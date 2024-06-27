@@ -15,15 +15,18 @@ export interface Product {
   category: Category;
   vendor: string;
   vouchers: Vouchers[];
-  sale?: number; 
+  sale?: number;
   rate?: number;
   discountedPrice?: number;
 }
 
 export interface Category {
-  id: number;
-  name?: string;
+  id?: number;
+  label: string;
   description?: string;
+  icon?: string;
+  link?: string;
+  children?: Category[];
 }
 
 export interface Price {

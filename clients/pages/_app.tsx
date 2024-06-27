@@ -1,42 +1,57 @@
-// Import styles of packages that you've installed.
-// All packages except `@mantine/hooks` require styles imports
-import "@mantine/core/styles.css";
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-import { AppShell, createTheme, MantineColorsTuple, MantineProvider } from "@mantine/core";
-import { Footer } from "@/components/Footer";
-import { HeaderMegaMenu } from "@/components/HeaderMegaMenu";
-import { SessionProvider } from "@/hooks/useUserSession";
+import '@mantine/core/styles.css';
 
-const myColor: MantineColorsTuple = [
-  '#e7fdef',
-  '#d7f5e1',
-  '#b1e8c4',
-  '#88dca5',
-  '#66d18a',
-  '#4fca79',
-  '#41c770',
-  '#32af5d',
-  '#269c52',
-  '#148743'
-];
+import type { AppProps } from 'next/app';
+import { AppShell, createTheme, MantineColorsTuple, MantineProvider } from '@mantine/core';
+import { Footer } from '@/components/Footer';
+import { SessionProvider } from 'next-auth/react';
+import { NavBar } from '@/components/NavBar';
+
+const base: MantineColorsTuple = [
+  "#d7fcf7",
+  "#aafbee",
+  "#7cfae5",
+  "#5dfadd",
+  "#4ff9d9",
+  "#46f9d7",
+  "#39ddbe",
+  "#2ac5a8",
+  "#03aa90",
+  "#027563"
+]
+
+const accent: MantineColorsTuple = [
+  "#ecf9fd",
+  "#dbeff7",
+  "#b0def0",
+  "#84ceeb",
+  "#64bfe5",
+  "#52b6e2",
+  "#47b3e2",
+  "#3a9cc8",
+  "#2c8bb3",
+  "#0f789e"
+]
 
 const theme = createTheme({
-  colors: {
-    myColor,
-  }
+  colors: {base, accent},
+  fontFamily: "Open Sans, sans-serif",
+  autoContrast: true,
+  luminanceThreshold: 0.15,
+  primaryShade: 9,
+  primaryColor: 'base',
+  defaultGradient: { deg: 133, from: 'base', to: 'accent' },
 });
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
-    <SessionProvider>
+    <SessionProvider session={session}>
       <MantineProvider theme={theme}>
         <AppShell
           header={{ height: 60, collapsed: false, offset: true }}
           withBorder={false}
         >
           <AppShell.Header>
-            <HeaderMegaMenu />
+            <NavBar />
           </AppShell.Header>
           <AppShell.Main>
             <Component {...pageProps} />

@@ -6,6 +6,14 @@ using RoadSide.Core.Extensions;
 
 namespace RoadSide.Core.Services.Users;
 
+public interface IUsersService
+{
+    ValueTask<ICollection<User>> GetAllAsync(UserQueryOption options);
+    ValueTask<User> GetById(Guid id);
+    ValueTask<User> GetById(BaseEntity<Guid> id);
+    ValueTask UpdateAsync(ICollection<User> users);
+    ValueTask RemoveAsync(Guid id);
+}
 public class UsersService : IUsersService
 {
     private readonly ICoreDbContext _context;
@@ -17,9 +25,21 @@ public class UsersService : IUsersService
         _mapper = mapper;
     }
 
-    public async ValueTask<ICollection<User>> GetAllAsync()
+    public async ValueTask<ICollection<User>> GetAllAsync(UserQueryOption options)
     {
-        var entities = await _context.Users.ToListAsync();
+        var query = _context.Users.AsQueryable().AsNoTracking();
+        if (options.IncludeRole)
+        {
+            query = query.Include(u => u.UserRoles)
+                .ThenInclude(x => x.RoleId);
+        }
+        
+        if (options.RoleId is not null)
+        {
+            query = query.Where(u => u.UserRoles.Any(ur => ur.RoleId == options.RoleId));
+        }
+
+        var entities = await query.ToListAsync();
         return _mapper.Map<IList<User>>(entities);
     }
     
@@ -62,4 +82,10 @@ public class UsersService : IUsersService
         _context.Users.Remove(entity);
         await _context.SaveChangesAsync();
     }
+}
+
+public class UserQueryOption
+{
+    public bool IncludeRole { get; set; }
+    public Guid? RoleId { get; set; }
 }

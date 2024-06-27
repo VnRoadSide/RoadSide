@@ -8,7 +8,6 @@ public class Role
 
     public string NormalizedName { get; set; }
 
-    public string ConcurrencyStamp { get; set; }
     public ICollection<RoleClaims> Claims { get; set;}
     public ICollection<UserRole> UserRoles { get; set; }
 }

@@ -117,7 +117,7 @@ public class ProductsController: ControllerBase
         }
     }
 
-    [HttpGet("categories")]
+    [HttpGet("category")]
     public async Task<ActionResult<ICollection<Category>>> GetCategories()
     {
         try
