@@ -4,7 +4,8 @@ ARG configuration=Release
 WORKDIR /src
 COPY src .
 
-ARG TARGETOS TARGETARCH
+ARG TARGETOS
+ARG TARGETARCH
 RUN dotnet publish RoadSide.Web -c $configuration --os=$TARGETOS --arch=$TARGETARCH --property:PublishDir=/src/published
 
 # =====================================================================================
