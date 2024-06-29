@@ -1,51 +1,69 @@
-import { Card, Group, Badge, Button, Image, Text, Container } from "@mantine/core";
-
-export function ProductCard() {
-  // const features = mockdata.map((feature) => (
-  //   <Center key={feature.label}>
-  //     <feature.icon size="1.05rem" className={classes.icon} stroke={1.5} />
-  //     <Text size="xs">{feature.label}</Text>
-  //   </Center>
-  // ));
-
+import { Product } from "@/models";
+import { formatNumber } from "@/utils";
+import {
+  Card,
+  Group,
+  Badge,
+  Button,
+  Image,
+  Text,
+  Container,
+  Space,
+  Box,
+  Stack,
+} from "@mantine/core";
+export function ProductCard({ product }: { product: Product }) {
+  const saleoff = !product.discountedPrice
+    ? 0
+    : Math.round((1 - product.discountedPrice / product.baseUnitPrice) * 100);
   return (
-    <Card withBorder padding="lg" radius="md" p="md"  >
-      {/* <Card.Section maw={100} >
-        <Image src="https://i.imgur.com/ZL52Q2D.png" alt="Tesla Model S"  />
-      </Card.Section> */}
+    <Card withBorder radius="md" padding="xs" miw="12rem" shadow="none">
+      <Card.Section>
+        <Image
+          src={product.imageUrl ?? "https://i.imgur.com/ZL52Q2D.png"}
+          alt={product.name}
+          height={120}
+        />
+      </Card.Section>
 
-      <Group justify="space-between" mt="md">
-        <div>
-          <Text fw={500}>Tesla Model S</Text>
-          <Text fz="xs" c="dimmed">
-            Free recharge at any station
+      <Card.Section px="sm" pt="sm">
+        <Group gap="md" justify="space-between">
+          <Text fw={500}>{product.name ?? "Title"}</Text>
+          <Text fz="sm" c="dimmed" fw={500} style={{ lineHeight: 1 }} mt={3}>
+            {product.unit ?? "Unit"}
           </Text>
-        </div>
-        <Badge variant="outline">25% off</Badge>
-      </Group>
-
-      <Container>
-        <Text fz="sm" c="dimmed">
-          Basic configuration
+        </Group>
+        <Text fz="xs" c="dimmed">
+          {product.description ?? "Description"}
         </Text>
-      </Container>
-
-      <Card.Section p="md">
-        <Group gap={30} justify="space-between">
-          <div>
-            <Text fz="xl" fw={700} style={{ lineHeight: 1 }}>
-              $168.00
+        <Group gap="md" justify="space-between" align="center">
+          <Stack justify="center" h={"3em"} gap={"0"}>
+            <Text fz="xl" fw={700} style={{ lineHeight: 1 }} component="span">
+              {product.discountedPrice
+                ? formatNumber(product.discountedPrice)
+                : formatNumber(product.baseUnitPrice)}
             </Text>
-            <Text fz="sm" c="dimmed" fw={500} style={{ lineHeight: 1 }} mt={3}>
-              per day
-            </Text>
-          </div>
-
-          <Button radius="xl">
-            Rent now
-          </Button>
+            {product.discountedPrice && (
+              <Text
+                fz="sm"
+                c="dimmed"
+                fw={500}
+                style={{ lineHeight: 1 }}
+                td="line-through"
+              >
+                {product.baseUnitPrice}
+              </Text>
+            )}
+          </Stack>
+          {product.discountedPrice && (
+            <Badge variant="outline">Giảm {saleoff}%</Badge>
+          )}
         </Group>
       </Card.Section>
+
+      <Button radius="xl" fullWidth>
+        Mua
+      </Button>
     </Card>
   );
 }

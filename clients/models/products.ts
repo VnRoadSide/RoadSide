@@ -10,6 +10,7 @@ export interface Product {
   imageUrl?: string;
   description?: string;
   baseUnitPrice: number;
+  unit: string;
   dateCreated: Date | string;
   dateModified: Date | string;
   category: Category;

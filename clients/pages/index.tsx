@@ -16,6 +16,9 @@ import {
   NavLink,
   Flex,
   Group,
+  useMantineTheme,
+  Box,
+  Paper,
 } from "@mantine/core";
 
 import { GetStaticProps } from "next";
@@ -66,7 +69,8 @@ function FeatureSection({ features }: { features: Feature[] }) {
 
 function HeroSection() {
   return (
-    <Stack>
+    <Stack align="stretch"
+    justify="center" gap="xs">
       <Container>
         <Image
           radius="md"
@@ -100,6 +104,20 @@ function HeroSection() {
   );
 }
 
+function ProductSection({ products }: { products: Product[] }) {
+  return (
+    <SimpleGrid
+      cols={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
+      spacing={{ base: "md", md: 10 }}
+      verticalSpacing={{ base: "xl", md: 10 }}
+    >
+      {products.map((product, index) => (
+        <ProductCard key={index} product={product} />
+      ))}
+    </SimpleGrid>
+  );
+}
+
 export default function Home({
   features,
   products,
@@ -109,14 +127,17 @@ export default function Home({
   products: Product[];
   categories: Category[];
 }) {
+  const theme = useMantineTheme();
   return (
-    <Stack p="xl">
-      <Flex>
-        <CategorySection categories={categories} />
-        <Container>
-          <ProductCard />
-        </Container>
-      </Flex>
+    <Stack p="xl" style={{ background: theme.colors["gray"][0] }}>
+      <Group grow preventGrowOverflow={false} wrap="nowrap" align="start">
+        <Paper radius="md" p="xs" miw="14rem" shadow="lg">
+          <CategorySection categories={categories} />
+        </Paper>
+        <Paper radius="md" p="xs" shadow="lg">
+          <ProductSection products={products} />
+        </Paper>
+      </Group>
       <FeatureSection features={features} />
       <HeroSection />
     </Stack>
@@ -135,6 +156,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const { get } = useApi();
 
   const { data, error } = await get<Product[]>("/products");
+  console.log("fethced products: ", data);
 
   if (error) {
     console.error("Error: ", error);
