@@ -10,20 +10,24 @@ export interface Product {
   imageUrl?: string;
   description?: string;
   baseUnitPrice: number;
+  unit: string;
   dateCreated: Date | string;
   dateModified: Date | string;
   category: Category;
   vendor: string;
   vouchers: Vouchers[];
-  sale?: number; 
+  sale?: number;
   rate?: number;
   discountedPrice?: number;
 }
 
 export interface Category {
-  id: number;
-  name?: string;
+  id?: number;
+  label: string;
   description?: string;
+  icon?: string;
+  link?: string;
+  children?: Category[];
 }
 
 export interface Price {

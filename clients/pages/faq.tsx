@@ -41,7 +41,7 @@ export default function FAQ() {
   ));
 
   return (
-    <Container size="sm">
+    <Container size="sm" p="lg">
       <Title ta="center">Một số câu hỏi thường gặp</Title>
       <Accordion variant="separated">{items}</Accordion>
     </Container>
