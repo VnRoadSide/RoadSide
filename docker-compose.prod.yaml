@@ -3,7 +3,7 @@ name: demeter
 services:
   backend:
     # Always use the latest image
-    image: ghcr.io/VnRoadSide/RoadSide/roadside-api
+    image: ghcr.io/vnroadside/roadside/roadside-api
     pull_policy: always
     environment:
       - ConnectionStrings__Postgres=${ConnectionStrings__PGConnection}

@@ -57,5 +57,5 @@ jobs:
       - run: sudo apt install --install-suggests wireguard
       - run: echo "${{ secrets.WG_CONF }}" > ./github-action.conf
       - run: wg-quick up ./github-action.conf
-      - run: curl -vvv http://192.168.0.1
+      - run: echo  "${{ secrets.SSH_PRIVKEY }}" | ssh -i /dev/stdin ducth@192.168.0.50 'docker compose -f ~/RoadSide/docker-compose.prod.yaml up -d'
       - run: wg-quick down ./github-action.conf
