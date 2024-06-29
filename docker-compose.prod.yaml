@@ -1,0 +1,24 @@
+name: demeter
+
+services:
+  backend:
+    # Always use the latest image
+    image: ghcr.io/vnroadside/roadside/roadside-api
+    pull_policy: always
+    environment:
+      - ConnectionStrings__Postgres=${ConnectionStrings__PGConnection}
+    ports:
+      - ${API_PORT}:8080
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.2"
+          memory: 50M
+        limits:
+          cpus: "2"
+          memory: 200M
+    networks:
+      - demeter-network
+
+networks:
+  demeter-network:
