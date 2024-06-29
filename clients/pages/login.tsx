@@ -1,7 +1,7 @@
 import { Grid, Box, Title, Space, Paper, TextInput, PasswordInput, Button, Text, Image } from "@mantine/core";
 import Link from "next/link";
 
-export function Login() {
+export default function Login() {
   return (
     <Grid style={{ minHeight: '600px', '@media (min-width: 1200px)': { minHeight: '800px' } }}>
       <Grid.Col span={12} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px' }}>
