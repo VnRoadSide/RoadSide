@@ -14,11 +14,9 @@ import {
   Text,
   Stack,
   NavLink,
-  Flex,
   Group,
-  useMantineTheme,
-  Box,
   Paper,
+  rem,
 } from "@mantine/core";
 
 import { GetStaticProps } from "next";
@@ -26,9 +24,9 @@ import { GetStaticProps } from "next";
 function CategorySection({ categories }: { categories: Category[] }) {
   function CategoryItem({ category }: { category: Category }) {
     return (
-      <NavLink href={category.link} label={category.label}>
-        {category.children ? (
-          <CategorySection categories={category.children} />
+      <NavLink href={category.link} label={category.name}>
+        {category.categories && category.categories.length > 0 ? (
+          <CategorySection categories={category.categories} />
         ) : null}
       </NavLink>
     );
@@ -69,8 +67,7 @@ function FeatureSection({ features }: { features: Feature[] }) {
 
 function HeroSection() {
   return (
-    <Stack align="stretch"
-    justify="center" gap="xs">
+    <Stack align="stretch" justify="center" gap="xs">
       <Container>
         <Image
           radius="md"
@@ -105,7 +102,7 @@ function HeroSection() {
 }
 
 function ProductSection({ products }: { products: Product[] }) {
-  return (
+  return products?.length > 0 ? (
     <SimpleGrid
       cols={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
       spacing={{ base: "md", md: 10 }}
@@ -115,6 +112,8 @@ function ProductSection({ products }: { products: Product[] }) {
         <ProductCard key={index} product={product} />
       ))}
     </SimpleGrid>
+  ) : (
+    <Text>No products to show. Try to reconnect to the internet.</Text>
   );
 }
 
@@ -127,11 +126,16 @@ export default function Home({
   products: Product[];
   categories: Category[];
 }) {
-  const theme = useMantineTheme();
   return (
-    <Stack p="xl" style={{ background: theme.colors["gray"][0] }}>
+    <Stack p="xl">
       <Group grow preventGrowOverflow={false} wrap="nowrap" align="start">
-        <Paper radius="md" p="xs" miw="14rem" shadow="lg">
+        <Paper
+          radius="md"
+          p="xs"
+          maw="15rem"
+          shadow="lg"
+          style={{ position: "sticky", top: rem(100), left: 0 }}
+        >
           <CategorySection categories={categories} />
         </Paper>
         <Paper radius="md" p="xs" shadow="lg">
@@ -147,25 +151,32 @@ export default function Home({
 export const getStaticProps: GetStaticProps = async () => {
   const promises = [
     fetch(`${environment.appUrl}/api/feature`),
-    fetch(`${environment.appUrl}/api/category`),
+    // fetch(`${environment.appUrl}/api/category`),
   ];
-  const [features, categories] = await Promise.all(
+  const [features] = await Promise.all(
     promises.map((p) => p.then((r) => r.json()))
   );
 
   const { get } = useApi();
 
-  const { data, error } = await get<Product[]>("/products");
-  console.log("fethced products: ", data);
+  const { data: products, error: productError } = await get<Product[]>(
+    "/products"
+  );
+  const { data: categories, error: categoryError } = await get<Category[]>(
+    "/products/category"
+  );
+  if (productError) {
+    console.error("Error: ", productError);
+  }
 
-  if (error) {
-    console.error("Error: ", error);
+  if (categoryError) {
+    console.error("Error: ", categoryError);
   }
 
   return {
     props: {
       features,
-      products: data,
+      products,
       categories,
     },
   };

@@ -17,9 +17,9 @@ public class CategoryService : ICategoryService
         _context = context;
     }
 
-    public async ValueTask<ICollection<Category>> GetAllAsync()
+    public async ValueTask<ICollection<Category>> GetAllBaseAsync()
     {
-        var entities = await _context.Categories.ToListAsync();
+        var entities = await _context.Categories.Where(c => c.BaseCategory == null).Include(c => c.Categories).ToListAsync();
         return _mapper.Map<IList<Category>>(entities);
     }
     

@@ -18,7 +18,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
     apiUrl: `${apiUrl}/api`,
     port: (process.env.PORT as string) ?? defaultPort,
     appName: (process.env.NEXT_PUBLIC_APP_NAME as string) ?? "RoadSide",
-    appUrl: process.env.VERCEL_URL ?? 'http://localhost:3000',
+    appUrl: process.env.VERCEL_URL ?`https://${process.env.VERCEL_URL}` : 'http://localhost:3000',
   };
 };
 

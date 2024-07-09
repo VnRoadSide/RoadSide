@@ -4,7 +4,7 @@ namespace RoadSide.Core.Services.Products;
 
 public interface ICategoryService
 {
-    ValueTask<ICollection<Category>> GetAllAsync();
+    ValueTask<ICollection<Category>> GetAllBaseAsync();
     ValueTask<ICollection<Category>> GetByName(string name);
     ValueTask UpdateAsync(ICollection<Category> categories);
     

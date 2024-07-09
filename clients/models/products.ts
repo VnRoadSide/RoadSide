@@ -1,10 +1,6 @@
-import { ReactNode, ElementType } from "react";
 import { Vouchers } from "./orders";
 
 export interface Product {
-  image: string | undefined;
-  newPrice: ReactNode;
-  quantity: React.ComponentPropsWithoutRef<ElementType>;
   id: number;
   name: string;
   imageUrl?: string;
@@ -21,13 +17,19 @@ export interface Product {
   discountedPrice?: number;
 }
 
+export interface OrderItem {
+  quantity: number;
+  id: number;
+  product: Product;
+}
+
 export interface Category {
   id?: number;
-  label: string;
+  name: string;
   description?: string;
   icon?: string;
   link?: string;
-  children?: Category[];
+  categories?: Category[];
 }
 
 export interface Price {

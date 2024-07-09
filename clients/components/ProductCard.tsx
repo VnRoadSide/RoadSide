@@ -1,5 +1,6 @@
-import { Product } from "@/models";
+import { OrderItem, Product } from "@/models";
 import { formatNumber } from "@/utils";
+import useCart from "@/utils/useCart";
 import {
   Card,
   Group,
@@ -7,12 +8,22 @@ import {
   Button,
   Image,
   Text,
-  Container,
-  Space,
-  Box,
   Stack,
 } from "@mantine/core";
 export function ProductCard({ product }: { product: Product }) {
+  const [{value, isClient}, setValue] = useCart();
+
+  function onAddToCart() {
+    const idx = value.findIndex((p) => p.product.id === product.id);
+    if (idx !== -1) {
+      const newValue = [...value];
+      newValue[idx].quantity += 1;
+      setValue(newValue);
+    } else {
+      setValue([...value, { id: value.length, quantity: 1, product } as OrderItem]);
+    }
+  }
+  
   const saleoff = !product.discountedPrice
     ? 0
     : Math.round((1 - product.discountedPrice / product.baseUnitPrice) * 100);
@@ -51,7 +62,7 @@ export function ProductCard({ product }: { product: Product }) {
                 style={{ lineHeight: 1 }}
                 td="line-through"
               >
-                {product.baseUnitPrice}
+                {formatNumber(product.baseUnitPrice)}
               </Text>
             )}
           </Stack>
@@ -61,7 +72,7 @@ export function ProductCard({ product }: { product: Product }) {
         </Group>
       </Card.Section>
 
-      <Button radius="xl" fullWidth>
+      <Button radius="xl" fullWidth onClick={onAddToCart}>
         Mua
       </Button>
     </Card>

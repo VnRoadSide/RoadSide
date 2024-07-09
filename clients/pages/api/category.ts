@@ -3,31 +3,31 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 const categories: Category[] = [
   {
-    label: "Trái cây & Rau củ",
+    name: "Trái cây & Rau củ",
     icon: "IconSalad",
-    children: [
-      { label: "Trái cây", link: "/" },
-      { label: "Rau củ", link: "/" },
+    categories: [
+      { name: "Trái cây", link: "/" },
+      { name: "Rau củ", link: "/" },
     ],
   },
   {
-    label: "Thịt cá",
+    name: "Thịt cá",
     icon: "IconFish",
-    children: [
-      { label: "Hải sản", link: "/" },
-      { label: "Thịt", link: "/" },
+    categories: [
+      { name: "Hải sản", link: "/" },
+      { name: "Thịt", link: "/" },
     ],
   },
   {
-    label: "Ngũ cốc",
+    name: "Ngũ cốc",
     icon: "IconCoffee",
-    children: [
-      { label: "Nuts & biscuits", link: "/" },
-      { label: "Chocolates", link: "/" },
-      { label: "Crisps", link: "/" },
-      { label: "Noodles & Pasta", link: "/" },
-      { label: "Sauces", link: "/" },
-      { label: "Soup", link: "/" },
+    categories: [
+      { name: "Nuts & biscuits", link: "/" },
+      { name: "Chocolates", link: "/" },
+      { name: "Crisps", link: "/" },
+      { name: "Noodles & Pasta", link: "/" },
+      { name: "Sauces", link: "/" },
+      { name: "Soup", link: "/" },
     ],
   },
 ];

@@ -122,7 +122,7 @@ public class ProductsController: ControllerBase
     {
         try
         {
-            var categories = await _categoryService.GetAllAsync();
+            var categories = await _categoryService.GetAllBaseAsync();
             return Ok(categories);
         }
         catch (Exception)

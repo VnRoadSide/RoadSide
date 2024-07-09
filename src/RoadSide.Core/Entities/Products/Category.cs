@@ -12,4 +12,5 @@ public class Category
     [ForeignKey("BaseCategory")]
     public int? BaseCategoryId { get; set; }
     public virtual Category? BaseCategory { get; set; }
+    public virtual ICollection<Category>? Categories { get; set; }
 }

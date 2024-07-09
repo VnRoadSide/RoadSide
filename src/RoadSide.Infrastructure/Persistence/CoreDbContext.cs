@@ -45,7 +45,8 @@ public class CoreDbContext : DbContext, ICoreDbContext
             .OnDelete(DeleteBehavior.NoAction);
         modelBuilder.Entity<Category>()
             .HasOne(c => c.BaseCategory)
-            .WithMany()
+            .WithMany(c => c.Categories)
+            .HasForeignKey(c => c.BaseCategoryId)
             .OnDelete(DeleteBehavior.NoAction);
     }
 
