@@ -1,5 +1,4 @@
-import { OrderItem, Product } from "@/models";
-import { useApi } from "@/utils";
+import { OrderItem } from "@/models";
 import useCart from "@/utils/useCart";
 import {
   Button,
@@ -14,7 +13,6 @@ import {
   Title,
   UnstyledButton,
 } from "@mantine/core";
-import { GetStaticProps } from "next";
 
 function ProductRow({
   item,

@@ -19,7 +19,7 @@ import {
   rem,
 } from "@mantine/core";
 
-import { GetStaticProps } from "next";
+import { GetServerSideProps, GetStaticProps, InferGetServerSidePropsType } from "next";
 
 function CategorySection({ categories }: { categories: Category[] }) {
   function CategoryItem({ category }: { category: Category }) {
@@ -121,11 +121,7 @@ export default function Home({
   features,
   products,
   categories,
-}: {
-  features: Feature[];
-  products: Product[];
-  categories: Category[];
-}) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>)  {
   return (
     <Stack p="xl">
       <Group grow preventGrowOverflow={false} wrap="nowrap" align="start">
@@ -148,14 +144,16 @@ export default function Home({
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const promises = [
-    fetch(`${environment.appUrl}/api/feature`),
-    // fetch(`${environment.appUrl}/api/category`),
-  ];
-  const [features] = await Promise.all(
-    promises.map((p) => p.then((r) => r.json()))
-  );
+type HomeProps = {
+  features: Feature[];
+  products: Product[];
+  categories: Category[];
+};
+
+export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
+  const features: Feature[] = await fetch(`${environment.appUrl}/api/feature`)
+    .then((r) => r.json())
+    .catch((err) => console.error(err));
 
   const { get } = useApi();
 
@@ -175,9 +173,9 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      features,
-      products,
-      categories,
+      features: features ?? [],
+      products: products ?? [],
+      categories: categories ?? [],
     },
   };
-};
+}

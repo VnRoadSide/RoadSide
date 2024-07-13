@@ -17,12 +17,6 @@ export interface Product {
   discountedPrice?: number;
 }
 
-export interface OrderItem {
-  quantity: number;
-  id: number;
-  product: Product;
-}
-
 export interface Category {
   id?: number;
   name: string;
