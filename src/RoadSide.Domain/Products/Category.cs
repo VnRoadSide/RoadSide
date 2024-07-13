@@ -6,4 +6,6 @@ public class Category: BaseEntity<int>
     public string Description { get; set; }
     public Category BaseCategory { get; set; }
     public ICollection<Category> Categories { get; set; }
+    public string Url { get; set; }
+    
 }

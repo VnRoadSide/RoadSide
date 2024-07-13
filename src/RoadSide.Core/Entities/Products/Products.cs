@@ -14,6 +14,7 @@ public class Products
     public string ImageUrl { get; set; } = String.Empty;
     public int Sale { get; set; }
     public int Rate { get; set; }
+    public string Url { get; set; } = String.Empty;
     
     [ForeignKey("Category")]
     public int CategoryId { get; set; }
