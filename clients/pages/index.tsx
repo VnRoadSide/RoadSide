@@ -151,7 +151,6 @@ type HomeProps = {
 };
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
-  console.log("GetServerSideProps", environment.appUrl);
   const features: Feature[] = await fetch(`${environment.appUrl}/api/feature`)
     .then((r) => r.json())
     .catch((err) => console.error(err));

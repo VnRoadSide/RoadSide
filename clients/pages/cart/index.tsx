@@ -90,11 +90,8 @@ function OrderSection() {
   }
 
   return (
-    value.length > 0 && (
-      <Stack>
-        <Title order={2} mb="lg">
-          Home & Car
-        </Title>
+    <Paper radius="md" p="xs" shadow="lg">
+      {value.length > 0 && (
         <Table>
           <Table.Thead>
             <Table.Tr>
@@ -120,8 +117,8 @@ function OrderSection() {
               ))}
           </Table.Tbody>
         </Table>
-      </Stack>
-    )
+      )}
+    </Paper>
   );
 }
 
@@ -177,9 +174,7 @@ function BannerSection({
               justifyContent: "flex-end",
             }}
           >
-            <Text size="lg" >
-              {price}₫
-            </Text>
+            <Text size="lg">{price}₫</Text>
           </Grid.Col>
           <Grid.Col
             span={1}
@@ -196,25 +191,11 @@ function BannerSection({
 export default function Cart() {
   return (
     <Stack p="xl">
+      <Title order={2} mb="lg">
+        Giỏ hàng
+      </Title>
       <OrderSection />
       <BannerSection />
     </Stack>
   );
 }
-
-// export const getStaticProps: GetStaticProps = async () => {
-//   const { get } = useApi();
-
-//   const { data: products, error: productError } = await get<Product[]>(
-//     "/products"
-//   );
-//   if (productError) {
-//     console.error("Error: ", productError);
-//   }
-
-//   return {
-//     props: {
-//       products: products?.slice(0, 3) ?? [],
-//     },
-//   };
-// };
