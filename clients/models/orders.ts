@@ -6,6 +6,7 @@ export interface OrderItem {
   quantity: number;
   dateCreated: Date | string;
   product: Product;
+  selected?: boolean;
 }
 
 export interface Orders {

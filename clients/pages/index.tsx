@@ -19,7 +19,7 @@ import {
   rem,
 } from "@mantine/core";
 
-import { GetServerSideProps, GetStaticProps, InferGetServerSidePropsType } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 function CategorySection({ categories }: { categories: Category[] }) {
   function CategoryItem({ category }: { category: Category }) {

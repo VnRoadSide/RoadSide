@@ -13,6 +13,7 @@ import {
   Title,
   UnstyledButton,
 } from "@mantine/core";
+import { useEffect, useState } from "react";
 
 function ProductRow({
   item,
@@ -28,12 +29,12 @@ function ProductRow({
   return (
     <Table.Tr>
       <Table.Td>
-        <Checkbox />
+        <Checkbox checked={item.selected} onClick={() => onUpdate({...item, selected: !item.selected})}/>
       </Table.Td>
       <Table.Td>
         <Text w={300}>{item.product.name}</Text>
         <Text size="sm" c="dimmed">
-          Bội miễn phí 15 ngày
+          Miễn phí 15 ngày
         </Text>
       </Table.Td>
 
@@ -122,15 +123,31 @@ function OrderSection() {
   );
 }
 
-function BannerSection({
-  selected = 0,
-  total = 0,
-  price = 0,
-}: {
-  selected?: number;
-  total?: number;
-  price?: number;
-}) {
+function BannerSection() {
+  // Render product row using Mantine Table components
+  const [{ value, isClient }, setValue] = useCart();
+  const [selectAll, setSelectedAll] = useState(value.every((p) => p.selected));
+
+  useEffect(() => {
+    setSelectedAll(value.every((p) => p.selected));
+  }, [value]);
+
+  const handleSelectAll = () => {
+    setSelectedAll(!selectAll);
+    setValue(value.map((p) => ({ ...p, selected: !selectAll })));
+  };
+  
+  const total = value.reduce(
+    (total, item) => total + item.product.baseUnitPrice * item.quantity,
+    0
+  );
+  const selected = value.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+
+  const price = total.toLocaleString();
+
   return (
     <Paper
       radius="md"
@@ -141,7 +158,7 @@ function BannerSection({
       <Stack p="md">
         <Grid grow>
           <Grid.Col span={6}>
-            <Checkbox label={`Chọn Tất Cả (${total})`} />
+            <Checkbox label={`Chọn Tất Cả (${value.length})`} checked={selectAll} onClick={handleSelectAll}/>
           </Grid.Col>
           <Grid.Col
             span={6}
@@ -180,7 +197,7 @@ function BannerSection({
             span={1}
             style={{ display: "flex", justifyContent: "flex-end" }}
           >
-            <Button size="md">Mua Hàng</Button>
+            <Button disabled={selected === 0} size="md">Mua Hàng</Button>
           </Grid.Col>
         </Grid>
       </Stack>
