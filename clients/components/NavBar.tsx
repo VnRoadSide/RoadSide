@@ -8,18 +8,31 @@ import {
   Container,
   ActionIcon,
   useMantineColorScheme,
-  useComputedColorScheme,
-  Button,
   Indicator,
+  Menu,
 } from "@mantine/core";
-import { IconMoon, IconShoppingCart, IconSun } from "@tabler/icons-react";
+import {
+  IconMoon,
+  IconShoppingCart,
+  IconSun,
+  IconUserCircle,
+} from "@tabler/icons-react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 // import { FuzzySearch } from "./Search";
 
 export function NavBar() {
   const { colorScheme, setColorScheme } = useMantineColorScheme();
   const [{ counter, isClient }, setValue] = useCart();
+  const [isPortal, setIsPortal] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    // if /portal in url by using nextjs router
+    if (typeof window !== "undefined") {
+      setIsPortal(router.asPath.includes("/portal"));
+    }
+  });
 
   return (
     <Paper shadow="sm" variant="gradient">
@@ -38,24 +51,49 @@ export function NavBar() {
           </Group>
 
           <Group gap={0} align="center">
-            <Anchor href="/faq" underline="never" p="sm">
-              FAQ
-            </Anchor>
-            <Anchor href="/contact" underline="never" p="sm">
-              Contact
-            </Anchor>
-            <ActionIcon
-              variant="transparent"
-              size="xl"
-              p="xs"
-              aria-label="Cart"
-              component={Link}
-              href="/cart"
-            >
-              <Indicator inline label={counter}>
-                <IconShoppingCart stroke={1.5} />
-              </Indicator>
-            </ActionIcon>
+            {!isPortal && (
+              <ActionIcon
+                variant="transparent"
+                size="xl"
+                p="xs"
+                aria-label="Cart"
+                component={Link}
+                href="/cart"
+              >
+                <Indicator inline label={counter}>
+                  <IconShoppingCart stroke={1.5} />
+                </Indicator>
+              </ActionIcon>
+            )}
+            <Menu shadow="md" width={200}>
+              <Menu.Target>
+                <ActionIcon
+                  variant="transparent"
+                  size="xl"
+                  p="xs"
+                  aria-label="Me"
+                >
+                  <Indicator inline label={counter}>
+                    <IconUserCircle stroke={1.5} />
+                  </Indicator>
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item component={Link} href="/me">
+                  Thông tin tài khoản
+                </Menu.Item>
+                <Menu.Item component={Link} href="/portal">
+                  Kênh người bán
+                </Menu.Item>
+                <Menu.Item component={Link} href="/me/notification">
+                  Thông báo
+                </Menu.Item>
+                <Menu.Item component={Link} href="/logout">
+                  Đăng xuất
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+
             {isClient && (
               <ActionIcon
                 onClick={() =>

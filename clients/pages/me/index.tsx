@@ -25,7 +25,7 @@ export const navigation: Url[] = [
   },
   {
     label: "Thông báo của tôi",
-    href: "/notification",
+    href: "me/notification",
   },
   {
     label: "Quản lý đơn hàng",
@@ -44,16 +44,8 @@ export const navigation: Url[] = [
     href: "/me/payment-info",
   },
   {
-    label: "Sản phẩm theo dõi",
+    label: "Theo dõi",
     href: "/me/follow",
-  },
-  {
-    label: "Chia sẻ có lời",
-    href: "/referral",
-  },
-  {
-    label: "Mã giảm giá",
-    href: "/discount-codes",
   },
   {
     label: "Hỗ trợ khách hàng",
