@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using RoadSide.Core.Services.Orders;
 using RoadSide.Core.Services.Products;
 using RoadSide.Domain;
@@ -60,6 +61,22 @@ public class ProductsController: ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+
+    [HttpGet]
+    [Authorize]
+    [Route("vendor")]
+    public async Task<ActionResult<ICollection<Products>>> GetProductByVendor()
+    {
+        try
+        {
+            
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+    
     [HttpGet("search")]
     public async Task<ActionResult<ICollection<Products>>> SearchProducts([Required] string name)
     {

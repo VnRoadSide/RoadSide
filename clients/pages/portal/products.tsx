@@ -74,19 +74,19 @@ export default function ProductManagement() {
   );
 }
 
-// type ProductProps = {
-//   products: any[];
-// };
+type ProductProps = {
+  products: any[];
+};
 
-// export const getServerSideProps: GetServerSideProps<
-//   ProductProps
-// > = async () => {
+export const getServerSideProps: GetServerSideProps<
+  ProductProps
+> = async () => {
 
 
 
-//   return {
-//     props: {
-//       ...notification,
-//     },
-//   };
-// };
+  return {
+    props: {
+      ...notification,
+    },
+  };
+};

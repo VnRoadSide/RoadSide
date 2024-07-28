@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import useCart from "@/utils/useCart";
 import {
   Group,
@@ -17,14 +18,15 @@ import {
   IconSun,
   IconUserCircle,
 } from "@tabler/icons-react";
+import { Session } from "next-auth";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 // import { FuzzySearch } from "./Search";
 
-export function NavBar() {
+export function NavBar({ session }: { session: Session | null }) {
   const { colorScheme, setColorScheme } = useMantineColorScheme();
-  const [{ counter, isClient }, setValue] = useCart();
+  const [{ counter, isClient }] = useCart();
   const [isPortal, setIsPortal] = useState(false);
   const router = useRouter();
   useEffect(() => {
@@ -65,34 +67,47 @@ export function NavBar() {
                 </Indicator>
               </ActionIcon>
             )}
-            <Menu shadow="md" width={200}>
-              <Menu.Target>
-                <ActionIcon
-                  variant="transparent"
-                  size="xl"
-                  p="xs"
-                  aria-label="Me"
-                >
-                  <Indicator inline label={counter}>
-                    <IconUserCircle stroke={1.5} />
-                  </Indicator>
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item component={Link} href="/me">
-                  Thông tin tài khoản
-                </Menu.Item>
-                <Menu.Item component={Link} href="/portal">
-                  Kênh người bán
-                </Menu.Item>
-                <Menu.Item component={Link} href="/me/notification">
-                  Thông báo
-                </Menu.Item>
-                <Menu.Item component={Link} href="/logout">
-                  Đăng xuất
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            {!!session ? (
+              <Menu shadow="md" width={200}>
+                <Menu.Target>
+                  <ActionIcon
+                    variant="transparent"
+                    size="xl"
+                    p="xs"
+                    aria-label="Me"
+                  >
+                    <Indicator inline label={counter}>
+                      <IconUserCircle stroke={1.5} />
+                    </Indicator>
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item component={Link} href="/me">
+                    Thông tin tài khoản
+                  </Menu.Item>
+                  <Menu.Item component={Link} href="/portal">
+                    Kênh người bán
+                  </Menu.Item>
+                  <Menu.Item component={Link} href="/me/notification">
+                    Thông báo
+                  </Menu.Item>
+                  <Menu.Item component={Link} href="/logout">
+                    Đăng xuất
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            ) : (
+              <ActionIcon
+                variant="transparent"
+                size="xl"
+                p="xs"
+                aria-label="Me"
+                component={Link}
+                href="/login"
+              >
+                <IconUserCircle stroke={1.5} />
+              </ActionIcon>
+            )}
 
             {isClient && (
               <ActionIcon
