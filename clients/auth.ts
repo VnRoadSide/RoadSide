@@ -16,11 +16,12 @@ const config: NextAuthConfig = {
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
       // e.g. domain, username, password, 2FA token, etc.
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        username: { label: "Email", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
         const { post } = useApi();
+        console.log(credentials)
 
         // ToDo: Authentication logic
         const { data: user, error } = await post<Authorization>("/auth/login", {
