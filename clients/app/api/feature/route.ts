@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest } from "next/server";
 
 const features = [
   {
@@ -33,6 +33,6 @@ const features = [
   },
 ];
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  res.status(200).json(features);
+export function GET() {
+  return Response.json(features);
 }
