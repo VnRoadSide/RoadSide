@@ -10,7 +10,7 @@ const navigation: Url[] = [
     },
     {
       label: "Thông báo của tôi",
-      href: "portal/notification",
+      href: "/portal/notification",
     },
     {
       label: "Quản Lý Đơn Hàng",

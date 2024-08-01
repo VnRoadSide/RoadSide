@@ -9,6 +9,9 @@ import {
     Box,
     Title,
     Group,
+    TableTd,
+    TableTr,
+    TableTbody,
   } from "@mantine/core";
   
   function CheckoutSection() {
@@ -36,23 +39,23 @@ import {
     ];
   
     const rows = products.map((product, index) => (
-      <Table.Tr key={index}>
-        <Table.Td>
+      <TableTr key={index}>
+        <TableTd>
           <Text w={500}>{product.name}</Text>
           <Text size="xs" c="dimmed">
             Loại: {product.type}
           </Text>
-        </Table.Td>
-        <Table.Td>
+        </TableTd>
+        <TableTd>
           <Text>₫{product.price.toLocaleString()}</Text>
-        </Table.Td>
-        <Table.Td>
+        </TableTd>
+        <TableTd>
           <Text>{product.quantity}</Text>
-        </Table.Td>
-        <Table.Td>
+        </TableTd>
+        <TableTd>
           <Text>₫{product.subtotal.toLocaleString()}</Text>
-        </Table.Td>
-      </Table.Tr>
+        </TableTd>
+      </TableTr>
     ));
   
     const totalCost = products.reduce(
@@ -77,7 +80,7 @@ import {
           </Text>
           <Divider my="sm" />
           <Table>
-            <Table.Tbody>{rows}</Table.Tbody>
+            <TableTbody>{rows}</TableTbody>
           </Table>
           <Group>
           <Badge color="pink" variant="light">

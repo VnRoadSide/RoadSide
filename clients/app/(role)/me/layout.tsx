@@ -10,7 +10,7 @@ const navigation: Url[] = [
   },
   {
     label: "Thông báo của tôi",
-    href: "me/notification",
+    href: "/me/notification",
   },
   {
     label: "Quản lý đơn hàng",
@@ -34,7 +34,7 @@ const navigation: Url[] = [
   },
   {
     label: "Hỗ trợ khách hàng",
-    href: "/customer-support",
+    href: "/me/support",
   },
 ];
 

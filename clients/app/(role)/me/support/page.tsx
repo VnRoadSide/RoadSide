@@ -8,6 +8,7 @@ import {
   Box,
   Paper,
   NavLink,
+  GridCol,
 } from "@mantine/core";
 import {
   IconPhone,
@@ -91,7 +92,7 @@ function SupportCenter() {
         </Title>
         <Grid gutter="lg">
           {supportOptions.map((option, index) => (
-            <Grid.Col key={index} span={4}>
+            <GridCol key={index} span={4}>
               <Paper p="lg">
                 <Group align="center">
                   <Icon icon={option.icon} />
@@ -105,7 +106,7 @@ function SupportCenter() {
                   {option.detail}
                 </Text>
               </Paper>
-            </Grid.Col>
+            </GridCol>
           ))}
         </Grid>
 
@@ -113,7 +114,7 @@ function SupportCenter() {
 
         <Grid gutter="lg">
           {infoOptions.map((option, index) => (
-            <Grid.Col key={index} span={6}>
+            <GridCol key={index} span={6}>
               <Box>
                 <Group >
                   <Icon icon={option.icon} />
@@ -134,7 +135,7 @@ function SupportCenter() {
                 </Text>
                 <Text size="sm">{option.content}</Text>
               </Box>
-            </Grid.Col>
+            </GridCol>
           ))}
         </Grid>
       </Box>

@@ -7,6 +7,14 @@ import {
   Title,
   Space,
   TextInput,
+  TabsList,
+  TabsTab,
+  TableTbody,
+  TableTd,
+  TableTh,
+  TableThead,
+  TableTr,
+  TabsPanel,
 } from "@mantine/core";
 
 export default function ProductManagement() {
@@ -15,15 +23,15 @@ export default function ProductManagement() {
       <Title order={2}>Sản phẩm</Title>
       <Space h="md" />
       <Tabs defaultValue="all">
-        <Tabs.List>
-          <Tabs.Tab value="all">Tất cả</Tabs.Tab>
-          <Tabs.Tab value="active">Đang hoạt động</Tabs.Tab>
-          <Tabs.Tab value="violations">Vi phạm</Tabs.Tab>
-          <Tabs.Tab value="pending">Chờ duyệt bởi Shopee</Tabs.Tab>
-          <Tabs.Tab value="unpublished">Chưa được đăng</Tabs.Tab>
-        </Tabs.List>
+        <TabsList>
+          <TabsTab value="all">Tất cả</TabsTab>
+          <TabsTab value="active">Đang hoạt động</TabsTab>
+          <TabsTab value="violations">Vi phạm</TabsTab>
+          <TabsTab value="pending">Chờ duyệt bởi Shopee</TabsTab>
+          <TabsTab value="unpublished">Chưa được đăng</TabsTab>
+        </TabsList>
 
-        <Tabs.Panel value="all">
+        <TabsPanel value="all">
           {/* Filter Section */}
           <Group pt="md" gap="md" align="end">
             <TextInput
@@ -44,23 +52,23 @@ export default function ProductManagement() {
 
           {/* Products Table */}
           <Table mt="md">
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Tên sản phẩm</Table.Th>
-                <Table.Th>Doanh số</Table.Th>
-                <Table.Th>Giá</Table.Th>
-                <Table.Th>Kho hàng</Table.Th>
-                <Table.Th>Chất Lượng Nội Dung</Table.Th>
-                <Table.Th>Thao tác</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              <Table.Tr>
-                <Table.Td colSpan={6}>0 Sản phẩm</Table.Td>
-              </Table.Tr>
-            </Table.Tbody>
+            <TableThead>
+              <TableTr>
+                <TableTh>Tên sản phẩm</TableTh>
+                <TableTh>Doanh số</TableTh>
+                <TableTh>Giá</TableTh>
+                <TableTh>Kho hàng</TableTh>
+                <TableTh>Chất Lượng Nội Dung</TableTh>
+                <TableTh>Thao tác</TableTh>
+              </TableTr>
+            </TableThead>
+            <TableTbody>
+              <TableTr>
+                <TableTd colSpan={6}>0 Sản phẩm</TableTd>
+              </TableTr>
+            </TableTbody>
           </Table>
-        </Tabs.Panel>
+        </TabsPanel>
 
         {/* Repeat Tabs.Panel for each tab with specific content if needed */}
       </Tabs>

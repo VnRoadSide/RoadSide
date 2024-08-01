@@ -9,12 +9,13 @@ import {
   Button,
   Text,
   Image,
+  GridCol,
 } from "@mantine/core";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useForm } from "@mantine/form";
 
-export default function Login() {
+export default function Page() {
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -29,7 +30,7 @@ export default function Login() {
         "@media (min-width: 1200px)": { minHeight: "800px" },
       }}
     >
-      <Grid.Col
+      <GridCol
         span={12}
         style={{
           display: "flex",
@@ -92,8 +93,8 @@ export default function Login() {
             </Link>
           </Text>
         </Box>
-      </Grid.Col>
-      <Grid.Col
+      </GridCol>
+      <GridCol
         span={0}
         style={{
           display: "none",
@@ -112,7 +113,7 @@ export default function Login() {
             filter: "brightness(0.2) grayscale(1)",
           }}
         />
-      </Grid.Col>
+      </GridCol>
     </Grid>
   );
 }

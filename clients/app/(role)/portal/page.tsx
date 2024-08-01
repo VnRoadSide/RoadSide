@@ -9,6 +9,9 @@ import {
   TableThead,
   TableTr,
   Tabs,
+  TabsList,
+  TabsPanel,
+  TabsTab,
   Title,
 } from "@mantine/core";
 
@@ -17,18 +20,18 @@ export default function Page() {
     <Stack>
       <Title order={2}>Tất cả</Title>
       <Tabs defaultValue="all">
-        <Tabs.List>
-          <Tabs.Tab value="all">Tất cả</Tabs.Tab>
-          <Tabs.Tab value="pending">Chờ xác nhận</Tabs.Tab>
-          <Tabs.Tab value="pickup">Chờ lấy hàng</Tabs.Tab>
-          <Tabs.Tab value="shipping">Đang giao</Tabs.Tab>
-          <Tabs.Tab value="delivered">Đã giao</Tabs.Tab>
-          <Tabs.Tab value="cancelled">Đơn Huỷ</Tabs.Tab>
-          <Tabs.Tab value="returned">Trả hàng/Hoàn tiền</Tabs.Tab>
-          <Tabs.Tab value="failed">Giao không thành công</Tabs.Tab>
-        </Tabs.List>
+        <TabsList>
+          <TabsTab value="all">Tất cả</TabsTab>
+          <TabsTab value="pending">Chờ xác nhận</TabsTab>
+          <TabsTab value="pickup">Chờ lấy hàng</TabsTab>
+          <TabsTab value="shipping">Đang giao</TabsTab>
+          <TabsTab value="delivered">Đã giao</TabsTab>
+          <TabsTab value="cancelled">Đơn Huỷ</TabsTab>
+          <TabsTab value="returned">Trả hàng/Hoàn tiền</TabsTab>
+          <TabsTab value="failed">Giao không thành công</TabsTab>
+        </TabsList>
 
-        <Tabs.Panel value="all">
+        <TabsPanel value="all">
           {/* Filter Section */}
           <Group
             pt="md"
@@ -67,10 +70,10 @@ export default function Page() {
               </TableTr>
             </TableThead>
             <TableTbody>
-              <Table.Tr></Table.Tr>
+              <TableTr></TableTr>
             </TableTbody>
           </Table>
-        </Tabs.Panel>
+        </TabsPanel>
 
         {/* Repeat Tabs.Panel for each tab with specific content if needed */}
       </Tabs>

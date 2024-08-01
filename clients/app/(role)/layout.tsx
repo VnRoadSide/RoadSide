@@ -17,7 +17,7 @@ function NavigationSection({ urls }: { urls: Url[] }) {
   return (
     <Stack gap={0}>
       {urls.map((url, index) => (
-        <NavLink href={url.href} label={url.label} />
+        <NavLink key={index} href={url.href} label={url.label} />
       ))}
     </Stack>
   );
