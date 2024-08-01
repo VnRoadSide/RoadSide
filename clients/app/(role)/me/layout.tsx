@@ -1,3 +1,4 @@
+"use client";
 import { Url } from "@/models/routing";
 import { useUrl } from "@/utils/useUrl";
 import { ReactNode, useEffect } from "react";
@@ -39,10 +40,8 @@ const navigation: Url[] = [
 
 export default function MeLayout({ children }: { children: ReactNode }) {
   const { registerUrls } = useUrl();
-
   useEffect(() => {
-    registerUrls(navigation);
-  }, [registerUrls]);
-
+    registerUrls({ "me": navigation });
+  }, []);
   return <>{children}</>;
 }

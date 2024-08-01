@@ -1,14 +1,21 @@
+"use client";
 import { OrderItem } from "@/models";
 import useCart from "@/utils/useCart";
 import {
   Button,
   Checkbox,
   Grid,
+  GridCol,
   Group,
   NumberInput,
   Paper,
   Stack,
   Table,
+  TableTbody,
+  TableTd,
+  TableTh,
+  TableThead,
+  TableTr,
   Text,
   Title,
   UnstyledButton,
@@ -27,18 +34,18 @@ function ProductRow({
   onSuggest?: () => void;
 }) {
   return (
-    <Table.Tr>
-      <Table.Td>
+    <TableTr>
+      <TableTd>
         <Checkbox checked={item.selected} onClick={() => onUpdate({...item, selected: !item.selected})}/>
-      </Table.Td>
-      <Table.Td>
+      </TableTd>
+      <TableTd>
         <Text w={300}>{item.product.name}</Text>
         <Text size="sm" c="dimmed">
           Miễn phí 15 ngày
         </Text>
-      </Table.Td>
+      </TableTd>
 
-      <Table.Td>
+      <TableTd>
         <Text
           c={item.product.discountedPrice ? "dimmed" : undefined}
           td={!!item.product.discountedPrice ? "line-through" : undefined}
@@ -53,8 +60,8 @@ function ProductRow({
             item.product.discountedPrice ?? item.product.baseUnitPrice
           ).toLocaleString()}
         </Text>
-      </Table.Td>
-      <Table.Td>
+      </TableTd>
+      <TableTd>
         <NumberInput
           defaultValue={item.quantity}
           min={1}
@@ -62,13 +69,13 @@ function ProductRow({
             onUpdate({ ...item, quantity: parseInt(val.toString()) })
           }
         />
-      </Table.Td>
-      <Table.Td w={100}>
+      </TableTd>
+      <TableTd w={100}>
         <Text>
           ₫{(item.product.baseUnitPrice * item.quantity).toLocaleString()}
         </Text>
-      </Table.Td>
-      <Table.Td>
+      </TableTd>
+      <TableTd>
         <Group justify="flex-end">
           <Button color="red" variant="light" onClick={onRemove}>
             Xóa
@@ -77,8 +84,8 @@ function ProductRow({
             Tìm sản phẩm tương tự
           </Button>
         </Group>
-      </Table.Td>
-    </Table.Tr>
+      </TableTd>
+    </TableTr>
   );
 }
 
@@ -94,17 +101,17 @@ function OrderSection() {
     <Paper radius="md" p="xs" shadow="lg">
       {value.length > 0 && (
         <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th></Table.Th>
-              <Table.Th>Sản Phẩm</Table.Th>
-              <Table.Th>Đơn Giá</Table.Th>
-              <Table.Th>Số Lượng</Table.Th>
-              <Table.Th>Số Tiền</Table.Th>
-              <Table.Th></Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
+          <TableThead>
+            <TableTr>
+              <TableTh></TableTh>
+              <TableTh>Sản Phẩm</TableTh>
+              <TableTh>Đơn Giá</TableTh>
+              <TableTh>Số Lượng</TableTh>
+              <TableTh>Số Tiền</TableTh>
+              <TableTh></TableTh>
+            </TableTr>
+          </TableThead>
+          <TableTbody>
             {isClient &&
               value.map((product) => (
                 <ProductRow
@@ -116,7 +123,7 @@ function OrderSection() {
                   }
                 />
               ))}
-          </Table.Tbody>
+          </TableTbody>
         </Table>
       )}
     </Paper>
@@ -157,10 +164,10 @@ function BannerSection() {
     >
       <Stack p="md">
         <Grid grow>
-          <Grid.Col span={6}>
+          <GridCol span={6}>
             <Checkbox label={`Chọn Tất Cả (${value.length})`} checked={selectAll} onClick={handleSelectAll}/>
-          </Grid.Col>
-          <Grid.Col
+          </GridCol>
+          <GridCol
             span={6}
             style={{
               display: "flex",
@@ -169,10 +176,10 @@ function BannerSection() {
             }}
           >
             <UnstyledButton>Đưa vào mục Đã thích</UnstyledButton>
-          </Grid.Col>
+          </GridCol>
         </Grid>
         <Grid grow>
-          <Grid.Col
+          <GridCol
             span={3}
             style={{
               display: "flex",
@@ -182,8 +189,8 @@ function BannerSection() {
             <Text size="sm" c="dimmed">
               Tổng thanh toán ({selected} Sản phẩm):
             </Text>
-          </Grid.Col>
-          <Grid.Col
+          </GridCol>
+          <GridCol
             span={2}
             style={{
               display: "flex",
@@ -192,13 +199,13 @@ function BannerSection() {
             }}
           >
             <Text size="lg">{price}₫</Text>
-          </Grid.Col>
-          <Grid.Col
+          </GridCol>
+          <GridCol
             span={1}
             style={{ display: "flex", justifyContent: "flex-end" }}
           >
             <Button disabled={selected === 0} size="md">Mua Hàng</Button>
-          </Grid.Col>
+          </GridCol>
         </Grid>
       </Stack>
     </Paper>

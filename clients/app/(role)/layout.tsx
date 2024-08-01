@@ -1,3 +1,4 @@
+"use client";
 import { Url } from "@/models/routing";
 import { useUrl } from "@/utils/useUrl";
 import {
@@ -24,8 +25,9 @@ function NavigationSection({ urls }: { urls: Url[] }) {
 
 export default function RoleLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const firstPath = pathname?.split("/")[1] ?? "";
   const { getUrlsByStartPath } = useUrl();
-  const urls = getUrlsByStartPath(pathname);
+  const urls = getUrlsByStartPath(firstPath);
   const nav: Url[] = [
     { label: "Trang chủ", href: "/" },
     ...urls.filter((item) => item.href === pathname),

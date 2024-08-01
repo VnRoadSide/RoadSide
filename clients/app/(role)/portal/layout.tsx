@@ -1,3 +1,4 @@
+"use client";
 import { Url } from "@/models/routing";
 import { useUrl } from "@/utils/useUrl";
 import { ReactNode, useEffect } from "react";
@@ -31,10 +32,9 @@ const navigation: Url[] = [
 
 export default function PortalLayout({ children }: { children: ReactNode }) {
   const { registerUrls } = useUrl();
-
   useEffect(() => {
-    registerUrls(navigation);
-  }, [registerUrls]);
+    registerUrls({ "portal": navigation });
+  }, []);
 
   return <>{children}</>;
 }

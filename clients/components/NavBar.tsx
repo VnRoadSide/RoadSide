@@ -34,7 +34,7 @@ export default function NavBar({
   const { colorScheme, setColorScheme } = useMantineColorScheme();
   const [{ counter, isClient }] = useCart();
   const [isPortal, setIsPortal] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
   useEffect(() => {
     // if /portal in url by using nextjs router
     setIsPortal(pathname.includes("/portal"));

@@ -4,6 +4,10 @@ import {
   Select,
   Stack,
   Table,
+  TableTbody,
+  TableTh,
+  TableThead,
+  TableTr,
   Tabs,
   Title,
 } from "@mantine/core";
@@ -52,19 +56,19 @@ export default function Page() {
 
           {/* Orders Table */}
           <Table mt="md">
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Sản phẩm</Table.Th>
-                <Table.Th>Tổng Đơn hàng</Table.Th>
-                <Table.Th>Trạng thái</Table.Th>
-                <Table.Th>Đếm ngược</Table.Th>
-                <Table.Th>Đơn vị vận chuyển</Table.Th>
-                <Table.Th>Thao tác</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
+            <TableThead>
+              <TableTr>
+                <TableTh>Sản phẩm</TableTh>
+                <TableTh>Tổng Đơn hàng</TableTh>
+                <TableTh>Trạng thái</TableTh>
+                <TableTh>Đếm ngược</TableTh>
+                <TableTh>Đơn vị vận chuyển</TableTh>
+                <TableTh>Thao tác</TableTh>
+              </TableTr>
+            </TableThead>
+            <TableTbody>
               <Table.Tr></Table.Tr>
-            </Table.Tbody>
+            </TableTbody>
           </Table>
         </Tabs.Panel>
 

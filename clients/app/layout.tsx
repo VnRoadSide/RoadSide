@@ -1,6 +1,6 @@
 // Import styles of packages that you've installed.
 // All packages except `@mantine/hooks` require styles imports
-import '@mantine/core/styles.css';
+import "@mantine/core/styles.css";
 
 import { Footer } from "@/components/Footer";
 import NavBar from "@/components/NavBar";
@@ -12,7 +12,7 @@ import {
   ColorSchemeScript,
   MantineProvider,
 } from "@mantine/core";
-
+import { UrlProvider } from "@/context/urlContext";
 
 export default function RootLayout({
   children,
@@ -30,16 +30,18 @@ export default function RootLayout({
       </head>
       <body>
         <MantineProvider theme={theme}>
-          <AppShell
-            header={{ height: 60, collapsed: false, offset: true }}
-            withBorder={false}
-          >
-            <AppShellHeader>
-              <NavBar />
-            </AppShellHeader>
-            <AppShellMain>{children}</AppShellMain>
-          </AppShell>
-          <Footer />
+          <UrlProvider>
+            <AppShell
+              header={{ height: 60, collapsed: false, offset: true }}
+              withBorder={false}
+            >
+              <AppShellHeader>
+                <NavBar />
+              </AppShellHeader>
+              <AppShellMain>{children}</AppShellMain>
+            </AppShell>
+            <Footer />
+          </UrlProvider>
         </MantineProvider>
       </body>
     </html>

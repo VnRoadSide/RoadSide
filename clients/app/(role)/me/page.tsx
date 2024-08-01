@@ -12,6 +12,7 @@ import {
   Group,
   Title,
   Space,
+  GridCol,
 } from "@mantine/core";
 import { IconBrandFacebook, IconBrandGoogle } from "@tabler/icons-react";
 
@@ -21,7 +22,7 @@ export default function Me() {
   return (
     <Stack p="md">
       <Grid>
-        <Grid.Col span={6}>
+        <GridCol span={6}>
           <Stack gap="sm">
             <Title order={3}>Thông tin cá nhân</Title>
             <Group wrap="nowrap">
@@ -81,9 +82,9 @@ export default function Me() {
 
             <Button color="blue">Lưu thay đổi</Button>
           </Stack>
-        </Grid.Col>
+        </GridCol>
 
-        <Grid.Col span={6}>
+        <GridCol span={6}>
           <Stack>
             <Title order={3}>Bảo mật</Title>
             <Group justify="space-between">
@@ -128,7 +129,7 @@ export default function Me() {
               </Button>
             </Group>
           </Stack>
-        </Grid.Col>
+        </GridCol>
       </Grid>
     </Stack>
   );
