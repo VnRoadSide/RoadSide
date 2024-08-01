@@ -1,4 +1,4 @@
-import { dayList, monthList, useApi, yearList } from "@/utils";
+import { dayList, monthList, yearList } from "@/utils";
 import {
   Avatar,
   Button,
@@ -14,7 +14,6 @@ import {
   Space,
 } from "@mantine/core";
 import { IconBrandFacebook, IconBrandGoogle } from "@tabler/icons-react";
-import { GetServerSideProps } from "next";
 
 
 

@@ -12,23 +12,18 @@ import {
   Box,
   Title,
   Pagination,
-  Modal,
   Text,
 } from "@mantine/core";
 import { IconReceipt, IconTrash } from "@tabler/icons-react";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { useEffect, useState } from "react";
-import { navigation } from "../me";
+import { useState } from "react";
 
 type NotificationProps = {
   notifications: Notification[];
   totalPage: number;
 };
 
-export default function NotificationPage({
-  notifications,
-  totalPage,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default async function NotificationPage() {
+  const {notifications, totalPage} = await getData();
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const startIndex = (currentPage - 1) * pageSize;
@@ -107,9 +102,7 @@ export default function NotificationPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps<
-  NotificationProps
-> = async () => {
+async function getData() {
   const notification: NotificationProps = await fetch(
     `${environment.appUrl}/api/notification`
   )
@@ -119,8 +112,6 @@ export const getServerSideProps: GetServerSideProps<
   console.log(notification);
 
   return {
-    props: {
-      ...notification,
-    },
+      ...notification
   };
 };

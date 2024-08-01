@@ -2,18 +2,12 @@ import React from "react";
 import {
   Tabs,
   Button,
-  Select,
   Group,
   Table,
   Title,
   Space,
-  Container,
   TextInput,
 } from "@mantine/core";
-import ProfileSection from "@/components/ProfileSection";
-import { sections } from ".";
-import { environment } from "@/environment";
-import { GetServerSideProps } from "next";
 
 export default function ProductManagement() {
   return (

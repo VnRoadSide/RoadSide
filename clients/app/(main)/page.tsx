@@ -19,7 +19,6 @@ import {
   rem,
 } from "@mantine/core";
 
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 function CategorySection({ categories }: { categories: Category[] }) {
   function CategoryItem({ category }: { category: Category }) {
@@ -117,11 +116,8 @@ function ProductSection({ products }: { products: Product[] }) {
   );
 }
 
-export default function Home({
-  features,
-  products,
-  categories,
-}: InferGetServerSidePropsType<typeof getServerSideProps>)  {
+export default async function Page()  {
+  const { features, products, categories } = await getData();
   return (
     <Stack p="xl">
       <Group grow preventGrowOverflow={false} wrap="nowrap" align="start">
@@ -144,13 +140,7 @@ export default function Home({
   );
 }
 
-type HomeProps = {
-  features: Feature[];
-  products: Product[];
-  categories: Category[];
-};
-
-export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
+async function getData() {
   const features: Feature[] = await fetch(`${environment.appUrl}/api/feature`)
     .then((r) => r.json())
     .catch((err) => console.error(err));
@@ -172,10 +162,8 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
   }
 
   return {
-    props: {
       features: features ?? [],
       products: products ?? [],
       categories: categories ?? [],
-    },
   };
 }

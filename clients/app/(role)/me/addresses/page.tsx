@@ -1,7 +1,6 @@
 
 import { Card, Text, Button, Group, Divider, Box, Badge } from "@mantine/core";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
-import { navigation } from ".";
 
 export default function AddressBook() {
   const addresses = [
