@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+"use client";
 import useCart from "@/utils/useCart";
 import {
   Group,
@@ -11,6 +11,9 @@ import {
   useMantineColorScheme,
   Indicator,
   Menu,
+  MenuTarget,
+  MenuDropdown,
+  MenuItem,
 } from "@mantine/core";
 import {
   IconMoon,
@@ -18,21 +21,23 @@ import {
   IconSun,
   IconUserCircle,
 } from "@tabler/icons-react";
+import { Session } from "next-auth";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default async function NavBar() {
+export default function NavBar({
+  session,
+}: {
+  session?: Session | null;
+}) {
   const { colorScheme, setColorScheme } = useMantineColorScheme();
   const [{ counter, isClient }] = useCart();
   const [isPortal, setIsPortal] = useState(false);
-  const router = useRouter();
-  const session = await auth();
+  const pathname = usePathname();
   useEffect(() => {
     // if /portal in url by using nextjs router
-    if (typeof window !== "undefined") {
-      setIsPortal(router.asPath.includes("/portal"));
-    }
+    setIsPortal(pathname.includes("/portal"));
   });
 
   return (
@@ -68,7 +73,7 @@ export default async function NavBar() {
             )}
             {!!session ? (
               <Menu shadow="md" width={200}>
-                <Menu.Target>
+                <MenuTarget>
                   <ActionIcon
                     variant="transparent"
                     size="xl"
@@ -79,21 +84,21 @@ export default async function NavBar() {
                       <IconUserCircle stroke={1.5} />
                     </Indicator>
                   </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item component={Link} href="/me">
+                </MenuTarget>
+                <MenuDropdown>
+                  <MenuItem component={Link} href="/me">
                     Thông tin tài khoản
-                  </Menu.Item>
-                  <Menu.Item component={Link} href="/portal">
+                  </MenuItem>
+                  <MenuItem component={Link} href="/portal">
                     Kênh người bán
-                  </Menu.Item>
-                  <Menu.Item component={Link} href="/me/notification">
+                  </MenuItem>
+                  <MenuItem component={Link} href="/me/notification">
                     Thông báo
-                  </Menu.Item>
-                  <Menu.Item component={Link} href="/logout">
+                  </MenuItem>
+                  <MenuItem component={Link} href="/logout">
                     Đăng xuất
-                  </Menu.Item>
-                </Menu.Dropdown>
+                  </MenuItem>
+                </MenuDropdown>
               </Menu>
             ) : (
               <ActionIcon

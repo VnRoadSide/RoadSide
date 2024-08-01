@@ -1,3 +1,4 @@
+"use client"
 import { OrderItem } from "@/models";
 import { useLocalStorage } from "@mantine/hooks";
 import { useEffect, useState } from "react";

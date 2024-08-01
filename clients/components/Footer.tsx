@@ -15,7 +15,6 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { useRouter } from "next/router";
 import React from "react";
 
 const data = [
@@ -48,14 +47,6 @@ const data = [
 ];
 
 export const Footer = () => {
-  const router = useRouter();
-  const hideNavbar =
-    router.pathname.startsWith("/shop") || router.pathname.startsWith("/admin");
-
-  if (hideNavbar) {
-    return null;
-  }
-
   const groups = data.map((group) => {
     const links = group.links.map((link, index) => (
       <Text key={index} component="a" href={link.link}>

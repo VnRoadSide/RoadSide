@@ -9,7 +9,7 @@ import {
   Stack,
   rem,
 } from "@mantine/core";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 
 function NavigationSection({ urls }: { urls: Url[] }) {
@@ -23,12 +23,12 @@ function NavigationSection({ urls }: { urls: Url[] }) {
 }
 
 export default function RoleLayout({ children }: { children: ReactNode }) {
-  const router = useRouter();
+  const pathname = usePathname();
   const { getUrlsByStartPath } = useUrl();
-  const urls = getUrlsByStartPath(router.asPath);
+  const urls = getUrlsByStartPath(pathname);
   const nav: Url[] = [
     { label: "Trang chủ", href: "/" },
-    ...urls.filter((item) => item.href === router.asPath),
+    ...urls.filter((item) => item.href === pathname),
   ];
   return (
     <Stack p="xl">

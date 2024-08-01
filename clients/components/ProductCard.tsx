@@ -1,3 +1,4 @@
+"use client";
 import { OrderItem, Product } from "@/models";
 import { formatNumber } from "@/utils";
 import useCart from "@/utils/useCart";
@@ -9,6 +10,7 @@ import {
   Image,
   Text,
   Stack,
+  CardSection,
 } from "@mantine/core";
 export function ProductCard({ product }: { product: Product }) {
   const [{value, isClient}, setValue] = useCart();
@@ -29,15 +31,15 @@ export function ProductCard({ product }: { product: Product }) {
     : Math.round((1 - product.discountedPrice / product.baseUnitPrice) * 100);
   return (
     <Card withBorder radius="md" padding="xs" miw="12rem" shadow="none">
-      <Card.Section>
+      <CardSection>
         <Image
           src={product.imageUrl ?? "https://i.imgur.com/ZL52Q2D.png"}
           alt={product.name}
           height={120}
         />
-      </Card.Section>
+      </CardSection>
 
-      <Card.Section px="sm" pt="sm">
+      <CardSection px="sm" pt="sm">
         <Group gap="md" justify="space-between">
           <Text fw={500}>{product.name ?? "Title"}</Text>
           <Text fz="sm" c="dimmed" fw={500} style={{ lineHeight: 1 }} mt={3}>
@@ -70,7 +72,7 @@ export function ProductCard({ product }: { product: Product }) {
             <Badge variant="outline">Giảm {saleoff}%</Badge>
           )}
         </Group>
-      </Card.Section>
+      </CardSection>
 
       <Button radius="xl" fullWidth onClick={onAddToCart}>
         Mua
