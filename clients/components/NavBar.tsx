@@ -18,17 +18,16 @@ import {
   IconSun,
   IconUserCircle,
 } from "@tabler/icons-react";
-import { Session } from "next-auth";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-// import { FuzzySearch } from "./Search";
 
-export function NavBar({ session }: { session: Session | null }) {
+export default async function NavBar() {
   const { colorScheme, setColorScheme } = useMantineColorScheme();
   const [{ counter, isClient }] = useCart();
   const [isPortal, setIsPortal] = useState(false);
   const router = useRouter();
+  const session = await auth();
   useEffect(() => {
     // if /portal in url by using nextjs router
     if (typeof window !== "undefined") {

@@ -1,4 +1,4 @@
-import ProfileSection from "@/components/ProfileSection";
+
 import { Card, Text, Button, Group, Divider, Box, Badge } from "@mantine/core";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { navigation } from ".";
@@ -22,7 +22,6 @@ export default function AddressBook() {
   ];
 
   return (
-    <ProfileSection urls={navigation}>
       <Box>
         <Text size="lg" w={500} mb="md">
           Số địa chỉ
@@ -66,6 +65,5 @@ export default function AddressBook() {
           + Thêm địa chỉ mới
         </Button>
       </Box>
-    </ProfileSection>
   );
 }

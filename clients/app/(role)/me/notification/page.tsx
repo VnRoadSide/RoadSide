@@ -1,4 +1,4 @@
-import ProfileSection from "@/components/ProfileSection";
+
 import { environment } from "@/environment";
 import { Notification } from "@/models";
 import { toNormalDate } from "@/utils";
@@ -77,7 +77,6 @@ export default function NotificationPage({
   ));
 
   return (
-    <ProfileSection urls={navigation}>
       <Stack align={"center"}>
         <Box>
           <Title>Thông báo của tôi</Title>
@@ -105,7 +104,6 @@ export default function NotificationPage({
             </Modal> */}
         </Flex>
       </Stack>
-    </ProfileSection>
   );
 }
 

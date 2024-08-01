@@ -20,8 +20,6 @@ import {
   IconSettings,
   IconChevronRight,
 } from "@tabler/icons-react";
-import ProfileSection from "@/components/ProfileSection";
-import { navigation } from "./me";
 
 function SupportCenter() {
   const supportOptions = [
@@ -87,7 +85,6 @@ function SupportCenter() {
   );
 
   return (
-    <ProfileSection urls={navigation}>
       <Box p="lg">
         <Title order={2} pb="lg">
           Trung tâm hỗ trợ
@@ -141,7 +138,6 @@ function SupportCenter() {
           ))}
         </Grid>
       </Box>
-    </ProfileSection>
   );
 }
 
