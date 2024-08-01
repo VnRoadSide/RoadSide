@@ -76,7 +76,6 @@ export default function NotificationPage({
   ));
 
   return (
-    <ProfileSection urls={sections}>
       <Stack align={"center"}>
         <Box>
           <Title>Thông báo của tôi</Title>
@@ -104,7 +103,6 @@ export default function NotificationPage({
             </Modal> */}
         </Flex>
       </Stack>
-    </ProfileSection>
   );
 }
 
