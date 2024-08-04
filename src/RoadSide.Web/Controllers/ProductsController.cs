@@ -62,20 +62,20 @@ public class ProductsController: ControllerBase
         }
     }
 
-    [HttpGet]
-    [Authorize]
-    [Route("vendor")]
-    public async Task<ActionResult<ICollection<Products>>> GetProductByVendor()
-    {
-        try
-        {
-            
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
+    // [HttpGet]
+    // [Authorize]
+    // [Route("vendor")]
+    // public async Task<ActionResult<ICollection<Products>>> GetProductByVendor()
+    // {
+    //     try
+    //     {
+    //         
+    //     }
+    //     catch (Exception)
+    //     {
+    //         return StatusCode(StatusCodes.Status500InternalServerError);
+    //     }
+    // }
     
     [HttpGet("search")]
     public async Task<ActionResult<ICollection<Products>>> SearchProducts([Required] string name)

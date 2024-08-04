@@ -1,6 +1,6 @@
 "use client";
 import { OrderItem } from "@/models";
-import useCart from "@/utils/useCart";
+import useCart from "@/lib/hooks/useCart";
 import {
   Button,
   Checkbox,

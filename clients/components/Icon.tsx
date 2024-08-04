@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 
-export default function DynamicIcon({ icon }: { icon?: string }) {
+export function DynamicIcon({ icon }: { icon?: string }) {
   if (!icon) return null;
 
   const Icon = dynamic(

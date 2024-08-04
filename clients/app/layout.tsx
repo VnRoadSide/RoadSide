@@ -12,7 +12,7 @@ import {
   ColorSchemeScript,
   MantineProvider,
 } from "@mantine/core";
-import { UrlProvider } from "@/context/urlContext";
+import { NavigationProgress } from "@mantine/nprogress";
 
 export default function RootLayout({
   children,
@@ -30,18 +30,18 @@ export default function RootLayout({
       </head>
       <body>
         <MantineProvider theme={theme}>
-          <UrlProvider>
-            <AppShell
-              header={{ height: 60, collapsed: false, offset: true }}
-              withBorder={false}
-            >
-              <AppShellHeader>
-                <NavBar />
-              </AppShellHeader>
-              <AppShellMain>{children}</AppShellMain>
-            </AppShell>
-            <Footer />
-          </UrlProvider>
+          <NavigationProgress />
+
+          <AppShell
+            header={{ height: 60, collapsed: false, offset: true }}
+            withBorder={false}
+          >
+            <AppShellHeader>
+              <NavBar />
+            </AppShellHeader>
+            <AppShellMain>{children}</AppShellMain>
+          </AppShell>
+          <Footer />
         </MantineProvider>
       </body>
     </html>

@@ -1,8 +1,8 @@
-import DynamicIcon from "@/components/DynamicIcon";
-import { ProductCard } from "@/components/ProductCard";
+import { DynamicIcon } from "@/components/Icon";
+import { ProductCard } from "@/components/Product";
 import { environment } from "@/environment";
 import { Category, Feature, Product } from "@/models";
-import { useApi } from "@/utils";
+import { useApi } from "@/lib/hooks";
 import {
   Title,
   Button,

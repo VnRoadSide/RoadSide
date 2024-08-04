@@ -1,7 +1,7 @@
 "use client";
 import { OrderItem, Product } from "@/models";
-import { formatNumber } from "@/utils";
-import useCart from "@/utils/useCart";
+import { formatNumber } from "@/lib/hooks";
+import useCart from "@/lib/hooks/useCart";
 import {
   Card,
   Group,

@@ -1,9 +1,7 @@
-"use client";
-import { Url } from "@/models/routing";
-import { useUrl } from "@/utils/useUrl";
-import { ReactNode, useEffect } from "react";
+import { RoleView } from "@/components/Role";
+import { ReactNode } from "react";
 
-const navigation: Url[] = [
+const navigation = [
   {
     label: "Thông tin tài khoản",
     href: "/me",
@@ -39,9 +37,5 @@ const navigation: Url[] = [
 ];
 
 export default function MeLayout({ children }: { children: ReactNode }) {
-  const { registerUrls } = useUrl();
-  useEffect(() => {
-    registerUrls({ "me": navigation });
-  }, []);
-  return <>{children}</>;
+  return <RoleView urls={navigation}>{children}</RoleView>;
 }

@@ -1,5 +1,5 @@
 "use client";
-import useCart from "@/utils/useCart";
+import useCart from "@/lib/hooks/useCart";
 import {
   Group,
   Image,
@@ -47,7 +47,7 @@ export default function NavBar({
           <Group gap={4}>
             <Anchor href="/" underline="never">
               <Group gap={4} align="end">
-                <Image src={"logo.png"} alt="logo" h={35} />
+                <Image src={"/logo.png"} alt="logo" h={35} />
                 <Text variant="gradient" fw={900} size="1.8rem">
                   {"RoadSide"}
                 </Text>

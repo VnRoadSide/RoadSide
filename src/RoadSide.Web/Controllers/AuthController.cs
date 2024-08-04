@@ -51,7 +51,7 @@ namespace RoadSide.Web.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([Required] LoginInfo info)
         {
-            var account = await _manager.FindByNameAsync(info.UserName);
+            var account = await _manager.FindUserByCredentials(info.Credential);
             if (account == null)
             {
                 return Unauthorized("Invalid login attempt");

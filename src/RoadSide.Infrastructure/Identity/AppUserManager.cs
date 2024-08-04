@@ -31,6 +31,12 @@ public class AppUserManager : UserManager<User>
         _logger = logger;
     }
 
+    public async Task<User> FindUserByCredentials(string credential)
+    {
+        var account = await FindByNameAsync(credential) ?? await FindByEmailAsync(credential);
+        return account;
+    }
+
     public async Task<IdentityResult> CreateAsync(RoadSide.Domain.User user)
     {
         // Mapping domain user to entity user
