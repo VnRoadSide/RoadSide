@@ -1,6 +1,7 @@
 
+import { NotificationView } from "@/components/Notification";
 import { environment } from "@/environment";
-import { NotificationView } from "../../_components";
+
 
 export default async function NotificationPage() {
   const data = await getData();

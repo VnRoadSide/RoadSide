@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { environment } from "@/environment";
 
 // Function to create the HTTP client instance
@@ -7,6 +8,17 @@ export const useApi = () => {
     options: RequestInit = {}
   ): Promise<{ data: T | null; error: any }> => {
     try {
+      options.headers = {
+        "Content-Type": "application/json",
+        ...options.headers,
+      }
+      const session = await auth();
+      if (session) {
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${session.accessToken}`,
+        }
+      }
       const response = await fetch(`${environment.apiUrl}${url}`, options);
 
       if (!response.ok) {
@@ -34,7 +46,6 @@ export const useApi = () => {
     makeRequest<T>(url, {
       ...config,
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 

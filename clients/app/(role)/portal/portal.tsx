@@ -59,7 +59,7 @@ export function PortalTable() {
           </Group>
 
           {/* Orders Table */}
-          <Table mt="md">
+          {/* <Table mt="md">
             <TableThead>
               <TableTr>
                 <TableTh>Sản phẩm</TableTh>
@@ -73,7 +73,7 @@ export function PortalTable() {
             <TableTbody>
               <TableTr></TableTr>
             </TableTbody>
-          </Table>
+          </Table> */}
         </TabsPanel>
 
         {/* Repeat Tabs.Panel for each tab with specific content if needed */}

@@ -1,5 +1,4 @@
 import { Product } from "./products";
-import { User } from "./users";
 
 export interface OrderItem {
   id: number;
@@ -11,7 +10,6 @@ export interface OrderItem {
 
 export interface Orders {
   id: string;
-  account: User;
   items?: OrderItem[];
   totalPrice: number;
 }

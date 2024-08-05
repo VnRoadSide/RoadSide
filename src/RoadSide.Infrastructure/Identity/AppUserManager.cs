@@ -1,10 +1,11 @@
 using AutoMapper;
-using RoadSide.Core.Entities;
 using RoadSide.Core.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RoadSide.Domain;
+using User = RoadSide.Core.Entities.User;
 
 namespace RoadSide.Infrastructure.Identity;
 public class AppUserManager : UserManager<User>
@@ -31,10 +32,17 @@ public class AppUserManager : UserManager<User>
         _logger = logger;
     }
 
-    public async Task<User> FindUserByCredentials(string credential)
+    public async Task<RoadSide.Domain.User> FindUserByCredentials(string credential)
     {
         var account = await FindByNameAsync(credential) ?? await FindByEmailAsync(credential);
-        return account;
+        return new Domain.User
+        {
+            Email = account?.Email,
+            UserName = account?.UserName,
+            PhoneNumber = account?.PhoneNumber,
+            TwoFactorEnabled = account?.TwoFactorEnabled ?? false,
+            EmailConfirmed = account?.EmailConfirmed ?? false
+        };
     }
 
     public async Task<IdentityResult> CreateAsync(RoadSide.Domain.User user)
@@ -75,26 +83,27 @@ public class AppUserManager : UserManager<User>
     }
 
 
-    public async Task<SignInResult> CheckPasswordSignInAsync(User user, string password, bool lockoutOnFailure)
+    public async Task<(SignInResult, Domain.User)> CheckPasswordSignInAsync(LoginInfo info, bool lockoutOnFailure)
     {
+        var user = await FindByNameAsync(info.Credential) ?? await FindByEmailAsync(info.Credential);
         if (user == null)
         {
             throw new ArgumentNullException(nameof(user));
         }
 
-        var passwordVerificationResult = PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+        var passwordVerificationResult = PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, info.Password);
         if (passwordVerificationResult == PasswordVerificationResult.Failed)
         {
             if (lockoutOnFailure)
             {
                 await AccessFailedAsync(user);
             }
-            return SignInResult.Failed;
+            return (SignInResult.Failed, null);
         }
 
         if (passwordVerificationResult == PasswordVerificationResult.SuccessRehashNeeded)
         {
-            await UpdatePasswordHash(user, password, validatePassword: false);
+            await UpdatePasswordHash(user, info.Password, validatePassword: false);
             await UpdateAsync(user);
         }
 
@@ -103,7 +112,14 @@ public class AppUserManager : UserManager<User>
             await ResetAccessFailedCountAsync(user);
         }
 
-        return SignInResult.Success;
+        return (SignInResult.Success, new Domain.User
+        {
+            Email = user.Email,
+            UserName = user.UserName,
+            PhoneNumber = user.PhoneNumber,
+            TwoFactorEnabled = user.TwoFactorEnabled,
+            EmailConfirmed = user.EmailConfirmed
+        });
     }
 
 }

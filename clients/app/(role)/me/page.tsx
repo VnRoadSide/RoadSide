@@ -19,7 +19,7 @@ import { IconBrandFacebook, IconBrandGoogle } from "@tabler/icons-react";
 async function GetData() {
   const { get } = useApi();
   const { data, error } = await get("/auth/me");
-  console.log(error);
+  console.log(data, error);
   return data;
 }
 
@@ -36,8 +36,8 @@ export default async function Me() {
 
               <TextInput
                 label="Họ & Tên"
-                placeholder="Tuấn Kiệt Trần"
-                defaultValue="Tuấn Kiệt Trần"
+                placeholder="Nguyen Van A"
+                defaultValue={meData?.name}
                 required
               />
             </Group>
@@ -78,11 +78,13 @@ export default async function Me() {
             <TextInput
               label="Số điện thoại"
               placeholder="0123456789"
+              defaultValue={meData?.phoneNumber}
               required
             />
             <TextInput
               label="Email"
               placeholder="tranvana@gmail.com"
+              defaultValue={meData?.email}
               // required
             />
 

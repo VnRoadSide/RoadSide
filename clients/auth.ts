@@ -18,27 +18,28 @@ const config: NextAuthConfig = {
         credential: { label: "Email", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
       },
-      authorize: (credentials) => signInUser({
-        credential: credentials?.credential as string,
-        password: credentials?.password as string
-      }),
+      authorize: async (credentials) => {
+        const result = await signInUser({
+          credential: credentials?.credential as string,
+          password: credentials?.password as string
+        });
+
+        return result;
+      }
     })
   ],
   callbacks: {
     async jwt({ user, token }) {
       //   update token from user
       if (user) {
-        token.user = user;
+        token.accessToken = user.accessToken;
       }
       //   return final_token
       return token;
     },
-    async session({ session: userSession, token }) {
+    async session({ session: userSession, token, }) {
       // update session from token
-      userSession = {
-        ...userSession,
-        user: token.user as any,
-      }
+      userSession.accessToken = token.accessToken as string;
       return userSession;
     },
     authorized: ({ request }) => {

@@ -1,5 +1,4 @@
 import { useApi } from "./hooks";
-const { post } = useApi();
 
 export type SignUpForm = {
   password: string;
@@ -48,25 +47,39 @@ export type Authorization = {
 
 
 declare module "next-auth" {
-  interface Session extends Authorization {}
+  interface User extends Authorization {}
+  interface Session {
+    user: User;
+    accessToken?: string;
+  }
 }
 
 export async function signUp(form: SignUpForm) {
+  const { post } = useApi();
   const { data } = await post<Authorization>("/auth/signup", form);
   return data;
 }
 
 export async function signInUser(form: SignInForm) {
+  const { post } = useApi();
   const { data, error } = await post<Authorization>("/auth/login", form);
   return data;
 }
 
+export async function signOutUser() {
+  const { post } = useApi();
+  const result = await post("/auth/logout");
+  return result;
+}
+
 export async function sendPasswordResetLink(email: string) {
+  const { post } = useApi();
   const result = await post("/auth/reset-email", { email });
   return result;
 }
 
 export async function resetPassword(token: string) {
+  const { post } = useApi();
   const result = await post(`/auth/reset?token=${token}`);
   return result;
 }

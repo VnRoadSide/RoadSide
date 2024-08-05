@@ -1,5 +1,5 @@
 "use client";
-import { signOut } from "@/auth";
+import { signOut } from "next-auth/react"
 import useCart from "@/lib/hooks/useCart";
 import {
   Group,
@@ -96,10 +96,7 @@ export default function NavBar({
                   <MenuItem component={Link} href="/me/notification">
                     Thông báo
                   </MenuItem>
-                  <MenuItem onClick={async () => {
-                    
-                    await signOut();
-                  }} >
+                  <MenuItem component={Link} href="/logout">
                     Đăng xuất
                   </MenuItem>
                 </MenuDropdown>

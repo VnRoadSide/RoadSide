@@ -51,20 +51,21 @@ namespace RoadSide.Web.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([Required] LoginInfo info)
         {
-            var account = await _manager.FindUserByCredentials(info.Credential);
-            if (account == null)
+            try
+            {
+                var (result, user) = await _manager.CheckPasswordSignInAsync(info, lockoutOnFailure: true);
+                if (result.Succeeded)
+                {
+                    var token = await _jwtService.GenerateTokenFromUserName(user.UserName);
+                    return Ok(new { token.AccessToken, token.ExpiresIn, Profile = user });
+                }
+
+                return Unauthorized("Invalid login attempt");
+            }
+            catch (Exception)
             {
                 return Unauthorized("Invalid login attempt");
             }
-
-            var result = await _manager.CheckPasswordSignInAsync(account, info.Password, lockoutOnFailure: true);
-            if (result.Succeeded)
-            {
-                var token = await _jwtService.GenerateTokenFromUserName(account.UserName);
-                return Ok(new { token.AccessToken, token.ExpiresIn });
-            }
-
-            return Unauthorized("Invalid login attempt");
         }
 
         [Authorize]
@@ -82,7 +83,7 @@ namespace RoadSide.Web.Controllers
             var user = await _manager.GetUserAsync(User);
             var result = new CurrentUserDto
             {
-                Id = user.Id,
+                Id = user!.Id,
                 UserName = user.UserName,
                 Email = user.Email,
                 RoleName = user.UserRoles.Select(t => t.Role.Name).ToList(),
