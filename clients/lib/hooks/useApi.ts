@@ -1,6 +1,4 @@
-
 import { environment } from "@/environment";
-import { logger } from "../log";
 
 // Function to create the HTTP client instance
 export const useApi = () => {
@@ -9,11 +7,9 @@ export const useApi = () => {
     options: RequestInit = {}
   ): Promise<{ data: T | null; error: any }> => {
     try {
-      logger.debug(`Making request to ${environment.apiUrl}${url}`);
       const response = await fetch(`${environment.apiUrl}${url}`, options);
 
       if (!response.ok) {
-        logger.error(`API error! Status: ${response.status}. Reason: ${response.statusText}`);
         throw new Error(`API error! Status: ${response.status}. Reason: ${response.statusText}`);
       }
 

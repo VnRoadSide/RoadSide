@@ -1,3 +1,5 @@
+import { PortalTable } from "../portal";
+
 export default function Orders() {
-    return <></>;
+    return <PortalTable></PortalTable>;
   }

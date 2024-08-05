@@ -40,9 +40,15 @@ export interface Address {
   postcode?: string;
 }
 
-export type Authorization = CurrentUser & {
+export type Authorization = {
+  user: CurrentUser;
   accessToken: string;
   expiresIn: number;
+}
+
+
+declare module "next-auth" {
+  interface Session extends Authorization {}
 }
 
 export async function signUp(form: SignUpForm) {

@@ -5,7 +5,7 @@ import { header } from "./header";
 const middlewares = createMiddleware(
   [
     header, 
-    // withAuth
+    withAuth
   ]
 );
 

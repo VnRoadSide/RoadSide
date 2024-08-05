@@ -1,4 +1,5 @@
 "use client";
+import { signOut } from "@/auth";
 import useCart from "@/lib/hooks/useCart";
 import {
   Group,
@@ -95,7 +96,10 @@ export default function NavBar({
                   <MenuItem component={Link} href="/me/notification">
                     Thông báo
                   </MenuItem>
-                  <MenuItem component={Link} href="/logout">
+                  <MenuItem onClick={async () => {
+                    
+                    await signOut();
+                  }} >
                     Đăng xuất
                   </MenuItem>
                 </MenuDropdown>
@@ -103,6 +107,7 @@ export default function NavBar({
             ) : (
               <ActionIcon
                 variant="transparent"
+                c="dimmed"
                 size="xl"
                 p="xs"
                 aria-label="Me"

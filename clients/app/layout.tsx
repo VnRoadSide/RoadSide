@@ -13,12 +13,14 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import { NavigationProgress } from "@mantine/nprogress";
+import { auth } from "@/auth";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
     <html lang="en">
       <head>
@@ -37,7 +39,7 @@ export default function RootLayout({
             withBorder={false}
           >
             <AppShellHeader>
-              <NavBar />
+              <NavBar session={session}/>
             </AppShellHeader>
             <AppShellMain>{children}</AppShellMain>
           </AppShell>

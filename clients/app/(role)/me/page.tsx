@@ -1,4 +1,4 @@
-import { dayList, monthList, yearList } from "@/lib/hooks";
+import { dayList, monthList, useApi, yearList } from "@/lib/hooks";
 import {
   Avatar,
   Button,
@@ -16,9 +16,15 @@ import {
 } from "@mantine/core";
 import { IconBrandFacebook, IconBrandGoogle } from "@tabler/icons-react";
 
+async function GetData() {
+  const { get } = useApi();
+  const { data, error } = await get("/auth/me");
+  console.log(error);
+  return data;
+}
 
-
-export default function Me() {
+export default async function Me() {
+  const meData = await GetData();
   return (
     <Stack p="md">
       <Grid>
@@ -134,17 +140,3 @@ export default function Me() {
     </Stack>
   );
 }
-
-// type MeProp = {};
-
-// export const getServerSideProps: GetServerSideProps<MeProp> = async (ctx) => {
-//   // const session = await auth(ctx);
-//   // if (!session) return { redirect: { destination: "/login" }, props: {} };
-
-//   const { get } = useApi();
-
-//   const data = await get("/auth/me");
-//   console.log(data);
-
-//   return { props: {} };
-// };
