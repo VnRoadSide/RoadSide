@@ -15,7 +15,9 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.AddressJson, act => act.MapFrom(src => JsonConvert.SerializeObject(src.Address)));
         CreateMap<Entities.User, User>()
             .ForMember(dest => dest.Address,
-                act => act.MapFrom(src => JsonConvert.DeserializeObject<Address>(src.AddressJson)));
+                act => act.MapFrom(src => JsonConvert.DeserializeObject<Address>(src.AddressJson)))
+            .ForMember(dest => dest.Roles, act => act.MapFrom(src => src.UserRoles.Select(t => t.Role).ToList()));
+        CreateMap<Role, Entities.Role>().ReverseMap();
         
         CreateMap<Orders, Entities.Orders>();
         CreateMap<Entities.Orders, Orders>();

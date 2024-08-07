@@ -143,9 +143,13 @@ function BannerSection() {
     setSelectedAll(!selectAll);
     setValue(value.map((p) => ({ ...p, selected: !selectAll })));
   };
+ 
+  const handleCheckout = () => {
+    
+  }
   
   const total = value.reduce(
-    (total, item) => total + item.product.baseUnitPrice * item.quantity,
+    (total, item) => total + (item.selected ? item.product.baseUnitPrice * item.quantity : 0),
     0
   );
   const selected = value.reduce(
@@ -153,7 +157,6 @@ function BannerSection() {
     0
   );
 
-  const price = total.toLocaleString();
 
   return (
     <Paper
@@ -198,7 +201,7 @@ function BannerSection() {
               justifyContent: "flex-end",
             }}
           >
-            <Text size="lg">{price}₫</Text>
+            <Text size="lg">{total?.toLocaleString()}₫</Text>
           </GridCol>
           <GridCol
             span={1}

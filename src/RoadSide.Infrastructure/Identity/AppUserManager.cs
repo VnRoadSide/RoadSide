@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using RoadSide.Core.Extensions;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +31,12 @@ public class AppUserManager : UserManager<User>
         _mapper = mapper;
         _context = context;
         _logger = logger;
+    }
+
+    public async ValueTask<Domain.User> GetDomainUserAsync(ClaimsPrincipal principal)
+    {
+        var user = await GetUserAsync(principal);
+        return _mapper.Map<Domain.User>(user);
     }
 
     public async Task<RoadSide.Domain.User> FindUserByCredentials(string credential)

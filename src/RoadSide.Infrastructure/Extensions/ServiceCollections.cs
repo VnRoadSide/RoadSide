@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using RoadSide.Core.Extensions;
 using RoadSide.Infrastructure.Identity;
 using RoadSide.Infrastructure.Jwt;
 using RoadSide.Infrastructure.Repository;
@@ -46,6 +47,8 @@ public static class ServiceCollections
         var jwtSettings = configuration
             .GetSection(nameof(JwtSettings))
             .Get<JwtSettings>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IAppUserContext, AppUserContext>();
 
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IUserClaimsPrincipalFactory<User>, AppUserClaimsPrincipleFactory>();

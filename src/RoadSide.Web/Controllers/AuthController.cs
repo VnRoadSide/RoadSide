@@ -16,11 +16,13 @@ namespace RoadSide.Web.Controllers
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthController> _logger;
         private readonly AppUserManager _manager;
-        public AuthController(IJwtService jwtService, ILogger<AuthController> logger, AppUserManager manager)
+        private readonly IAppUserContext _appUserContext;
+        public AuthController(IJwtService jwtService, ILogger<AuthController> logger, AppUserManager manager, IAppUserContext appUserContext)
         {
             _jwtService = jwtService;
             _logger = logger;
             _manager = manager;
+            _appUserContext = appUserContext;
         }
 
         [HttpPost("signup")]
@@ -73,25 +75,26 @@ namespace RoadSide.Web.Controllers
         public IActionResult Logout()
         {
             // Implement logout logic if needed (e.g., invalidating tokens)
+            
             return Ok("Logged out successfully");
         }
 
         [Authorize]
         [HttpGet("me")]
-        public async Task<IActionResult> Me()
+        public Task<IActionResult> Me()
         {
-            var user = await _manager.GetUserAsync(User);
+            var user = _appUserContext.User;
             var result = new CurrentUserDto
             {
                 Id = user!.Id,
                 UserName = user.UserName,
                 Email = user.Email,
-                RoleName = user.UserRoles.Select(t => t.Role.Name).ToList(),
+                RoleName = user.Roles.Select(t => t.Name).ToList(),
                 Name = user.FullName,
                 PhoneNumber = user.PhoneNumber,
                 Avatar = user.AvatarUrl
             };
-            return Ok(result);
+            return Task.FromResult<IActionResult>(Ok(result));
         }
     }
 }
