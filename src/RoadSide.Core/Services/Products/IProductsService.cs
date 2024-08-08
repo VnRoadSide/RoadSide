@@ -2,6 +2,7 @@ namespace RoadSide.Core.Services.Products;
 
 public interface IProductsService
 {
+    
     ValueTask<ICollection<RoadSide.Domain.Products>> GetAllAsync();
     ValueTask<RoadSide.Domain.Products?> GetById(string id);
     ValueTask<ICollection<(RoadSide.Domain.Products, int?)>> GetAllWithDiscount();

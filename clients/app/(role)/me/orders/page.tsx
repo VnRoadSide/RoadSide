@@ -1,5 +1,24 @@
+import { environment } from "@/environment";
+import { OrderView } from "./order";
+import { Orders } from "@/models";
+import { useApi } from "@/lib/hooks";
 
+export default async function Page() {
+  const {orders} = await getData();
+  return <OrderView orders={orders} />;
+}
 
-export default function Orders() {
-  return <></>;
+async function getData() {
+  const { get } = useApi();
+  const {data: orders, error: OrderError} = await get<Orders[]>(
+    "/orders"
+  );
+
+  if (OrderError) {
+    console.error("Error: ", OrderError);
+  }
+
+  return {
+    orders: orders ?? [],
+  };
 }

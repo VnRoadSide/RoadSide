@@ -7,6 +7,7 @@ public class OrderItem
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int OrderItemId { get; set; }
     public int Quantity { get; set; }
+     
     public DateTimeOffset DateCreated { get; set; }
     
     [ForeignKey("Product")]

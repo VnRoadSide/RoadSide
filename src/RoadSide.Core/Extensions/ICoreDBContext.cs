@@ -17,6 +17,8 @@ public interface ICoreDbContext
     DbSet<UserRole> UserRole { get; set; }
     
     Task<int> SaveChangesAsync();
+
+    DbSet<TEntity> Set<TEntity>() where TEntity : class;
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

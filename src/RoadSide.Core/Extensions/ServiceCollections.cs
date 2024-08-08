@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using RoadSide.Core.Services.AppSettings;
-using RoadSide.Core.Services.Orders;
 using RoadSide.Core.Services.Products;
 using RoadSide.Core.Services.Users;
+using RoadSide.Core.Services;
 
 namespace RoadSide.Core.Extensions;
 
@@ -14,13 +14,12 @@ public static class ServiceCollections
         // services.AddTransient<IMyService, MyService>();
         services.AddScoped<IAppSettingsService, AppSettingsService>();
         
-        services.AddScoped<IOrderItemService, OrderItemService>();
-        services.AddScoped<IOrdersService, OrdersService>();
-        services.AddScoped<IVoucherService, VoucherService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IProductService, ProductService>();
 
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPriceService, PricesService>();
-        services.AddScoped<IProductsService, ProductsService>();
+        services.AddScoped<IUserService, UserService>();
 
         services.AddScoped<IUsersService, UsersService>();
         

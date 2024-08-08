@@ -11,8 +11,6 @@ async function getData() {
     .then((r) => r.json())
     .catch((err) => console.error(err));
 
-  console.log("response", data);
-
   return {
     orders: data ?? [],
   };
