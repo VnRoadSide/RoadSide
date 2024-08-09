@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
 using RoadSide.Core.Services;
-using RoadSide.Web.DTO;
 using ICategoryService = RoadSide.Core.Services.ICategoryService;
 using IPriceService = RoadSide.Core.Services.IPriceService;
 
@@ -15,14 +14,12 @@ public class ProductsController: ControllerBase
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
-    private readonly IPriceService _priceService;
 
     public ProductsController(ILogger<ProductsController> logger, IProductService productService,
-        ICategoryService categoryService, IPriceService priceService) {
+        ICategoryService categoryService) {
         _logger = logger;
         _productService = productService;
         _categoryService = categoryService;
-        _priceService = priceService;
     }
 
     [HttpGet]
@@ -93,7 +90,7 @@ public class ProductsController: ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }

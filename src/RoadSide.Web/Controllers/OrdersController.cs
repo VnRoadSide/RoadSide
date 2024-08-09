@@ -14,16 +14,12 @@ public class OrdersController: ControllerBase
     private readonly ILogger<OrdersController> _logger;
     private readonly IOrderService _ordersService;
     private readonly IProductService _productsService;
-    private readonly IVoucherService _voucherService;
-    private readonly IOrderItemService _orderItemService;
     private readonly IAppUserContext _appUserContext;
     private readonly IUserService _userService;
     
-    public OrdersController(ILogger<OrdersController> logger, IOrderService ordersService, IVoucherService voucherService, IOrderItemService orderItemService, IProductService productsService, IAppUserContext appUserContext, IUserService userService) {
+    public OrdersController(ILogger<OrdersController> logger, IOrderService ordersService, IProductService productsService, IAppUserContext appUserContext, IUserService userService) {
         _logger = logger;
         _ordersService = ordersService;
-        _voucherService = voucherService;
-        _orderItemService = orderItemService;
         _productsService = productsService;
         _appUserContext = appUserContext;
         _userService = userService;
@@ -59,7 +55,7 @@ public class OrdersController: ControllerBase
     }
     
     [HttpGet("checkout/{sessionId}/get")]
-    public async ValueTask<ActionResult<ICollection<Orders>>> GetCheckoutSessionAsync(Guid sessionId)
+    public ActionResult<ICollection<Orders>> GetCheckoutSessionAsync(Guid sessionId)
     {
         try
         {
@@ -123,20 +119,6 @@ public class OrdersController: ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-
-    [HttpGet("voucher")]
-    public async ValueTask<ActionResult<ICollection<Voucher>>> GetVoucher()
-    {
-        try
-        {
-            var voucher = await _voucherService.GetAllAsync();
-            return Ok(voucher);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
     
     [HttpPost]
     public async ValueTask<IActionResult> AddNewOrderAsync([FromBody] Orders order)
@@ -155,40 +137,5 @@ public class OrdersController: ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-
-    [HttpDelete("voucher")]
-    public async ValueTask<IActionResult> DeleteVoucherAsync([Required] string id)
-    {
-        try
-        {
-            await _voucherService.Remove(id);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    [HttpDelete("items")]
-    public async ValueTask<IActionResult> DeleteOrderItemsAsync([Required] string id)
-    {
-        try
-        {
-            await _orderItemService.Remove(id);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
+    
 }
