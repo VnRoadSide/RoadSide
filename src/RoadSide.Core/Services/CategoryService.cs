@@ -15,7 +15,7 @@ public interface ICategoryService: IService<Domain.Category, Entities.Category>
     ValueTask<ICollection<Domain.Category>> GetAsync(CategoryQueryOption option);
     ValueTask<Domain.Category> GetByIdAsync(Guid id);
 }
-public class CategoryService(ICoreDbContext context, IMapper mapper)
+internal class CategoryService(ICoreDbContext context, IMapper mapper)
     : Service<Domain.Category, Entities.Category>(context, mapper), ICategoryService
 {
     public async ValueTask<ICollection<Domain.Category>> GetAsync(CategoryQueryOption option)

@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authorization;
-using RoadSide.Core.Services.Orders;
-using RoadSide.Core.Services.Products;
 using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
+using RoadSide.Core.Services;
 using RoadSide.Web.DTO;
+using ICategoryService = RoadSide.Core.Services.ICategoryService;
+using IPriceService = RoadSide.Core.Services.IPriceService;
 
 namespace RoadSide.Web.Controllers;
 
@@ -13,18 +13,16 @@ namespace RoadSide.Web.Controllers;
 public class ProductsController: ControllerBase
 {
     private readonly ILogger<ProductsController> _logger;
-    private readonly IProductsService _productsService;
+    private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
     private readonly IPriceService _priceService;
-    private readonly IVoucherService _voucherService;
 
-    public ProductsController(ILogger<ProductsController> logger, IProductsService productsService,
-        ICategoryService categoryService, IPriceService priceService, IVoucherService voucherService) {
+    public ProductsController(ILogger<ProductsController> logger, IProductService productService,
+        ICategoryService categoryService, IPriceService priceService) {
         _logger = logger;
-        _productsService = productsService;
+        _productService = productService;
         _categoryService = categoryService;
         _priceService = priceService;
-        _voucherService = voucherService;
     }
 
     [HttpGet]
@@ -32,29 +30,13 @@ public class ProductsController: ControllerBase
     {
         try
         {
-            var products = await _productsService.GetAllWithDiscount();
-            var result = new List<ProductDto>();
-            foreach (var (product, discountedPrice) in products)
+            var option = new ProductQueryOption
             {
-                result.Add(new ProductDto
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Description = product.Description,
-                    BaseUnitPrice = product.BaseUnitPrice,
-                    DateCreated = product.DateCreated,
-                    DateModified = product.DateModified,
-                    ImageUrl = product.ImageUrl,
-                    Sale = product.Sale,
-                    Rate = product.Rate,
-                    Category = product.Category,
-                    Vendor = product.Vendor,
-                    Vouchers = product.Vouchers,
-                    DiscountedPrice = discountedPrice
-                });
-            }
+                IncludeCategory = true,
+            };
+            var products = await _productService.GetAsync(option);
             
-            return Ok(result);
+            return Ok(products);
         }
         catch (Exception)
         {
@@ -99,28 +81,11 @@ public class ProductsController: ControllerBase
 
     [HttpGet]
     [Route("{id}")] // api/products/{id}
-    public async Task<ActionResult<ProductDto>> GetProductById(string id)
+    public async Task<ActionResult<Products>> GetProductById(Guid id)
     {
         try
         {
-            var (product, discountedPrice) = await _productsService.GetByIdWithDiscount(id);
-
-            var result = new ProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                BaseUnitPrice = product.BaseUnitPrice,
-                DateCreated = product.DateCreated,
-                DateModified = product.DateModified,
-                ImageUrl = product.ImageUrl,
-                Sale = product.Sale,
-                Rate = product.Rate,
-                Category = product.Category,
-                Vendor = product.Vendor,
-                Vouchers = product.Vouchers,
-                DiscountedPrice = discountedPrice
-            };
+            var result = await _productService.GetByIdAsync(id);
             
             return Ok(result);
         }
@@ -139,22 +104,8 @@ public class ProductsController: ControllerBase
     {
         try
         {
-            var categories = await _categoryService.GetAllBaseAsync();
+            var categories = await _categoryService.GetAsync(new CategoryQueryOption());
             return Ok(categories);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    [HttpGet("prices")]
-    public async Task<ActionResult<ICollection<Prices>>> GetPrices()
-    {
-        try
-        {
-            var prices = await _priceService.GetAllAsync();
-            return Ok(prices);
         }
         catch (Exception)
         {
@@ -167,7 +118,7 @@ public class ProductsController: ControllerBase
     {
         try
         {
-            await _productsService.AddAsync(product);
+            await _productService.AddAsync(product);
             return Ok();
         }
         catch (ValidationException ex)
@@ -179,77 +130,4 @@ public class ProductsController: ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-
-    [HttpPost("update")]
-    public async ValueTask<IActionResult> UpdateProductsAsync([FromBody] ICollection<Products> products)
-    {
-        try
-        {
-            await _productsService.UpdateAsync(products);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    [HttpDelete]
-    public async ValueTask<IActionResult> DeleteProductAsync([Required] string id)
-    {
-        try
-        {
-            await _productsService.Remove(id);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    [HttpDelete("prices")]
-    public async ValueTask<IActionResult> DeletePricesAsync([Required] string id)
-    {
-        try
-        {
-            await _priceService.Remove(id);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    [HttpDelete("categories")]
-    public async ValueTask<IActionResult> DeleteCategoriesAsync([Required] string id)
-    {
-        try
-        {
-            await _categoryService.Remove(id);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-    
 }

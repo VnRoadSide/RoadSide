@@ -14,7 +14,7 @@ public interface IService<TDomain, TEntity>
     void RemoveAsync<TId>(TId id, CancellationToken cancellationToken = default);
 }
 
-public class Service<TDomain, TEntity> : IService<TDomain, TEntity>
+internal class Service<TDomain, TEntity> : IService<TDomain, TEntity>
     where TDomain : class
     where TEntity : class
 {

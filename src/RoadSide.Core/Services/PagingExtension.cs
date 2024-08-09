@@ -10,7 +10,7 @@ public enum Sorting
 public abstract class QueryPaging
 {
     public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
+    public int PageSize { get; set; } = 100;
 }
 
 public interface IQueryFilter

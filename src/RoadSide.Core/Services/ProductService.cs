@@ -8,7 +8,7 @@ public class ProductQueryOption : QueryPaging, IQueryFilter
 {
     public bool IncludeCategory { get; set; }
     public string? Search { get; set; }
-    public ICollection<(string, Sorting)> Filters { get; set; }
+    public ICollection<(string, Sorting)> Filters { get; set; } = new List<(string, Sorting)>();
 }
 
 public interface IProductService: IService<Domain.Products, Entities.Products>
@@ -41,9 +41,11 @@ internal class ProductService(ICoreDbContext context, IMapper mapper)
 
     public async ValueTask<Domain.Products> GetByIdAsync(Guid id)
     {
-        var result = await GetQueryable().FirstOrDefaultAsync(x => x.Id == id);
-        ArgumentNullException.ThrowIfNull(result);
-        return mapper.Map<Domain.Products>(result);
+        var entity = await GetQueryable().FirstOrDefaultAsync(x => x.Id == id);
+        ArgumentNullException.ThrowIfNull(entity);
+        var result = mapper.Map<Domain.Products>(entity);
+        result.DiscountedPrice = CalculateDiscount(result);
+        return result;
     }
     
     private int? CalculateDiscount(RoadSide.Domain.Products product)
