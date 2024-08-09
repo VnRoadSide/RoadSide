@@ -11,10 +11,6 @@ const navigation = [
     href: "/portal/notification",
   },
   {
-    label: "Quản Lý Đơn Hàng",
-    href: "/portal/orders",
-  },
-  {
     label: "Quản Lý Sản Phẩm",
     href: "/portal/products",
   },

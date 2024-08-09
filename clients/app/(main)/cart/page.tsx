@@ -19,6 +19,7 @@ import {
   Text,
   Title,
   UnstyledButton,
+  Image
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 
@@ -37,6 +38,13 @@ function ProductRow({
     <TableTr>
       <TableTd>
         <Checkbox checked={item.selected} onClick={() => onUpdate({...item, selected: !item.selected})}/>
+      </TableTd>
+      <TableTd>
+        <Image
+          src={item.product.imageUrl}
+          alt="no image here"
+          height={50}
+          w={50}/>
       </TableTd>
       <TableTd>
         <Text w={300}>{item.product.name}</Text>
@@ -103,6 +111,7 @@ function OrderSection() {
         <Table>
           <TableThead>
             <TableTr>
+              <TableTh></TableTh>
               <TableTh></TableTh>
               <TableTh>Sản Phẩm</TableTh>
               <TableTh>Đơn Giá</TableTh>

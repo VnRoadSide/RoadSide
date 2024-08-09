@@ -1,3 +1,4 @@
+"use client";
 import { useLocalStorage } from "@mantine/hooks";
 import { CreateCheckoutSession, GetCheckoutSession, OrderItem } from "../checkout";
 import { useEffect, useState } from "react";

@@ -1,44 +1,29 @@
-"use client"
+"use client";
 import { Orders } from "@/models/orders";
 import {
   Autocomplete,
-  Button,
+  Card,
+  Paper,
   Stack,
-  Table,
-  TableTbody,
-  TableTd,
-  TableTh,
-  TableThead,
-  TableTr,
   Tabs,
   TabsList,
   TabsPanel,
   TabsTab,
   Title,
+  Image,
+  Group,
+  Text,
+  TableTr,
+  Table,
+  TableTbody,
+  TableTh,
+  TableTd,
+  TableThead,
+  Button,
+  Badge,
 } from "@mantine/core";
 
-// type Order = {
-//   product: string;
-//   total_order: string;
-//   status: string;
-//   countdown: string;
-//   shipping_unit: string;
-//   operation: string;
-// };
-
-export function OrderView({orders}: {orders: Orders[]}) {
-  const rows = orders.map((data,index) => (
-    <TableTr>
-      <TableTd>{data.id}</TableTd>
-      <TableTd>{data.totalPrice}</TableTd>
-      <TableTd>{data.id}</TableTd>
-      <TableTd>{data.id}</TableTd>
-      <TableTd>{data.id}</TableTd>
-      <TableTd>
-        <Button variant="outline">Xem chi tiết</Button>
-      </TableTd>
-    </TableTr>
-  ));
+export function OrderView({ orders }: { orders: Orders[] }) {
   return (
     <Stack>
       <Title order={2}>Tất cả</Title>
@@ -52,24 +37,70 @@ export function OrderView({orders}: {orders: Orders[]}) {
           <TabsTab value="cancelled">Đơn Huỷ</TabsTab>
           <TabsTab value="returned">Trả hàng/Hoàn tiền</TabsTab>
         </TabsList>
-        <Autocomplete mt={"md"} placeholder="Bạn có thể tìm kiếm theo tên Shop, ID đơn hàng hoặc Tên Sản phẩm "/>
-
+        <Autocomplete
+          mt={"md"}
+          mb={"md"}
+          placeholder="Bạn có thể tìm kiếm theo tên Shop, ID đơn hàng hoặc Tên Sản phẩm "
+        />
         <TabsPanel value="all">
-          <Table mt="md">
-          <TableThead>
-            <TableTr>
-              <TableTh>Sản phẩm</TableTh>
-              <TableTh>Tổng Đơn hàng</TableTh>
-              <TableTh>Trạng thái</TableTh>
-              <TableTh>Đếm ngược</TableTh>
-              <TableTh>Đơn vị vận chuyển</TableTh>
-              <TableTh>Thao tác</TableTh>
-            </TableTr>
-          </TableThead>
-          <TableTbody>
-            {rows}
-          </TableTbody>
-          </Table>
+          {orders.map((data, index) => (
+            <Card key={index} shadow="sm" padding="lg" mb="md">
+              <Group justify="space-between">
+                <Title order={4}>Đơn hàng {index + 1}</Title>
+                <Badge>Chờ xác nhận</Badge>
+              </Group>
+              <Table>
+                <TableThead>
+                  <TableTr>
+                    <TableTh></TableTh>
+                    <TableTh>Sản Phẩm</TableTh>
+                    <TableTh>Đơn Giá</TableTh>
+                    <TableTh>Số Lượng</TableTh>
+                    <TableTh>Số Tiền</TableTh>
+                  </TableTr>
+                </TableThead>
+                {data.items.map((data, index) => (
+                  <TableTbody key={index}>
+                    <TableTr>
+                      <TableTd>
+                        <Image
+                          src={data.product.imageUrl}
+                          alt="no image here"
+                          height={50}
+                          w={50}
+                        />
+                      </TableTd>
+                      <TableTd>{data.product.name}</TableTd>
+                      <TableTd>
+                        {data.product.baseUnitPrice.toLocaleString()}
+                      </TableTd>
+                      <TableTd>{data.quantity}</TableTd>
+                      <TableTd>
+                        {(
+                          data.product.baseUnitPrice * data.quantity
+                        ).toLocaleString()}
+                      </TableTd>
+                    </TableTr>
+                  </TableTbody>
+                ))}
+                <TableTbody>
+                  <TableTr>
+                    <TableTd></TableTd>
+                    <TableTd></TableTd>
+                    <TableTd></TableTd>
+                    <TableTd>
+                      <Title order={4}>Thành tiền:</Title>
+                    </TableTd>
+                    <TableTd>
+                      <Title order={4}>
+                        {data.totalPrice.toLocaleString()}
+                      </Title>
+                    </TableTd>
+                  </TableTr>
+                </TableTbody>
+              </Table>
+            </Card>
+          ))}
         </TabsPanel>
       </Tabs>
     </Stack>

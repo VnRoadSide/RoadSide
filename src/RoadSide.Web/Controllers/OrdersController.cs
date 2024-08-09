@@ -4,7 +4,6 @@ using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
 using RoadSide.Core.Extensions;
 using RoadSide.Core.Services;
-using RoadSide.Core.Services.Products;
 
 namespace RoadSide.Web.Controllers;
 
@@ -59,14 +58,34 @@ public class OrdersController: ControllerBase
         }
     }
     
-    [HttpPost("order/{sessionId}")]
-    public async ValueTask<ActionResult> CreateCheckoutSessionAsync(Guid sessionId)
+    [HttpGet("checkout/{sessionId}/get")]
+    public async ValueTask<ActionResult<ICollection<Orders>>> GetCheckoutSessionAsync(Guid sessionId)
     {
         try
         {
             var user = _appUserContext.User;
             var orderItems = user.AdditionalProperties["Checkout"] as List<Orders>;
-            if (orderItems is null)
+            if (orderItems is null || (user.AdditionalProperties["CheckoutSessionId"] as Guid? ?? default) != sessionId)
+            {
+                return NotFound();
+            }
+
+            return Ok(orderItems);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+    
+    [HttpPost("checkout/{sessionId}/proceed")]
+    public async ValueTask<ActionResult> ProceedOrderAsync(Guid sessionId)
+    {
+        try
+        {
+            var user = _appUserContext.User;
+            var orderItems = user.AdditionalProperties["Checkout"] as List<Orders>;
+            if (orderItems is null || (user.AdditionalProperties["CheckoutSessionId"] as Guid? ?? default) != sessionId)
             {
                 return NotFound();
             }
@@ -82,16 +101,17 @@ public class OrdersController: ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+
     
     [HttpGet]
-    public async ValueTask<ActionResult<ICollection<Orders>>> GetAllOrdersAsync([FromBody] QueryPaging paging)
+    public async ValueTask<ActionResult<ICollection<Orders>>> GetAllOrdersAsync([FromQuery] int page, int pageSize)
     {
         try
         {
             var option = new QueryOrderOptions
             {
-                Page = paging.Page,
-                PageSize = paging.PageSize,
+                Page = page,
+                PageSize = pageSize,
                 UserId = _appUserContext.User.Id
             };
             

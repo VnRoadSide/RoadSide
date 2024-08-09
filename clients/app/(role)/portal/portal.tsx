@@ -1,23 +1,47 @@
-"use client"
+"use client";
+
 import {
-  Button,
-  Group,
-  Select,
-  Stack,
   Table,
-  TableTbody,
-  TableTh,
   TableThead,
   TableTr,
+  TableTh,
+  TableTbody,
+  TableTd,
+  Button,
+  TabsPanel,
+  Stack,
   Tabs,
   TabsList,
-  TabsPanel,
   TabsTab,
   Title,
+  Group,
+  Select,
 } from "@mantine/core";
 
-export function PortalTable() {
-  return (
+type Order = {
+  product: string;
+  total_order: string;
+  status: string;
+  countdown: string;
+  shipping_unit: string;
+  operation: string;
+};
+
+export function OrderView({orders}: {orders: Order[]}) {
+  const rows = orders.map(({ product, total_order, status, countdown, shipping_unit, operation },index) => (
+    <TableTr key={index}>
+      <TableTd>{product}</TableTd>
+      <TableTd>{total_order}</TableTd>
+      <TableTd>{status}</TableTd>
+      <TableTd>{countdown}</TableTd>
+      <TableTd>{shipping_unit}</TableTd>
+      <TableTd>
+        <Button variant="outline">{operation}</Button>
+      </TableTd>
+    </TableTr>
+  ));
+
+  return(
     <Stack>
       <Title order={2}>Tất cả</Title>
       <Tabs defaultValue="all">
@@ -32,7 +56,6 @@ export function PortalTable() {
           <TabsTab value="failed">Giao không thành công</TabsTab>
         </TabsList>
 
-        <TabsPanel value="all">
           {/* Filter Section */}
           <Group
             pt="md"
@@ -57,9 +80,9 @@ export function PortalTable() {
             <Button variant="outline">Xuất</Button>
             <Button variant="outline">Lịch sử Xuất Báo cáo</Button>
           </Group>
-
-          {/* Orders Table */}
-          {/* <Table mt="md">
+          
+        <TabsPanel value="all">
+          <Table mt="md">
             <TableThead>
               <TableTr>
                 <TableTh>Sản phẩm</TableTh>
@@ -71,12 +94,10 @@ export function PortalTable() {
               </TableTr>
             </TableThead>
             <TableTbody>
-              <TableTr></TableTr>
+              {rows}
             </TableTbody>
-          </Table> */}
+          </Table>
         </TabsPanel>
-
-        {/* Repeat Tabs.Panel for each tab with specific content if needed */}
       </Tabs>
     </Stack>
   );

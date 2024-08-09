@@ -41,7 +41,13 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IAppUserCont
 
     public async Task<ICollection<Domain.Orders>> GetAllAsync(QueryOrderOptions option)
     {
-        var query = GetQueryable().Where(order => order.UserId == option.UserId).GetPaging(option).AsNoTracking();
+        var query = GetQueryable()
+            .Where(order => order.UserId == option.UserId)
+            .GetPaging(option)
+            
+            .Include(q => q.User)
+            .AsNoTracking();
+        query = query.Include(q => q.Items).ThenInclude(q => q.Product).ThenInclude(q => q.Vendor);
         return mapper.Map<IList<Domain.Orders>>(await query.ToListAsync());
     }
 
