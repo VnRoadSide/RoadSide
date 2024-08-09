@@ -77,25 +77,25 @@ public class ProductsController: ControllerBase
     //     }
     // }
     
-    [HttpGet("search")]
-    public async Task<ActionResult<ICollection<Products>>> SearchProducts([Required] string name)
-    {
-        try
-        {
-            var products = await _productsService.GetByName(name);
-            if (products.Count != 0) return Ok(products);
-            var categories = await _categoryService.GetByName(name);
-            var productsCollection = await Task.WhenAll(categories
-                .Select(async c => await _productsService.GetByCategory(c.Id)));
-            products = productsCollection.SelectMany(p => p).ToList();
-
-            return Ok(products);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
+    // [HttpGet("search")]
+    // public async Task<ActionResult<ICollection<Products>>> SearchProducts([Required] string name)
+    // {
+    //     try
+    //     {
+    //         var products = await _productsService.GetByName(name);
+    //         if (products.Count != 0) return Ok(products);
+    //         var categories = await _categoryService.GetByName(name);
+    //         var productsCollection = await Task.WhenAll(categories
+    //             .Select(async c => await _productsService.GetByCategory(c.Id)));
+    //         products = productsCollection.SelectMany(p => p).ToList();
+    //
+    //         return Ok(products);
+    //     }
+    //     catch (Exception)
+    //     {
+    //         return StatusCode(StatusCodes.Status500InternalServerError);
+    //     }
+    // }
 
     [HttpGet]
     [Route("{id}")] // api/products/{id}

@@ -29,8 +29,14 @@ internal class ProductService(ICoreDbContext context, IMapper mapper)
             query = query
                 .Include(x => x.Category);
         }
+
+        var result = mapper.Map<IList<Domain.Products>>(await query.ToListAsync());
+        foreach (var item in result)
+        {
+            item.DiscountedPrice = CalculateDiscount(item);
+        }
         
-        return mapper.Map<IList<Domain.Products>>(await query.ToListAsync());
+        return result;
     }
 
     public async ValueTask<Domain.Products> GetByIdAsync(Guid id)
@@ -38,5 +44,16 @@ internal class ProductService(ICoreDbContext context, IMapper mapper)
         var result = await GetQueryable().FirstOrDefaultAsync(x => x.Id == id);
         ArgumentNullException.ThrowIfNull(result);
         return mapper.Map<Domain.Products>(result);
+    }
+    
+    private int? CalculateDiscount(RoadSide.Domain.Products product)
+    {
+        var activeVoucher = product.Vouchers
+            .Where(v => v.Active && v.StartDate <= DateTimeOffset.UtcNow && v.EndDate >= DateTimeOffset.UtcNow)
+            .MaxBy(v => v.Discount);
+
+        return (activeVoucher != null)
+            ? product.BaseUnitPrice * (100 - activeVoucher.Discount) / 100
+            : null;
     }
 }

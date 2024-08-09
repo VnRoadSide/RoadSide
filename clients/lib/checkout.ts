@@ -15,7 +15,14 @@ export interface Order {
   totalPrice: number;
 }
 
-async function CreateCheckoutSession(order: Order) {
+export async function CreateCheckoutSession(items: OrderItem[]) {
   const { post } = useApi();
-  const { data } = await post("/orders", order);
+  const { data } = await post<string>("/checkout", items);
+  return data;
+}
+
+export async function GetCheckoutSession(sessionId: string) {
+  const { get } = useApi();
+  const { data } = await get<Order[]>(`/checkout/${sessionId}`);
+  return data;
 }
