@@ -28,7 +28,7 @@ export interface CurrentUser {
   email: string;
   avatarUrl: string;
   roles: string[];
-  phonenumber: string;
+  phoneNumber: string;
 }
 
 export interface Address {

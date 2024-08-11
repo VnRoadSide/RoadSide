@@ -16,7 +16,7 @@ type CartHook = CartValue & {
 
 type CartAction = (val: CartValue | ((prevState: CartValue) => CartValue)) => void
 
-function useCart(initial: OrderItem[] = []): [CartHook, CartAction, () => Promise<void>] {
+function useCart(initial: OrderItem[] = []): [CartHook, CartAction, () => Promise<string>] {
   const [value, setValue] = useLocalStorage<{ items: OrderItem[], session: string | null }>({
     key: 'cart',
     defaultValue: { items: initial, session: null },
@@ -28,8 +28,7 @@ function useCart(initial: OrderItem[] = []): [CartHook, CartAction, () => Promis
   const [isClient, setIsClient] = useState(false);
 
   const getSession = async () => {
-    const session = await createCheckoutSession(value.items);
-    setValue({ items: value.items, session: session });
+    return await createCheckoutSession(value.items);
   }
 
   useEffect(() => {

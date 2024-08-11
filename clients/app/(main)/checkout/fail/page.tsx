@@ -10,12 +10,12 @@ export default function CheckoutFail() {
         </Container>
 
         <Container>
-          <Title>Thanh toán thất bại</Title>
+          <Title>Đặt hàng thất bại</Title>
         </Container>
 
         <Container>
           <Text size="lg" fw="500" >
-            Đơn hàng của bạn chưa được hoàn tất thanh toán
+            Đơn hàng của bạn chưa được hoàn tất
           </Text>
         </Container>
 

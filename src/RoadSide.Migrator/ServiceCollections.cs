@@ -31,11 +31,10 @@ public static class ServiceCollections
                 connectionString,
                 builder => builder
                     .MigrationsAssembly(Constant.Migrator)
-                    .EnableRetryOnFailure()
             ).UseSnakeCaseNamingConvention(),
             ServiceLifetime.Transient
         );
-        services.AddScoped<ICoreDbContext>(provider => provider.GetService<CoreDbContext>());
+        services.AddTransient<ICoreDbContext>(provider => provider.GetService<CoreDbContext>());
         return services;
     }
     

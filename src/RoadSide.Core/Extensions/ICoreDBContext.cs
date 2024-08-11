@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 using RoadSide.Core.Entities;
 
@@ -21,4 +22,6 @@ public interface ICoreDbContext
     DbSet<TEntity> Set<TEntity>() where TEntity : class;
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    Task<IDisposable> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, CancellationToken cancellationToken = default);
+    Task CommitTransactionAsync(CancellationToken cancellationToken = default);
 }

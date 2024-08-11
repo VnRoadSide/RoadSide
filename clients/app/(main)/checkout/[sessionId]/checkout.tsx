@@ -1,4 +1,5 @@
-import { Order } from "@/lib/checkout";
+"use client";
+import { Order, OrderItem, proceedCheckout } from "@/lib/checkout";
 import {
   Card,
   Table,
@@ -15,65 +16,54 @@ import {
   TableTbody,
 } from "@mantine/core";
 import { Session } from "next-auth";
+import { useRouter } from "next/navigation";
 
-function CheckoutSection() {
-  const products = [
-    {
-      name: "Orico USB Hub Nhôm Siêu Tốc Độ Cao 10Gbp...",
-      type: "Usb-a + Loại C (10...)",
-      price: 520000,
-      quantity: 1,
-      subtotal: 520000,
-      shippingCost: 17000,
-      discount: 11000,
-      total: 526500,
-    },
-    {
-        name: "Orico USB Hub Nhôm Siêu Tốc Độ Cao 10Gbp...",
-        type: "Usb-a + Loại C (10...)",
-        price: 520000,
-        quantity: 1,
-        subtotal: 520000,
-        shippingCost: 17000,
-        discount: 11000,
-        total: 526500,
-      },
-  ];
+function OrderPart({ order }: { order: Order }) {
+  const rows = order.items.map((item, index) => {
+    const price = item.product.discountedPrice ?? item.product.baseUnitPrice;
+    const subtotal = item.quantity * price;
+    return (
+      <TableTr key={index}>
+        <TableTd>
+          <Text w={500}>{item.product.name}</Text>
+          <Text size="xs" c="dimmed">
+            Loại: {item.product.name}
+          </Text>
+        </TableTd>
+        <TableTd>
+          <Text>₫{price.toLocaleString()}</Text>
+        </TableTd>
+        <TableTd>
+          <Text>{item.quantity}</Text>
+        </TableTd>
+        <TableTd>
+          <Text>₫{subtotal.toLocaleString()}</Text>
+        </TableTd>
+      </TableTr>
+    );
+  });
+  return (
+    <>
+      <Table>
+        <TableTbody>{rows}</TableTbody>
+      </Table>
+      {rows.length > 0 && (
+        <Group>
+          <Badge color="pink" variant="light">
+            Giảm ₫11.000 - Voucher của Shop
+          </Badge>
 
-  const rows = products.map((product, index) => (
-    <TableTr key={index}>
-      <TableTd>
-        <Text w={500}>{product.name}</Text>
-        <Text size="xs" c="dimmed">
-          Loại: {product.type}
-        </Text>
-      </TableTd>
-      <TableTd>
-        <Text>₫{product.price.toLocaleString()}</Text>
-      </TableTd>
-      <TableTd>
-        <Text>{product.quantity}</Text>
-      </TableTd>
-      <TableTd>
-        <Text>₫{product.subtotal.toLocaleString()}</Text>
-      </TableTd>
-    </TableTr>
-  ));
-
-  const totalCost = products.reduce(
-    (total, product) => total + product.total,
-    0
+          <Button variant="subtle" size="xs">
+            Chọn Voucher Khác
+          </Button>
+        </Group>
+      )}
+    </>
   );
-  const totalShippingCost = products.reduce(
-    (total, product) => total + product.shippingCost,
-    0
-  );
+}
 
-  const totalProducts = products.reduce(
-    (total, product) => total + product.quantity,
-    0
-  );
-
+function CheckoutSection({ orders }: { orders: Order[] }) {
+  const totalShippingCost = 0;
   return (
     <Box>
       <Card shadow="sm" p="lg" radius="md">
@@ -81,18 +71,9 @@ function CheckoutSection() {
           Sản phẩm
         </Text>
         <Divider my="sm" />
-        <Table>
-          <TableTbody>{rows}</TableTbody>
-        </Table>
-        <Group>
-        <Badge color="pink" variant="light">
-          Giảm ₫11.000 - Voucher của Shop
-        </Badge>
-        
-        <Button variant="subtle" size="xs">
-          Chọn Voucher Khác
-        </Button>
-        </Group>
+        {orders.map((order) => (
+          <OrderPart key={order.id} order={order} />
+        ))}
       </Card>
 
       <Card shadow="sm" p="lg" radius="md" mt="md">
@@ -107,38 +88,77 @@ function CheckoutSection() {
       <Card shadow="sm" p="lg" radius="md" mt="md">
         <TextInput label="Lời nhắn:" placeholder="Lưu ý cho Người bán..." />
       </Card>
-
-      <Card shadow="sm" p="lg" radius="md" mt="md">
-        <Text size="lg" w={500}>
-          Tổng số tiền ({totalProducts} sản phẩm): ₫{totalCost.toLocaleString()}
-        </Text>
-      </Card>
     </Box>
   );
 }
 
-export function CheckoutView({session, orders} : { session: Session | null, orders: Order[] }) {
+export function CheckoutView({
+  session,
+  orders,
+  checkoutSessionId
+}: {
+  session: Session | null;
+  orders: Order[];
+  checkoutSessionId: string
+}) {
   const address = {
     name: "Trần Hà Tuấn Kiệt",
     phone: "(+84) 355749742",
-    address: "Tầng 5, Tòa Nhà Pijico, Số 186, Điện Biên Phủ, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh",
+    address:
+      "Tầng 5, Tòa Nhà Pijico, Số 186, Điện Biên Phủ, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh",
+  };
+  const router = useRouter();
 
-  }
+  const totalCost = orders.reduce(
+    (total, order) => total + order.totalPrice,
+    0
+  );
+
+  const totalProducts = orders.reduce(
+    (total, order) =>
+      total + order.items.reduce((total, item) => total + item.quantity, 0),
+    0
+  );
+
+
+  const handleConfirm = async () => {
+    console.log("handleConfirm");
+    const result = await proceedCheckout(checkoutSessionId);
+    console.log("result", result);
+    if (result?.success) {
+      router.push("/checkout/success");
+    } else {
+      router.push("/checkout/fail");
+    }
+  };
+
   return (
     <Box p="xl">
       <Card shadow="sm" p="lg" radius="md" mb="md">
         <Title order={4}>Địa Chỉ Nhận Hàng</Title>
         <Group justify="space-between">
-          <Text> {address.name} {address.phone}</Text>
           <Text>
-            {address.address}
+            {" "}
+            {address.name} {address.phone}
           </Text>
+          <Text>{address.address}</Text>
           <Button variant="subtle" size="xs">
             Thay Đổi
           </Button>
         </Group>
       </Card>
-      <CheckoutSection />
+
+      <CheckoutSection orders={orders} />
+
+      <Card shadow="sm" p="lg" radius="md" mt="md">
+        <Group justify="space-between">
+          <Text size="lg" w={500}>
+            Tổng số tiền ({totalProducts} sản phẩm): ₫
+            {totalCost.toLocaleString()}
+          </Text>
+          <Button variant="outline" onClick={handleConfirm}>Thanh toán</Button>
+        </Group>
+      </Card>
     </Box>
   );
 }

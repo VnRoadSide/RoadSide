@@ -12,7 +12,7 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
-  items?: OrderItem[];
+  items: OrderItem[];
   totalPrice: number;
 }
 
@@ -29,3 +29,9 @@ export async function getCheckoutSession(sessionId: string) {
   const { data } = await get<Order[]>(`/orders/checkout/${sessionId}`);
   return data;
 } 
+
+export async function proceedCheckout(sessionId: string) {
+  const { post } = useApi();
+  const { data } = await post<{success: boolean}>(`/orders/${sessionId}`);
+  return data
+}

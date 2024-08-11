@@ -42,10 +42,16 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.Roles, act => act.MapFrom(src => src.UserRoles.Select(t => t.Role).ToList()))
             .ForMember(dest => dest.AdditionalProperties, opt => opt.MapFrom<AdditionalPropertiesResolver>());
         CreateMap<Role, Entities.Role>().ReverseMap();
-        
-        CreateMap<Orders, Entities.Orders>();
+
+        CreateMap<Orders, Entities.Orders>()
+            .ForMember(dest => dest.User, act => act.Ignore())
+            .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.User.Id));
         CreateMap<Entities.Orders, Orders>();
-        CreateMap<OrderItem, Entities.OrderItem>();
+        CreateMap<OrderItem, Entities.OrderItem>()
+            .ForMember(dest => dest.Product, act => act.Ignore())
+            .ForMember(dest => dest.ProductId, act => act.MapFrom(src => src.Product.Id))
+            .ForMember(dest => dest.Order, act => act.Ignore())
+            .ForMember(dest => dest.OrderId, act => act.MapFrom(src => src.Order.Id));
         CreateMap<Entities.OrderItem, OrderItem>();
         CreateMap<Voucher, Entities.Voucher>();
         CreateMap<Entities.Voucher, Voucher>();

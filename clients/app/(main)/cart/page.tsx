@@ -174,16 +174,17 @@ export default function Cart() {
   };
 
   const handleCheckout = async () => {
-    await getSession();
-    console.log(session);
-    if (!session) {
+    const newSession = await getSession();
+    console.log("newSession", newSession);
+    if (!newSession) {
+      console.log("hit")
       return;
     }
     setValue({
       items,
-      session: session,
+      session: newSession,
     });
-    router.push(`/checkout/${session}`);
+    router.push(`/checkout/${newSession}`);
   };
 
   const total = items.reduce(

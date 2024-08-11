@@ -41,7 +41,7 @@ internal class ProductService(ICoreDbContext context, IMapper mapper)
 
     public async ValueTask<Domain.Products> GetByIdAsync(Guid id)
     {
-        var entity = await GetQueryable().FirstOrDefaultAsync(x => x.Id == id);
+        var entity = await GetQueryable().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         ArgumentNullException.ThrowIfNull(entity);
         var result = mapper.Map<Domain.Products>(entity);
         result.DiscountedPrice = CalculateDiscount(result);

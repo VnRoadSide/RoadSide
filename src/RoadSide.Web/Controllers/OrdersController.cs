@@ -1,13 +1,11 @@
 using System.Collections;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
-using RoadSide.Core.Services.Orders;
 using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using RoadSide.Core.Extensions;
 using RoadSide.Core.Services;
-using Stripe.Climate;
+using RoadSide.Web.DTO;
 
 namespace RoadSide.Web.Controllers;
 
@@ -17,16 +15,13 @@ public class OrdersController : ControllerBase
 {
     private readonly ILogger<OrdersController> _logger;
     private readonly IOrderService _ordersService;
-    private readonly IProductService _productsService;
     private readonly IAppUserContext _appUserContext;
     private readonly IUserService _userService;
 
-    public OrdersController(ILogger<OrdersController> logger, IOrderService ordersService,
-        IProductService productsService, IAppUserContext appUserContext, IUserService userService)
+    public OrdersController(ILogger<OrdersController> logger, IOrderService ordersService, IAppUserContext appUserContext, IUserService userService)
     {
         _logger = logger;
         _ordersService = ordersService;
-        _productsService = productsService;
         _appUserContext = appUserContext;
         _userService = userService;
     }
@@ -37,17 +32,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var processedItems = await Task.WhenAll(
-                orderItems
-                    .Select(async item => new OrderItem
-                    {
-                        Product = await _productsService.GetByIdAsync(item.Product.Id),
-                        Quantity = item.Quantity,
-                        DateCreated = DateTime.UtcNow
-                    })
-            );
-
-            var (sessionId, ordersList) = await _ordersService.CreateCheckoutSessionAsync(processedItems.ToList());
+            var (sessionId, ordersList) = await _ordersService.CreateCheckoutSessionAsync(orderItems);
             var user = _appUserContext.User;
             user.AdditionalProperties["Checkout"] = ordersList;
             user.AdditionalProperties["CheckoutSessionId"] = sessionId;
@@ -61,36 +46,21 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpGet("checkout/{sessionId}/get")]
-    public ActionResult<ICollection<Orders>> GetCheckoutSessionAsync(Guid sessionId)
+    [Authorize]
+    [HttpGet("checkout/{sessionId}")]
+    public async Task<ActionResult<ICollection<Orders>>> GetCheckoutSessionAsync(Guid sessionId)
     {
         try
         {
             var user = _appUserContext.User;
-            List<Orders> orderItems = [];
-            if (user.AdditionalProperties.TryGetValue("Checkout", out var checkoutValue))
-            {
-                var type = checkoutValue.GetType();
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-                {
-                    var genericList = (IList)checkoutValue;
-                    foreach (var item in genericList)
-                    {
-                        if (item is JObject jObject)
-                        {
-                            // Process the order
-                            var order = jObject.ToObject<Orders>();
-                            orderItems.Add(order);
-                        }
-                    }
-                }
-            }
-
             Guid.TryParse(user.AdditionalProperties["CheckoutSessionId"].ToString(), out var parsedGuid);
-            if (orderItems is null || parsedGuid != sessionId)
+            user.AdditionalProperties.TryGetValue("Checkout", out var checkoutValue);
+            if (checkoutValue is null || parsedGuid != sessionId)
             {
                 return NotFound();
             }
+            
+            var orderItems = await _ordersService.RevalidateOrders(checkoutValue);
 
             return Ok(orderItems);
         }
@@ -100,32 +70,40 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpPost("checkout/{sessionId}/proceed")]
-    public async ValueTask<ActionResult> ProceedOrderAsync(Guid sessionId)
+    [Authorize]
+    [HttpPost("{sessionId}")]
+    public async ValueTask<ActionResult<StatusAction>> ProceedOrderAsync(Guid? sessionId)
     {
         try
         {
+            if (sessionId is null)
+            {
+                return BadRequest("Session id required!");
+            }
             var user = _appUserContext.User;
-            var orderList = user.AdditionalProperties["Checkout"] as List<Orders>;
-            if (orderList is null || (user.AdditionalProperties["CheckoutSessionId"] as Guid? ?? default) != sessionId)
+            Guid.TryParse(user.AdditionalProperties["CheckoutSessionId"].ToString(), out var parsedGuid);
+            user.AdditionalProperties.TryGetValue("Checkout", out var checkoutValue);
+            if (checkoutValue is null || parsedGuid != sessionId)
             {
                 return NotFound();
             }
+            
+            var orderItems = await _ordersService.RevalidateOrders(checkoutValue);
 
-            foreach (var order in orderList)
+            foreach (var order in orderItems)
             {
                 order.User = user;
             }
 
-            await _ordersService.BulkAddAsync(orderList);
+            await _ordersService.BulkAddAsync(orderItems);
             user.AdditionalProperties["Checkout"] = null;
             user.AdditionalProperties["CheckoutSessionId"] = null;
             await _userService.UpdateAsync(user);
-            return Ok();
+            return Ok(new StatusAction{ Success = true});
         }
         catch (Exception)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return Ok(new StatusAction{ Success = false});
         }
     }
 
@@ -144,24 +122,6 @@ public class OrdersController : ControllerBase
 
             var orders = await _ordersService.GetAllAsync(option);
             return Ok(orders);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    [HttpPost]
-    public async ValueTask<IActionResult> AddNewOrderAsync([FromBody] Orders order)
-    {
-        try
-        {
-            await _ordersService.AddAsync(order);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
         }
         catch (Exception)
         {
