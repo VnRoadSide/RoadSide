@@ -88,13 +88,13 @@ export default function NavBar({
                 </MenuTarget>
                 <MenuDropdown>
                   <MenuItem component={Link} href="/me">
-                    Thông tin tài khoản
+                    Tài khoản của tôi
                   </MenuItem>
                   <MenuItem component={Link} href="/portal">
                     Kênh người bán
                   </MenuItem>
-                  <MenuItem component={Link} href="/me/notification">
-                    Thông báo
+                  <MenuItem component={Link} href="/me/orders">
+                    Đơn mua
                   </MenuItem>
                   <MenuItem component={Link} href="/logout">
                     Đăng xuất

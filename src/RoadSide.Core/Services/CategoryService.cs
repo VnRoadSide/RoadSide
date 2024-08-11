@@ -9,6 +9,7 @@ public class CategoryQueryOption
 {
     public bool FromBase { get; set; } = true;
     public bool Flatten { get; set; } = false;
+    public bool isLeaf { get; set; } = false;
 }
 public interface ICategoryService: IService<Domain.Category, Entities.Category>
 {
@@ -29,6 +30,11 @@ internal class CategoryService(ICoreDbContext context, IMapper mapper)
         if (!option.Flatten)
         {
             query = query.Include(c => c.Categories);
+        }
+        
+        if (option.isLeaf)
+        {
+            query = query.Where(c => c.Categories.Count == 0);
         }
 
         return mapper.Map<ICollection<Domain.Category>>(await query.ToListAsync());

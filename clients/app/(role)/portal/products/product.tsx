@@ -16,6 +16,7 @@ import {
   TableThead,
   TableTr,
   TabsPanel,
+  NavLink,
 } from "@mantine/core";
 import { Product } from "@/models";
 
@@ -61,6 +62,9 @@ export function ProductManagement({products}: {products: Product[]}) {
             </Button>
             <Button variant="outline" style={{ flex: 0.5 }}>
               Nhập Lại
+            </Button>
+            <Button component="a" variant="outline" style={{ flex: 0.5 }} href="/portal/products/new">
+              Thêm
             </Button>
           </Group>
 

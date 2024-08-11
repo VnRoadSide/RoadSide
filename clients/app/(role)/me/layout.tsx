@@ -3,20 +3,16 @@ import { ReactNode } from "react";
 
 const navigation = [
   {
-    label: "Thông tin tài khoản",
+    label: "Tài khoản của tôi",
     href: "/me",
   },
   {
-    label: "Thông báo của tôi",
+    label: "Thông báo",
     href: "/me/notification",
   },
   {
-    label: "Quản lý đơn hàng",
+    label: "Đơn mua",
     href: "/me/orders",
-  },
-  {
-    label: "Quản lý đổi trả",
-    href: "/me/returns",
   },
   {
     label: "Sổ địa chỉ",

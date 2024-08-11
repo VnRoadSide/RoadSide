@@ -97,11 +97,24 @@ public class ProductsController: ControllerBase
     }
 
     [HttpGet("category")]
-    public async Task<ActionResult<ICollection<Category>>> GetCategories()
+    public async Task<ActionResult<ICollection<Category>>> GetCategories([FromQuery] bool? fromBase, bool? flatten, bool? isLeaf)
     {
         try
         {
-            var categories = await _categoryService.GetAsync(new CategoryQueryOption());
+            var option = new CategoryQueryOption();
+            if (fromBase.HasValue)
+            {
+                option.FromBase = fromBase.Value;
+            }
+            if (flatten.HasValue)
+            {
+                option.Flatten = flatten.Value;
+            }
+            if (isLeaf.HasValue)
+            {
+                option.isLeaf = isLeaf.Value;
+            }
+            var categories = await _categoryService.GetAsync(option);
             return Ok(categories);
         }
         catch (Exception)

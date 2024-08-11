@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RoadSide.Core.Services.AppSettings;
 using RoadSide.Core.Services.Users;
 using RoadSide.Core.Services;
+using RoadSide.Core.Services.Orders;
 
 namespace RoadSide.Core.Extensions;
 
