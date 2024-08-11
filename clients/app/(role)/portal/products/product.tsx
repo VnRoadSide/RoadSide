@@ -17,12 +17,21 @@ import {
   TableTr,
   TabsPanel,
   NavLink,
+  Image
 } from "@mantine/core";
 import { Product } from "@/models";
 
 export function ProductManagement({products}: {products: Product[]}) {
     const rows = products.map(( item, index) => (
         <TableTr key={index}>
+          <TableTd>
+            <Image
+              src={item.imageUrl}
+              alt="no image here"
+              height={50}
+              w={50}
+            />
+          </TableTd>
           <TableTd>{item.name}</TableTd>
           <TableTd>{item.sale}</TableTd>
           <TableTd>{item.baseUnitPrice}</TableTd>
@@ -72,11 +81,12 @@ export function ProductManagement({products}: {products: Product[]}) {
           <Table mt="md">
             <TableThead>
               <TableTr>
+              <TableTh></TableTh>
                 <TableTh>Tên sản phẩm</TableTh>
-                <TableTh>Doanh số</TableTh>
+                <TableTh>Đã bán</TableTh>
                 <TableTh>Giá</TableTh>
                 <TableTh>Kho hàng</TableTh>
-                <TableTh>Chất Lượng Nội Dung</TableTh>
+                <TableTh>Mô tả</TableTh>
                 <TableTh>Thao tác</TableTh>
               </TableTr>
             </TableThead>
