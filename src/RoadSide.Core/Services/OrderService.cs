@@ -22,6 +22,8 @@ public interface IOrderService : IService<Domain.Orders, Entities.Orders>
 {
     Task<(Guid, List<Domain.Orders>)> CreateCheckoutSessionAsync(ICollection<OrderItem> orderItem);
     Task<ICollection<Domain.Orders>> GetAllAsync(QueryOrderOptions option);
+    Task<ICollection<Domain.OrderItem>> GetForPortalAsync(QueryOrderOptions option);
+
     Task BulkAddAsync(List<Domain.Orders> orders);
     Task<List<Domain.Orders>> RevalidateOrders(object dataObject);
 }
@@ -57,6 +59,16 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
             .AsNoTracking();
         query = query.Include(q => q.Items).ThenInclude(q => q.Product).ThenInclude(q => q.Vendor);
         return mapper.Map<IList<Domain.Orders>>(await query.ToListAsync());
+    }
+
+    public async Task<ICollection<Domain.OrderItem>> GetForPortalAsync(QueryOrderOptions option)
+    {
+        var query = context.Set<Entities.OrderItem>()
+            .Include(o => o.Product)
+            .Where(o => o.Product.VendorId == option.UserId)
+            .AsNoTracking();
+        
+        return mapper.Map<IList<Domain.OrderItem>>(await query.ToListAsync());
     }
 
     public async Task BulkAddAsync(List<Domain.Orders> orders)

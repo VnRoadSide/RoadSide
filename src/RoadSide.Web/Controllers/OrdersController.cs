@@ -1,8 +1,6 @@
-using System.Collections;
 using Microsoft.AspNetCore.Authorization;
 using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using RoadSide.Core.Extensions;
 using RoadSide.Core.Services;
 using RoadSide.Web.DTO;
@@ -104,6 +102,27 @@ public class OrdersController : ControllerBase
         catch (Exception)
         {
             return Ok(new StatusAction{ Success = false});
+        }
+    }
+    
+    [HttpGet("/portal")]
+    public async ValueTask<ActionResult<ICollection<Orders>>> GetOrderForPortalAsync([FromQuery] int page, int pageSize)
+    {
+        try
+        {
+            var option = new QueryOrderOptions
+            {
+                Page = page,
+                PageSize = pageSize,
+                UserId = _appUserContext.User.Id
+            };
+
+            var orders = await _ordersService.GetForPortalAsync(option);
+            return Ok(orders);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 

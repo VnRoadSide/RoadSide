@@ -46,17 +46,22 @@ public class AutoMapperProfile : Profile
         CreateMap<Orders, Entities.Orders>()
             .ForMember(dest => dest.User, act => act.Ignore())
             .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.User.Id));
+        
         CreateMap<Entities.Orders, Orders>();
         CreateMap<OrderItem, Entities.OrderItem>()
             .ForMember(dest => dest.Product, act => act.Ignore())
             .ForMember(dest => dest.ProductId, act => act.MapFrom(src => src.Product.Id))
             .ForMember(dest => dest.Order, act => act.Ignore())
             .ForMember(dest => dest.OrderId, act => act.MapFrom(src => src.Order.Id));
+        
         CreateMap<Entities.OrderItem, OrderItem>();
         CreateMap<Voucher, Entities.Voucher>();
         CreateMap<Entities.Voucher, Voucher>();
+
+        CreateMap<Products, Entities.Products>()
+            .ForMember(dest => dest.Vendor, act => act.Ignore())
+            .ForMember(dest => dest.VendorId, act => act.MapFrom(src => src.Vendor.Id));
         
-        CreateMap<Products, Entities.Products>();
         CreateMap<Entities.Products, Products>();
         CreateMap<Category, Entities.Category>();
         CreateMap<Entities.Category, Category>();
