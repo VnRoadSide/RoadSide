@@ -1,3 +1,4 @@
+"use server"
 import { Product } from "@/models";
 import { useApi } from "./hooks";
 
@@ -15,14 +16,16 @@ export interface Order {
   totalPrice: number;
 }
 
-export async function CreateCheckoutSession(items: OrderItem[]) {
+export async function createCheckoutSession(items: OrderItem[]) {
+  console.log("createCheckoutSession", items);
   const { post } = useApi();
-  const { data } = await post<string>("/checkout", items);
+  const { data, error } = await post<string>("/orders/checkout", items);
+  console.log(data, error)
   return data;
 }
 
-export async function GetCheckoutSession(sessionId: string) {
+export async function getCheckoutSession(sessionId: string) {
   const { get } = useApi();
-  const { data } = await get<Order[]>(`/checkout/${sessionId}`);
+  const { data } = await get<Order[]>(`/orders/checkout/${sessionId}`);
   return data;
-}
+} 

@@ -58,7 +58,7 @@ public class AppUserManager : UserManager<User>
         var appUser = _mapper.Map<User>(user);
         
         // Attempt to create the user
-        var result = await base.CreateAsync(appUser, user.Password);
+        var result = await base.CreateAsync(appUser, user.PasswordHash);
         if (result.Succeeded)
         {
             try
@@ -89,6 +89,12 @@ public class AppUserManager : UserManager<User>
         return result;
     }
 
+    public async Task<IdentityResult> UpdateAsync(RoadSide.Domain.User user)
+    {
+        // Mapping domain user to entity user
+        var appUser = _mapper.Map<User>(user);
+        return await base.UpdateAsync(appUser);
+    }
 
     public async Task<(SignInResult, Domain.User)> CheckPasswordSignInAsync(LoginInfo info, bool lockoutOnFailure)
     {

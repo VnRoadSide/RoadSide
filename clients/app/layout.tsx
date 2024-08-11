@@ -30,7 +30,7 @@ export default async function RootLayout({
         />
         <ColorSchemeScript />
       </head>
-      <body>
+      <body suppressHydrationWarning={true}>
         <MantineProvider theme={theme}>
           <NavigationProgress />
 

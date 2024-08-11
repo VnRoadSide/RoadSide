@@ -19,9 +19,10 @@ import {
   Text,
   Title,
   UnstyledButton,
-  Image
+  Image,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 
 function ProductRow({
   item,
@@ -37,14 +38,18 @@ function ProductRow({
   return (
     <TableTr>
       <TableTd>
-        <Checkbox checked={item.selected} onClick={() => onUpdate({...item, selected: !item.selected})}/>
+        <Checkbox
+          checked={item.selected}
+          onClick={() => onUpdate({ ...item, selected: !item.selected })}
+        />
       </TableTd>
       <TableTd>
         <Image
           src={item.product.imageUrl}
           alt="no image here"
           height={50}
-          w={50}/>
+          w={50}
+        />
       </TableTd>
       <TableTd>
         <Text w={300}>{item.product.name}</Text>
@@ -99,15 +104,27 @@ function ProductRow({
 
 function OrderSection() {
   // Render product row using Mantine Table components
-  const [{ value, isClient }, setValue] = useCart();
+  const [{ items, session, isClient }, setValue] = useCart();
 
   function onChange(item: OrderItem) {
-    setValue(value.map((p) => (p.id === item.id ? item : p)));
+    const valueToSet = {
+      items: items.map((p) => (p.id === item.id ? item : p)),
+      session,
+    };
+    setValue(valueToSet);
+  }
+
+  function onRemove(item: OrderItem) {
+    const valueToSet = {
+      items: items.filter((p) => p.id !== item.id),
+      session,
+    };
+    setValue(valueToSet);
   }
 
   return (
     <Paper radius="md" p="xs" shadow="lg">
-      {value.length > 0 && (
+      {items.length > 0 && (
         <Table>
           <TableThead>
             <TableTr>
@@ -122,14 +139,12 @@ function OrderSection() {
           </TableThead>
           <TableTbody>
             {isClient &&
-              value.map((product) => (
+              items.map((product) => (
                 <ProductRow
                   key={product.id}
                   item={product}
                   onUpdate={onChange}
-                  onRemove={() =>
-                    setValue(value.filter((p) => p.id !== product.id))
-                  }
+                  onRemove={() => onRemove(product)}
                 />
               ))}
           </TableTbody>
@@ -139,99 +154,113 @@ function OrderSection() {
   );
 }
 
-function BannerSection() {
+export default function Cart() {
   // Render product row using Mantine Table components
-  const [{ value, isClient }, setValue] = useCart();
-  const [selectAll, setSelectedAll] = useState(value.every((p) => p.selected));
+  const [{ items, session, isClient }, setValue, getSession] = useCart();
+  const [selectAll, setSelectedAll] = useState(items.every((p) => p.selected));
+  const router = useRouter()
 
   useEffect(() => {
-    setSelectedAll(value.every((p) => p.selected));
-  }, [value]);
+    setSelectedAll(items.every((p) => p.selected));
+  }, [items]);
 
   const handleSelectAll = () => {
     setSelectedAll(!selectAll);
-    setValue(value.map((p) => ({ ...p, selected: !selectAll })));
+    const valueToSet = {
+      session,
+      items: items.map((p) => ({ ...p, selected: !selectAll })),
+    };
+    setValue(valueToSet);
   };
- 
-  const handleCheckout = () => {
-    
-  }
-  
-  const total = value.reduce(
-    (total, item) => total + (item.selected ? item.product.baseUnitPrice * item.quantity : 0),
+
+  const handleCheckout = async () => {
+    await getSession();
+    console.log(session);
+    if (!session) {
+      return;
+    }
+    setValue({
+      items,
+      session: session,
+    });
+    router.push(`/checkout/${session}`);
+  };
+
+  const total = items.reduce(
+    (total, item) =>
+      total + (item.selected ? item.product.baseUnitPrice * item.quantity : 0),
     0
   );
-  const selected = value.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
-
-
-  return (
-    <Paper
-      radius="md"
-      p="xs"
-      shadow="lg"
-      style={{ position: "sticky", bottom: 0, left: 0, right: 0, zIndex: 1 }}
-    >
-      <Stack p="md">
-        <Grid grow>
-          <GridCol span={6}>
-            <Checkbox label={`Chọn Tất Cả (${value.length})`} checked={selectAll} onClick={handleSelectAll}/>
-          </GridCol>
-          <GridCol
-            span={6}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-            }}
-          >
-            <UnstyledButton>Đưa vào mục Đã thích</UnstyledButton>
-          </GridCol>
-        </Grid>
-        <Grid grow>
-          <GridCol
-            span={3}
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Text size="sm" c="dimmed">
-              Tổng thanh toán ({selected} Sản phẩm):
-            </Text>
-          </GridCol>
-          <GridCol
-            span={2}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-            }}
-          >
-            <Text size="lg">{total?.toLocaleString()}₫</Text>
-          </GridCol>
-          <GridCol
-            span={1}
-            style={{ display: "flex", justifyContent: "flex-end" }}
-          >
-            <Button disabled={selected === 0} size="md">Mua Hàng</Button>
-          </GridCol>
-        </Grid>
-      </Stack>
-    </Paper>
-  );
-}
-
-export default function Cart() {
+  const selected = items.reduce((total, item) => total + item.quantity, 0);
   return (
     <Stack p="xl">
       <Title order={2} mb="lg">
         Giỏ hàng
       </Title>
       <OrderSection />
-      <BannerSection />
+      <Paper
+        radius="md"
+        p="xs"
+        shadow="lg"
+        style={{ position: "sticky", bottom: 0, left: 0, right: 0, zIndex: 1 }}
+      >
+        <Stack p="md">
+          <Grid grow>
+            <GridCol span={6}>
+              <Checkbox
+                label={`Chọn Tất Cả (${items.length})`}
+                checked={selectAll}
+                onClick={handleSelectAll}
+              />
+            </GridCol>
+            <GridCol
+              span={6}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
+              <UnstyledButton>Đưa vào mục Đã thích</UnstyledButton>
+            </GridCol>
+          </Grid>
+          <Grid grow>
+            <GridCol
+              span={3}
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Text size="sm" c="dimmed">
+                Tổng thanh toán ({selected} Sản phẩm):
+              </Text>
+            </GridCol>
+            <GridCol
+              span={2}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Text size="lg">{total?.toLocaleString()}₫</Text>
+            </GridCol>
+            <GridCol
+              span={1}
+              style={{ display: "flex", justifyContent: "flex-end" }}
+            >
+              <Button
+                disabled={selected === 0}
+                onClick={handleCheckout}
+                size="md"
+              >
+                Mua Hàng
+              </Button>
+            </GridCol>
+          </Grid>
+        </Stack>
+      </Paper>
     </Stack>
   );
 }

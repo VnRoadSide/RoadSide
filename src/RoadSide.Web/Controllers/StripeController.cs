@@ -9,10 +9,10 @@ namespace RoadSide.Web.Controllers;
 [Route("api/stripe")]
 public class StripeController: ControllerBase
 {
-    private readonly ILogger<ProductsController> _logger;
+    private readonly ILogger<StripeController> _logger;
     private readonly ICheckoutService _checkoutService;
 
-    public StripeController(ICheckoutService checkoutService, ILogger<ProductsController> logger)
+    public StripeController(ICheckoutService checkoutService, ILogger<StripeController> logger)
     {
         _checkoutService = checkoutService;
         _logger = logger;

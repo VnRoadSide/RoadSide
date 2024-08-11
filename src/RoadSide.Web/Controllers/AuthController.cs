@@ -33,7 +33,7 @@ namespace RoadSide.Web.Controllers
                 var user = new User {
                     UserName = account.UserName, 
                     Email = account.Email, 
-                    Password = account.Password
+                    PasswordHash = account.Password
                 };
                 var result = await _manager.CreateAsync(user);
                 if (result.Succeeded)

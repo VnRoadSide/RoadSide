@@ -31,6 +31,7 @@ public static class ServiceCollections
                 connectionString,
                 builder => builder
                     .MigrationsAssembly(Constant.Migrator)
+                    .EnableRetryOnFailure()
             ).UseSnakeCaseNamingConvention(),
             ServiceLifetime.Transient
         );

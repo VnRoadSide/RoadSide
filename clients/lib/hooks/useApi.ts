@@ -18,7 +18,9 @@ export const useApi = () => {
           ...options.headers,
           Authorization: `Bearer ${session.accessToken}`,
         }
+        console.log("session: ", session.accessToken);
       }
+      
       const response = await fetch(`${environment.apiUrl}${url}`, options);
 
       if (!response.ok) {

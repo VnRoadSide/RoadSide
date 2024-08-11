@@ -38,7 +38,7 @@ public class User : JsonBaseEntity<Guid>
 
     public int AccessFailedCount { get; set; }
 
-    public string Password { get; set; }
+    public string PasswordHash { get; set; }
     
     public List<Role> Roles { get; set; }
 }

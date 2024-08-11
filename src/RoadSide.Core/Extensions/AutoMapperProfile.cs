@@ -4,6 +4,28 @@ using Newtonsoft.Json;
 
 namespace RoadSide.Core.Extensions;
 
+public class AdditionalPropertiesResolver : IValueResolver<object, object, Dictionary<string, object>>
+{
+    public Dictionary<string, object> Resolve(object source, object destination, Dictionary<string, object> destMember, ResolutionContext context)
+    {
+        // Assuming source is a class that has a JSON string property representing the additional properties
+        var jsonString = source.GetType().GetProperty("AdditionalPropertiesJson")?.GetValue(source)?.ToString();
+
+        if (string.IsNullOrEmpty(jsonString))
+        {
+            return new Dictionary<string, object>();
+        }
+
+        // Define JsonSerializerSettings with the custom converter
+        var settings = new JsonSerializerSettings();
+        settings.Converters.Add(new AdditionalPropertiesConverter());
+
+        // Deserialize the JSON string to a dictionary using the custom converter
+        var dictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonString, settings);
+        return dictionary ?? new Dictionary<string, object>();
+    }
+}
+
 public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
@@ -12,11 +34,13 @@ public class AutoMapperProfile : Profile
         CreateMap<Entities.AppSettings, AppSettings>();
 
         CreateMap<User, Entities.User>()
-            .ForMember(dest => dest.AddressJson, act => act.MapFrom(src => JsonConvert.SerializeObject(src.Address)));
+            .ForMember(dest => dest.AddressJson, act => act.MapFrom(src => JsonConvert.SerializeObject(src.Address)))
+            .ForMember(dest => dest.AdditionalPropertiesJson, act => act.MapFrom(src => JsonConvert.SerializeObject(src.AdditionalProperties)));
         CreateMap<Entities.User, User>()
             .ForMember(dest => dest.Address,
                 act => act.MapFrom(src => JsonConvert.DeserializeObject<Address>(src.AddressJson)))
-            .ForMember(dest => dest.Roles, act => act.MapFrom(src => src.UserRoles.Select(t => t.Role).ToList()));
+            .ForMember(dest => dest.Roles, act => act.MapFrom(src => src.UserRoles.Select(t => t.Role).ToList()))
+            .ForMember(dest => dest.AdditionalProperties, opt => opt.MapFrom<AdditionalPropertiesResolver>());
         CreateMap<Role, Entities.Role>().ReverseMap();
         
         CreateMap<Orders, Entities.Orders>();

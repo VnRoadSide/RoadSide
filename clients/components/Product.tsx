@@ -13,16 +13,23 @@ import {
   CardSection,
 } from "@mantine/core";
 export function ProductCard({ product }: { product: Product }) {
-  const [{value, isClient}, setValue] = useCart();
+  const [{items, session}, setValue] = useCart();
 
   function onAddToCart() {
-    const idx = value.findIndex((p) => p.product.id === product.id);
+    const idx = items.findIndex((p) => p.product.id === product.id);
     if (idx !== -1) {
-      const newValue = [...value];
+      const newValue = [...items];
       newValue[idx].quantity += 1;
-      setValue(newValue);
+      setValue({
+        items: newValue,
+        session
+      });
     } else {
-      setValue([...value, { id: value.length, quantity: 1, product } as OrderItem]);
+      
+      setValue({
+        items: [...items, { id: items.length, quantity: 1, product } as OrderItem],
+        session
+      });
     }
   }
   

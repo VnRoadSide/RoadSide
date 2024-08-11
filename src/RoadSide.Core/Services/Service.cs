@@ -53,18 +53,20 @@ internal class Service<TDomain, TEntity> : IService<TDomain, TEntity>
         return query.ToListAsync();
     }
 
-    public Task<TDomain> AddAsync(TDomain domain, CancellationToken cancellationToken = default)
+    public async Task<TDomain> AddAsync(TDomain domain, CancellationToken cancellationToken = default)
     {
         var entityToAdd = _mapper.Map<TEntity>(domain);
         DbSet.Add(entityToAdd);
-        return Task.FromResult(domain);
+        await _context.SaveChangesAsync(cancellationToken);
+        return domain;
     }
 
-    public Task<TDomain> UpdateAsync(TDomain domain, CancellationToken cancellationToken = default)
+    public async Task<TDomain> UpdateAsync(TDomain domain, CancellationToken cancellationToken = default)
     {
         var entityToUpdate = _mapper.Map<TEntity>(domain);
         DbSet.Update(entityToUpdate);
-        return Task.FromResult(domain);
+        await _context.SaveChangesAsync(cancellationToken);
+        return domain;
     }
 
     public async void RemoveAsync<TId>(TId id, CancellationToken cancellationToken = default)
@@ -72,5 +74,6 @@ internal class Service<TDomain, TEntity> : IService<TDomain, TEntity>
         var entityToRemove = await GetByIdAsync(id);
         ArgumentNullException.ThrowIfNull(entityToRemove);
         _context.Set<TEntity>().Remove(entityToRemove);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
