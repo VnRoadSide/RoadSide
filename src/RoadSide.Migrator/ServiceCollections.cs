@@ -34,7 +34,7 @@ public static class ServiceCollections
             ).UseSnakeCaseNamingConvention(),
             ServiceLifetime.Transient
         );
-        services.AddScoped<ICoreDbContext>(provider => provider.GetService<CoreDbContext>());
+        services.AddTransient<ICoreDbContext>(provider => provider.GetService<CoreDbContext>());
         return services;
     }
     

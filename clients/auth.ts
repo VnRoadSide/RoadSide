@@ -1,7 +1,6 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
+import NextAuth, { NextAuthConfig, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { useApi } from "./utils";
-import { Authorization, UserLogin } from "./models/users";
+import { signInUser } from "./lib/auth";
 
 const publicFileRegex = /\.(.*)$/;
 const anonymousRoutes = [
@@ -16,37 +15,33 @@ const config: NextAuthConfig = {
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
       // e.g. domain, username, password, 2FA token, etc.
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        credential: { label: "Email", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const { post } = useApi();
+        const result = await signInUser({
+          credential: credentials?.credential as string,
+          password: credentials?.password as string
+        });
 
-        // ToDo: Authentication logic
-        const { data: user, error } = await post<Authorization>("/auth/login", {
-          username: credentials?.username,
-          password: credentials?.password,
-        } as UserLogin);
-
-        // return user object with the their profile data
-        if (!error) {
-          // No user found, so this is their first attempt to login
-          // meaning this is also the place you could do registration
-          return user;
-        }
-
-        return null;
-      },
-    }),
+        return result;
+      }
+    })
   ],
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    async jwt({ user, token }) {
+      //   update token from user
+      if (user) {
+        token.accessToken = user.accessToken;
+      }
+      //   return final_token
+      return token;
+    },
+    async session({ session: userSession, token, }) {
+      // update session from token
+      userSession.accessToken = token.accessToken as string;
+      return userSession;
+    },
     authorized: ({ request }) => {
       const { pathname } = request.nextUrl;
 

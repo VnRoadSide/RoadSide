@@ -128,6 +128,10 @@ namespace RoadSide.Migrator.Postgres
                         .HasColumnType("uuid")
                         .HasColumnName("order_id");
 
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("order_status");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid")
                         .HasColumnName("product_id");
@@ -143,7 +147,6 @@ namespace RoadSide.Migrator.Postgres
                         .HasDatabaseName("ix_order_item_order_id");
 
                     b.HasIndex("ProductId")
-                        .IsUnique()
                         .HasDatabaseName("ix_order_item_product_id");
 
                     b.ToTable("order_item", (string)null);
@@ -155,6 +158,10 @@ namespace RoadSide.Migrator.Postgres
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("order_id");
+
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("order_status");
 
                     b.Property<int>("TotalPrice")
                         .HasColumnType("integer")
@@ -617,7 +624,7 @@ namespace RoadSide.Migrator.Postgres
             modelBuilder.Entity("RoadSide.Core.Entities.Category", b =>
                 {
                     b.HasOne("RoadSide.Core.Entities.Category", "BaseCategory")
-                        .WithMany()
+                        .WithMany("Categories")
                         .HasForeignKey("BaseCategoryId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("fk_category_category_base_category_id");
@@ -635,8 +642,8 @@ namespace RoadSide.Migrator.Postgres
                         .HasConstraintName("fk_order_item_orders_order_id");
 
                     b.HasOne("RoadSide.Core.Entities.Products", "Product")
-                        .WithOne()
-                        .HasForeignKey("RoadSide.Core.Entities.OrderItem", "ProductId")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("fk_order_item_products_product_id");
@@ -744,6 +751,11 @@ namespace RoadSide.Migrator.Postgres
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_tokens_user_user_id");
+                });
+
+            modelBuilder.Entity("RoadSide.Core.Entities.Category", b =>
+                {
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("RoadSide.Core.Entities.Orders", b =>

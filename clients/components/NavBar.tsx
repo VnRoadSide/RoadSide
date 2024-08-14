@@ -1,5 +1,6 @@
-import { auth } from "@/auth";
-import useCart from "@/utils/useCart";
+"use client";
+import { signOut } from "next-auth/react"
+import useCart from "@/lib/hooks/useCart";
 import {
   Group,
   Image,
@@ -11,6 +12,9 @@ import {
   useMantineColorScheme,
   Indicator,
   Menu,
+  MenuTarget,
+  MenuDropdown,
+  MenuItem,
 } from "@mantine/core";
 import {
   IconMoon,
@@ -20,20 +24,21 @@ import {
 } from "@tabler/icons-react";
 import { Session } from "next-auth";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-// import { FuzzySearch } from "./Search";
 
-export function NavBar({ session }: { session: Session | null }) {
+export default function NavBar({
+  session,
+}: {
+  session?: Session | null;
+}) {
   const { colorScheme, setColorScheme } = useMantineColorScheme();
   const [{ counter, isClient }] = useCart();
   const [isPortal, setIsPortal] = useState(false);
-  const router = useRouter();
+  const pathname = usePathname() ?? "";
   useEffect(() => {
     // if /portal in url by using nextjs router
-    if (typeof window !== "undefined") {
-      setIsPortal(router.asPath.includes("/portal"));
-    }
+    setIsPortal(pathname.includes("/portal"));
   });
 
   return (
@@ -43,7 +48,7 @@ export function NavBar({ session }: { session: Session | null }) {
           <Group gap={4}>
             <Anchor href="/" underline="never">
               <Group gap={4} align="end">
-                <Image src={"logo.png"} alt="logo" h={35} />
+                <Image src={"/logo.png"} alt="logo" h={35} />
                 <Text variant="gradient" fw={900} size="1.8rem">
                   {"RoadSide"}
                 </Text>
@@ -69,7 +74,7 @@ export function NavBar({ session }: { session: Session | null }) {
             )}
             {!!session ? (
               <Menu shadow="md" width={200}>
-                <Menu.Target>
+                <MenuTarget>
                   <ActionIcon
                     variant="transparent"
                     size="xl"
@@ -80,25 +85,26 @@ export function NavBar({ session }: { session: Session | null }) {
                       <IconUserCircle stroke={1.5} />
                     </Indicator>
                   </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item component={Link} href="/me">
-                    Thông tin tài khoản
-                  </Menu.Item>
-                  <Menu.Item component={Link} href="/portal">
+                </MenuTarget>
+                <MenuDropdown>
+                  <MenuItem component={Link} href="/me">
+                    Tài khoản của tôi
+                  </MenuItem>
+                  <MenuItem component={Link} href="/portal">
                     Kênh người bán
-                  </Menu.Item>
-                  <Menu.Item component={Link} href="/me/notification">
-                    Thông báo
-                  </Menu.Item>
-                  <Menu.Item component={Link} href="/logout">
+                  </MenuItem>
+                  <MenuItem component={Link} href="/me/orders">
+                    Đơn mua
+                  </MenuItem>
+                  <MenuItem component={Link} href="/logout">
                     Đăng xuất
-                  </Menu.Item>
-                </Menu.Dropdown>
+                  </MenuItem>
+                </MenuDropdown>
               </Menu>
             ) : (
               <ActionIcon
                 variant="transparent"
+                c="dimmed"
                 size="xl"
                 p="xs"
                 aria-label="Me"

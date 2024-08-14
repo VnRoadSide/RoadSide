@@ -1,33 +1,42 @@
-using System.ComponentModel.DataAnnotations;
-using RoadSide.Core.Services.Orders;
+using Microsoft.AspNetCore.Authorization;
 using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
+using RoadSide.Core.Extensions;
+using RoadSide.Core.Services;
+using RoadSide.Web.DTO;
 
 namespace RoadSide.Web.Controllers;
 
 [ApiController]
 [Route("api/orders")]
-public class OrdersController: ControllerBase
+public class OrdersController : ControllerBase
 {
     private readonly ILogger<OrdersController> _logger;
-    private readonly IOrdersService _ordersService;
-    private readonly IVoucherService _voucherService;
-    private readonly IOrderItemService _orderItemService;
-    
-    public OrdersController(ILogger<OrdersController> logger, IOrdersService ordersService, IVoucherService voucherService, IOrderItemService orderItemService) {
+    private readonly IOrderService _ordersService;
+    private readonly IAppUserContext _appUserContext;
+    private readonly IUserService _userService;
+
+    public OrdersController(ILogger<OrdersController> logger, IOrderService ordersService, IAppUserContext appUserContext, IUserService userService)
+    {
         _logger = logger;
         _ordersService = ordersService;
-        _voucherService = voucherService;
-        _orderItemService = orderItemService;
+        _appUserContext = appUserContext;
+        _userService = userService;
     }
 
-    [HttpGet]
-    public async ValueTask<IActionResult> GetAllOrdersAsync()
+    [Authorize]
+    [HttpPost("checkout")]
+    public async ValueTask<ActionResult<Guid>> CreateCheckoutSessionAsync([FromBody] ICollection<OrderItem> orderItems)
     {
         try
         {
-            var orders = await _ordersService.GetAllAsync();
-            return Ok(orders);
+            var (sessionId, ordersList) = await _ordersService.CreateCheckoutSessionAsync(orderItems);
+            var user = _appUserContext.User;
+            user.AdditionalProperties["Checkout"] = ordersList;
+            user.AdditionalProperties["CheckoutSessionId"] = sessionId;
+            await _userService.UpdateAsync(user);
+
+            return Ok(sessionId);
         }
         catch (Exception)
         {
@@ -35,26 +44,22 @@ public class OrdersController: ControllerBase
         }
     }
 
-    [HttpGet("voucher")]
-    public async ValueTask<ActionResult<ICollection<Voucher>>> GetVoucher()
+    [Authorize]
+    [HttpGet("checkout/{sessionId}")]
+    public async Task<ActionResult<ICollection<Orders>>> GetCheckoutSessionAsync(Guid sessionId)
     {
         try
         {
-            var voucher = await _voucherService.GetAllAsync();
-            return Ok(voucher);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
+            var user = _appUserContext.User;
+            Guid.TryParse(user.AdditionalProperties["CheckoutSessionId"].ToString(), out var parsedGuid);
+            user.AdditionalProperties.TryGetValue("Checkout", out var checkoutValue);
+            if (checkoutValue is null || parsedGuid != sessionId)
+            {
+                return NotFound();
+            }
+            
+            var orderItems = await _ordersService.RevalidateOrders(checkoutValue);
 
-    [HttpGet("items")]
-    public async ValueTask<IActionResult> GetOrderItems()
-    {
-        try
-        {
-            var orderItems = await _orderItemService.GetAllAsync();
             return Ok(orderItems);
         }
         catch (Exception)
@@ -63,17 +68,57 @@ public class OrdersController: ControllerBase
         }
     }
 
-    [HttpPost]
-    public async ValueTask<IActionResult> AddNewOrderAsync([FromBody] Orders order)
+    [Authorize]
+    [HttpPost("{sessionId}")]
+    public async ValueTask<ActionResult<StatusAction>> ProceedOrderAsync(Guid? sessionId)
     {
         try
         {
-            await _ordersService.AddAsync(order);
-            return Ok();
+            if (sessionId is null)
+            {
+                return BadRequest("Session id required!");
+            }
+            var user = _appUserContext.User;
+            Guid.TryParse(user.AdditionalProperties["CheckoutSessionId"].ToString(), out var parsedGuid);
+            user.AdditionalProperties.TryGetValue("Checkout", out var checkoutValue);
+            if (checkoutValue is null || parsedGuid != sessionId)
+            {
+                return NotFound();
+            }
+            
+            var orderItems = await _ordersService.RevalidateOrders(checkoutValue);
+
+            foreach (var order in orderItems)
+            {
+                order.User = user;
+            }
+
+            await _ordersService.BulkAddAsync(orderItems);
+            user.AdditionalProperties["Checkout"] = null;
+            user.AdditionalProperties["CheckoutSessionId"] = null;
+            await _userService.UpdateAsync(user);
+            return Ok(new StatusAction{ Success = true});
         }
-        catch (ValidationException ex)
+        catch (Exception)
         {
-            return BadRequest(ex.Message);
+            return Ok(new StatusAction{ Success = false});
+        }
+    }
+    
+    [HttpGet("/portal")]
+    public async ValueTask<ActionResult<ICollection<Orders>>> GetOrderForPortalAsync([FromQuery] int page, int pageSize)
+    {
+        try
+        {
+            var option = new QueryOrderOptions
+            {
+                Page = page,
+                PageSize = pageSize,
+                UserId = _appUserContext.User.Id
+            };
+
+            var orders = await _ordersService.GetForPortalAsync(option);
+            return Ok(orders);
         }
         catch (Exception)
         {
@@ -81,71 +126,21 @@ public class OrdersController: ControllerBase
         }
     }
 
-    [HttpPost("update")]
-    public async ValueTask<IActionResult> UpdateOrdersAsync([FromBody] ICollection<Orders> orders)
-    {
-        try
-        {
-            await _ordersService.UpdateAsync(orders);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
 
-    [HttpDelete]
-    public async ValueTask<IActionResult> DeleteOrderAsync([Required] string id)
+    [HttpGet]
+    public async ValueTask<ActionResult<ICollection<Orders>>> GetAllOrdersAsync([FromQuery] int page, int pageSize)
     {
         try
         {
-            await _ordersService.Remove(id);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
+            var option = new QueryOrderOptions
+            {
+                Page = page,
+                PageSize = pageSize,
+                UserId = _appUserContext.User.Id
+            };
 
-    [HttpDelete("voucher")]
-    public async ValueTask<IActionResult> DeleteVoucherAsync([Required] string id)
-    {
-        try
-        {
-            await _voucherService.Remove(id);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    [HttpDelete("items")]
-    public async ValueTask<IActionResult> DeleteOrderItemsAsync([Required] string id)
-    {
-        try
-        {
-            await _orderItemService.Remove(id);
-            return Ok();
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
+            var orders = await _ordersService.GetAllAsync(option);
+            return Ok(orders);
         }
         catch (Exception)
         {

@@ -1,3 +1,4 @@
+using System.Data;
 using RoadSide.Core.Entities;
 using RoadSide.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,18 @@ public class TestDbContext : DbContext, ICoreDbContext
     {
         return base.SaveChangesAsync();
     }
+
+    public Task<IDisposable> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
+        CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public TestDbContext(DbContextOptions<TestDbContext> options) : base(options)
     {
     }

@@ -1,17 +1,23 @@
+using System.Data;
 using RoadSide.Core.Entities;
 using RoadSide.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using RoadSide.Infrastructure.Extensions;
 
 namespace RoadSide.Infrastructure.Persistence;
 
 public class CoreDbContext : DbContext, ICoreDbContext
 {
+    private IDbContextTransaction _dbContextTransaction;
     #region Ctor
 
     public CoreDbContext(DbContextOptions<CoreDbContext> options)
         : base(options)
     {
     }
+    
+    
 
     #endregion
 
@@ -36,6 +42,17 @@ public class CoreDbContext : DbContext, ICoreDbContext
     {
         return base.SaveChangesAsync();
     }
+    
+    public async Task<IDisposable> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, CancellationToken cancellationToken = default)
+    {
+        _dbContextTransaction = await Database.BeginTransactionAsync(isolationLevel, cancellationToken);
+        return _dbContextTransaction;
+    }
+
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        await _dbContextTransaction.CommitAsync(cancellationToken);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,6 +65,28 @@ public class CoreDbContext : DbContext, ICoreDbContext
             .WithMany(c => c.Categories)
             .HasForeignKey(c => c.BaseCategoryId)
             .OnDelete(DeleteBehavior.NoAction);
+        // Configuring the relationship between OrderItem and Product
+        modelBuilder.Entity<OrderItem>()
+            .HasOne(oi => oi.Product)
+            .WithMany()
+            .HasForeignKey(oi => oi.ProductId)
+            .IsRequired(); // This makes sure that ProductId is a required field
+
+        // Configuring the relationship between OrderItem and Order
+        modelBuilder.Entity<OrderItem>()
+            .HasOne(oi => oi.Order)
+            .WithMany(o => o.Items)
+            .HasForeignKey(oi => oi.OrderId)
+            .IsRequired(); // This makes sure that OrderId is a required field
+        modelBuilder.Entity<OrderItem>()
+            .HasIndex(oi => oi.ProductId).IsUnique(false);
+    }
+    
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder
+            .Properties<DateTimeOffset>()
+            .HaveConversion<DateTimeOffsetConverter>();
     }
 
     #endregion

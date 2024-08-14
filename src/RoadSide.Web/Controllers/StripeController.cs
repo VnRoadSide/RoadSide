@@ -9,12 +9,13 @@ namespace RoadSide.Web.Controllers;
 [Route("api/stripe")]
 public class StripeController: ControllerBase
 {
-    private readonly ILogger<ProductsController> _logger;
+    private readonly ILogger<StripeController> _logger;
     private readonly ICheckoutService _checkoutService;
 
-    public StripeController(ICheckoutService checkoutService)
+    public StripeController(ICheckoutService checkoutService, ILogger<StripeController> logger)
     {
         _checkoutService = checkoutService;
+        _logger = logger;
     }
 
     [HttpPost("customer/add")]
@@ -46,7 +47,7 @@ public class StripeController: ControllerBase
     }
 
     [HttpPost("create-checkout-session")]
-    public async Task<IActionResult> CreateCheckoutSession([FromBody] List<CreateCheckoutSessionStripeRequest> request)
+    public IActionResult CreateCheckoutSession([FromBody] List<CreateCheckoutSessionStripeRequest> request)
     {
         string Url = _checkoutService.CreateCheckoutSession(request);
         return Ok(Url);
