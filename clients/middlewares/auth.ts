@@ -3,10 +3,13 @@ import { NextResponse } from "next/server";
 import { defineMiddleware } from "./factory";
 import { environment } from "@/environment";
 
+const publicFileRegex = /\.(.*)$/;
 const anonymousRoutes = [
   "/",
   "/login",
-  "/register"
+  "/signup",
+  "/reset-password",
+  "/logout"
 ]; // The whitelisted routes
 
 export const withAuth = defineMiddleware(async (request) => {

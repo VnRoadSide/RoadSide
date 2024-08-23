@@ -6,7 +6,9 @@ const publicFileRegex = /\.(.*)$/;
 const anonymousRoutes = [
   "/",
   "/login",
-  "/register"
+  "/signup",
+  "/reset-password",
+  "/logout"
 ]; // The whitelisted routes
 
 const config: NextAuthConfig = {
@@ -64,6 +66,8 @@ const config: NextAuthConfig = {
   // If you have custom pages like I do, these should be whitelisted!
   pages: {
     signIn: "/login",
+    newUser: "/signup",
+    signOut: "/logout",
   },
 };
 
