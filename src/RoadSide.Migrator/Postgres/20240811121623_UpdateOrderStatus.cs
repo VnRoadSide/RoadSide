@@ -10,9 +10,6 @@ namespace RoadSide.Migrator.Postgres
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "ix_order_item_product_id",
-                table: "order_item");
 
             migrationBuilder.AddColumn<int>(
                 name: "order_status",
@@ -27,19 +24,11 @@ namespace RoadSide.Migrator.Postgres
                 type: "integer",
                 nullable: false,
                 defaultValue: 0);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_order_item_product_id",
-                table: "order_item",
-                column: "product_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "ix_order_item_product_id",
-                table: "order_item");
 
             migrationBuilder.DropColumn(
                 name: "order_status",
@@ -48,12 +37,6 @@ namespace RoadSide.Migrator.Postgres
             migrationBuilder.DropColumn(
                 name: "order_status",
                 table: "order_item");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_order_item_product_id",
-                table: "order_item",
-                column: "product_id",
-                unique: true);
         }
     }
 }

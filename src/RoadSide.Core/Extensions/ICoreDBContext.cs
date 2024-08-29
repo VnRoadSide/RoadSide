@@ -16,6 +16,7 @@ public interface ICoreDbContext
     DbSet<User> Users { get; set; }
     DbSet<Role> Roles { get; set; }
     DbSet<UserRole> UserRole { get; set; }
+    DbSet<Notifications> Notification { get; set; }
     
     Task<int> SaveChangesAsync();
 

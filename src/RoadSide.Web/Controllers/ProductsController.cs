@@ -23,13 +23,14 @@ public class ProductsController: ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ICollection<Products>>> GetProducts()
+    public async Task<ActionResult<ICollection<Products>>> GetProducts([FromQuery] string category = null)
     {
         try
         {
             var option = new ProductQueryOption
             {
                 IncludeCategory = true,
+                CategoryUrl = category
             };
             var products = await _productService.GetAsync(option);
             

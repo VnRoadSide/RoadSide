@@ -18,12 +18,16 @@ import {
   Paper,
   rem,
 } from "@mantine/core";
-
+import Link from "next/link";
 
 function CategorySection({ categories }: { categories: Category[] }) {
   function CategoryItem({ category }: { category: Category }) {
     return (
-      <NavLink href={category.link} label={category.name}>
+      <NavLink
+        component={Link}
+        href={`?category=${category.url}`}
+        label={category.name}
+      >
         {category.categories && category.categories.length > 0 ? (
           <CategorySection categories={category.categories} />
         ) : null}
@@ -116,8 +120,14 @@ function ProductSection({ products }: { products: Product[] }) {
   );
 }
 
-export default async function Page()  {
-  const { features, products, categories } = await getData();
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { category: string | undefined };
+}) {
+  const { features, products, categories } = await getData(
+    searchParams.category
+  );
   return (
     <Stack p="xl">
       <Group grow preventGrowOverflow={false} wrap="nowrap" align="start">
@@ -140,7 +150,8 @@ export default async function Page()  {
   );
 }
 
-async function getData() {
+async function getData(categoryUrl?: string) {
+  console.log(categoryUrl);
   const features: Feature[] = await fetch(`${environment.appUrl}/api/feature`)
     .then((r) => r.json())
     .catch((err) => console.error(err));
@@ -148,7 +159,7 @@ async function getData() {
   const { get } = useApi();
 
   const { data: products, error: productError } = await get<Product[]>(
-    "/products"
+    `/products${categoryUrl ? "?category=" + categoryUrl : ""}`
   );
   const { data: categories, error: categoryError } = await get<Category[]>(
     "/products/category"
@@ -162,8 +173,8 @@ async function getData() {
   }
 
   return {
-      features: features ?? [],
-      products: products ?? [],
-      categories: categories ?? [],
+    features: features ?? [],
+    products: products ?? [],
+    categories: categories ?? [],
   };
 }

@@ -18,6 +18,7 @@ public class TestDbContext : DbContext, ICoreDbContext
     public DbSet<Role> Roles { get; set; }
 
     public DbSet<UserRole> UserRole { get; set; }
+    public DbSet<Notifications> Notification { get; set; }
     public DbSet<RoleClaims> RoleClaims { get; set; }
 
     public Task<int> SaveChangesAsync()

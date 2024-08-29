@@ -338,12 +338,6 @@ namespace RoadSide.Migrator.Postgres
                 column: "order_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_order_item_product_id",
-                table: "order_item",
-                column: "product_id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "ix_orders_user_id",
                 table: "orders",
                 column: "user_id");
