@@ -1,5 +1,7 @@
 import { environment } from "@/environment";
 import { OrderView } from "./portal";
+import { useApi } from "@/lib/hooks";
+import { OrderItem, Orders } from "@/models";
 
 
 export default async function Page() {
@@ -8,11 +10,14 @@ export default async function Page() {
 }
 
 async function getData() {
-  const data = await fetch(`${environment.appUrl}/api/orders`)
-    .then((r) => r.json())
-    .catch((err) => console.error(err));
+  const { get } = useApi();
+  const {data: orders, error: OrderError} = await get<OrderItem[]>("/orders/portal?page=1&pageSize=10");
+  console.log(orders)
+  if (OrderError) {
+    console.error("Error: ", OrderError);
+  }
 
   return {
-    orders: data ?? [],
+    orders: orders ?? [],
   };
 }

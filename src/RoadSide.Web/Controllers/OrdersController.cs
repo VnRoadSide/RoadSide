@@ -105,7 +105,7 @@ public class OrdersController : ControllerBase
         }
     }
     
-    [HttpGet("/portal")]
+    [HttpGet("portal")]
     public async ValueTask<ActionResult<ICollection<Orders>>> GetOrderForPortalAsync([FromQuery] int page, int pageSize)
     {
         try

@@ -1,5 +1,5 @@
 "use client";
-
+import { OrderItem} from "@/models";
 import {
   Table,
   TableThead,
@@ -16,31 +16,13 @@ import {
   Title,
   Group,
   Select,
+  Badge,
+  Card,
+  Image
 } from "@mantine/core";
 
-type Order = {
-  product: string;
-  total_order: string;
-  status: string;
-  countdown: string;
-  shipping_unit: string;
-  operation: string;
-};
-
-export function OrderView({orders}: {orders: Order[]}) {
-  const rows = orders.map(({ product, total_order, status, countdown, shipping_unit, operation },index) => (
-    <TableTr key={index}>
-      <TableTd>{product}</TableTd>
-      <TableTd>{total_order}</TableTd>
-      <TableTd>{status}</TableTd>
-      <TableTd>{countdown}</TableTd>
-      <TableTd>{shipping_unit}</TableTd>
-      <TableTd>
-        <Button variant="outline">{operation}</Button>
-      </TableTd>
-    </TableTr>
-  ));
-
+export function OrderView({orders}: {orders: OrderItem[]}) {
+  var total = 0;
   return(
     <Stack>
       <Title order={2}>Tất cả</Title>
@@ -81,22 +63,63 @@ export function OrderView({orders}: {orders: Order[]}) {
             <Button variant="outline">Lịch sử Xuất Báo cáo</Button>
           </Group>
           
-        <TabsPanel value="all">
-          <Table mt="md">
-            <TableThead>
-              <TableTr>
-                <TableTh>Sản phẩm</TableTh>
-                <TableTh>Tổng Đơn hàng</TableTh>
-                <TableTh>Trạng thái</TableTh>
-                <TableTh>Đếm ngược</TableTh>
-                <TableTh>Đơn vị vận chuyển</TableTh>
-                <TableTh>Thao tác</TableTh>
-              </TableTr>
-            </TableThead>
-            <TableTbody>
-              {rows}
-            </TableTbody>
-          </Table>
+          <TabsPanel value="all">
+          {orders.map((data, index) => (
+            <Card key={index} shadow="sm" padding="lg" mb="md">
+              <Group justify="space-between">
+                <Title order={4}>Đơn hàng {index + 1}</Title>
+                <Badge>Chờ xác nhận</Badge>
+              </Group>
+              <Table>
+                <TableThead>
+                  <TableTr>
+                    <TableTh></TableTh>
+                    <TableTh>Sản Phẩm</TableTh>
+                    <TableTh>Đơn Giá</TableTh>
+                    <TableTh>Số Lượng</TableTh>
+                    <TableTh>Số Tiền</TableTh>
+                  </TableTr>
+                </TableThead>
+                  <TableTbody>
+                    <TableTr>
+                      <TableTd>
+                        <Image
+                          src={data.product.imageUrl}
+                          alt="no image here"
+                          height={50}
+                          w={50}
+                        />
+                      </TableTd>
+                      <TableTd>{data.product.name}</TableTd>
+                      <TableTd>
+                        {data.product.baseUnitPrice.toLocaleString()}
+                      </TableTd>
+                      <TableTd>{data.quantity}</TableTd>
+                      <TableTd>
+                        {(
+                          data.product.baseUnitPrice * data.quantity
+                        ).toLocaleString()}
+                      </TableTd>
+                    </TableTr>
+                  </TableTbody>
+                <TableTbody>
+                  <TableTr>
+                    <TableTd></TableTd>
+                    <TableTd></TableTd>
+                    <TableTd></TableTd>
+                    <TableTd>
+                      <Title order={4}>Thành tiền:</Title>
+                    </TableTd>
+                    <TableTd>
+                      <Title order={4}>
+                        
+                      </Title>
+                    </TableTd>
+                  </TableTr>
+                </TableTbody>
+              </Table>
+            </Card>
+          ))}
         </TabsPanel>
       </Tabs>
     </Stack>
