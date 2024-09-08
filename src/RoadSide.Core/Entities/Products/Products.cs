@@ -26,7 +26,7 @@ public class Products
     public Guid VendorId { get; set; }
     public virtual User Vendor { get; set; }
     
-    public ICollection<Voucher>? Vouchers { get; set; }
+    public virtual ICollection<Voucher>? Vouchers { get; set; }
 
     // public IList<Variants> Variants { get; set; }
 }

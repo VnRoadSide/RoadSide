@@ -61,7 +61,7 @@ public class AutoMapperProfile : Profile
         CreateMap<Products, Entities.Products>()
             .ForMember(dest => dest.Vendor, act => act.Ignore())
             .ForMember(dest => dest.VendorId, act => act.MapFrom(src => src.Vendor.Id));
-        
+
         CreateMap<Entities.Products, Products>();
         CreateMap<Category, Entities.Category>();
         CreateMap<Entities.Category, Category>();

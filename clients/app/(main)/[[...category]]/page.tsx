@@ -25,7 +25,7 @@ function CategorySection({ categories }: { categories: Category[] }) {
     return (
       <NavLink
         component={Link}
-        href={`?category=${category.url}`}
+        href={`/${category.url}`}
         label={category.name}
       >
         {category.categories && category.categories.length > 0 ? (
@@ -120,13 +120,10 @@ function ProductSection({ products }: { products: Product[] }) {
   );
 }
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: { category: string | undefined };
-}) {
+export default async function Page({ params }: { params?: { category: string[] } }) {
+  const categoryUrl = params?.category?.join("/");
   const { features, products, categories } = await getData(
-    searchParams.category
+    categoryUrl
   );
   return (
     <Stack p="xl">
@@ -159,10 +156,10 @@ async function getData(categoryUrl?: string) {
   const { get } = useApi();
 
   const { data: products, error: productError } = await get<Product[]>(
-    `/products${categoryUrl ? "?category=" + categoryUrl : ""}`
+    `/products/${categoryUrl ?? ""}`
   );
   const { data: categories, error: categoryError } = await get<Category[]>(
-    "/products/category"
+    "/category"
   );
   if (productError) {
     console.error("Error: ", productError);

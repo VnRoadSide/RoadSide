@@ -12,6 +12,7 @@ import {
   Stack,
   CardSection,
 } from "@mantine/core";
+import Link from "next/link";
 export function ProductCard({ product }: { product: Product }) {
   const [{items, session}, setValue] = useCart();
 
@@ -38,7 +39,7 @@ export function ProductCard({ product }: { product: Product }) {
     : Math.round((1 - product.discountedPrice / product.baseUnitPrice) * 100);
   return (
     <Card withBorder radius="md" padding="xs" miw="12rem" shadow="none">
-      <CardSection>
+      <CardSection component={Link} href={`/product?id=${product.id}`}>
         <Image
           src={product.imageUrl ?? "https://i.imgur.com/ZL52Q2D.png"}
           alt={product.name}

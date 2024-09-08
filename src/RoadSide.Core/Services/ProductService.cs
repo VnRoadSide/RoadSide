@@ -12,10 +12,10 @@ public class ProductQueryOption : QueryPaging, IQueryFilter
     public ICollection<(string, Sorting)> Filters { get; set; } = new List<(string, Sorting)>();
 }
 
-public interface IProductService: IService<Domain.Products, Entities.Products>
+public interface IProductService : IService<Domain.Products, Entities.Products>
 {
     ValueTask<ICollection<Domain.Products>> GetAsync(ProductQueryOption option);
-    ValueTask<Domain.Products> GetByIdAsync(Guid id);
+    ValueTask<Domain.Products?> GetByIdAsync(Guid id);
 }
 
 internal class ProductService(ICoreDbContext context, IMapper mapper)
@@ -23,7 +23,10 @@ internal class ProductService(ICoreDbContext context, IMapper mapper)
 {
     public async ValueTask<ICollection<Domain.Products>> GetAsync(ProductQueryOption option)
     {
-        var query = GetQueryable().GetFilter(option).GetPaging(option);
+        var query = GetQueryable().GetFilter(option).GetPaging(option)
+            .Include(x => x.Vouchers)
+            .Include(x => x.Vendor)
+            .AsNoTracking();
 
         if (option.IncludeCategory)
         {
@@ -40,19 +43,22 @@ internal class ProductService(ICoreDbContext context, IMapper mapper)
         {
             item.DiscountedPrice = CalculateDiscount(item);
         }
-        
+
         return result;
     }
 
-    public async ValueTask<Domain.Products> GetByIdAsync(Guid id)
+    public async ValueTask<Domain.Products?> GetByIdAsync(Guid id)
     {
-        var entity = await GetQueryable().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-        ArgumentNullException.ThrowIfNull(entity);
+        var entity = await GetQueryable()
+            .Include(x => x.Vouchers)
+            .Include(x => x.Vendor)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
         var result = mapper.Map<Domain.Products>(entity);
         result.DiscountedPrice = CalculateDiscount(result);
         return result;
     }
-    
+
     private int? CalculateDiscount(RoadSide.Domain.Products product)
     {
         var activeVoucher = product.Vouchers

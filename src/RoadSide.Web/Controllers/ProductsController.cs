@@ -8,7 +8,7 @@ using IPriceService = RoadSide.Core.Services.IPriceService;
 namespace RoadSide.Web.Controllers;
 
 [ApiController]
-[Route("api/products")]
+[Route("api")]
 public class ProductsController: ControllerBase
 {
     private readonly ILogger<ProductsController> _logger;
@@ -23,14 +23,16 @@ public class ProductsController: ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ICollection<Products>>> GetProducts([FromQuery] string category = null)
+    [Route("products")]
+    [Route("products/{categoryUrl}")]
+    public async Task<ActionResult<ICollection<Products>>> GetProducts(string categoryUrl = null)
     {
         try
         {
             var option = new ProductQueryOption
             {
                 IncludeCategory = true,
-                CategoryUrl = category
+                CategoryUrl = categoryUrl
             };
             var products = await _productService.GetAsync(option);
             
@@ -78,13 +80,12 @@ public class ProductsController: ControllerBase
     // }
 
     [HttpGet]
-    [Route("{id}")] // api/products/{id}
+    [Route("detail/{id}")]
     public async Task<ActionResult<Products>> GetProductById(Guid id)
     {
         try
         {
             var result = await _productService.GetByIdAsync(id);
-            
             return Ok(result);
         }
         catch (ValidationException ex)
@@ -125,6 +126,7 @@ public class ProductsController: ControllerBase
     }
 
     [HttpPost]
+    [Route("products")]
     public async ValueTask<IActionResult> AddNewProductAsync([FromBody] Products product)
     {
         try
