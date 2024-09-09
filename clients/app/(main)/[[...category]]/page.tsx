@@ -1,7 +1,7 @@
 import { DynamicIcon } from "@/components/Icon";
 import { ProductCard } from "@/components/Product";
 import { environment } from "@/environment";
-import { Category, Feature, Product } from "@/models";
+import { Category, Feature, PagingResult, Product } from "@/models";
 import { useApi } from "@/lib/hooks";
 import {
   Title,
@@ -138,7 +138,7 @@ export default async function Page({ params }: { params?: { category: string[] }
           <CategorySection categories={categories} />
         </Paper>
         <Paper radius="md" p="xs" shadow="lg">
-          <ProductSection products={products} />
+          <ProductSection products={products.data} />
         </Paper>
       </Group>
       <FeatureSection features={features} />
@@ -155,7 +155,7 @@ async function getData(categoryUrl?: string) {
 
   const { get } = useApi();
 
-  const { data: products, error: productError } = await get<Product[]>(
+  const { data: products, error: productError } = await get<PagingResult<Product>>(
     `/products/${categoryUrl ?? ""}`
   );
   const { data: categories, error: categoryError } = await get<Category[]>(
@@ -171,7 +171,7 @@ async function getData(categoryUrl?: string) {
 
   return {
     features: features ?? [],
-    products: products ?? [],
+    products: products ?? { data: [] },
     categories: categories ?? [],
   };
 }

@@ -3,6 +3,7 @@ using RoadSide.Infrastructure.Extensions;
 using RoadSide.Infrastructure.Jwt;
 using RoadSide.Migrator;
 using Microsoft.OpenApi.Models;
+using RoadSide.Infrastructure.Cache;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,7 @@ builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddStripe(builder.Configuration);
 builder.Services.AddCoreServices();
 
-
+builder.Services.AddCaches(builder.Configuration);
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = 
         Newtonsoft.Json.ReferenceLoopHandling.Ignore);

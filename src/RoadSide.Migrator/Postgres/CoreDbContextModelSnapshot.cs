@@ -132,26 +132,25 @@ namespace RoadSide.Migrator.Postgres
                         .HasColumnType("uuid")
                         .HasColumnName("from_id");
 
-                    b.Property<Guid>("FromUserRoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("from_user_role_id");
-
                     b.Property<Guid>("ToId")
                         .HasColumnType("uuid")
                         .HasColumnName("to_id");
 
-                    b.Property<Guid>("ToUserRoleId")
+                    b.Property<Guid?>("UserRoleId")
                         .HasColumnType("uuid")
-                        .HasColumnName("to_user_role_id");
+                        .HasColumnName("user_role_id");
 
                     b.HasKey("Id")
                         .HasName("pk_notifications");
 
-                    b.HasIndex("FromUserRoleId")
-                        .HasDatabaseName("ix_notifications_from_user_role_id");
+                    b.HasIndex("FromId")
+                        .HasDatabaseName("ix_notifications_from_id");
 
-                    b.HasIndex("ToUserRoleId")
-                        .HasDatabaseName("ix_notifications_to_user_role_id");
+                    b.HasIndex("ToId")
+                        .HasDatabaseName("ix_notifications_to_id");
+
+                    b.HasIndex("UserRoleId")
+                        .HasDatabaseName("ix_notifications_user_role_id");
 
                     b.ToTable("notifications", (string)null);
                 });
@@ -681,17 +680,22 @@ namespace RoadSide.Migrator.Postgres
                 {
                     b.HasOne("RoadSide.Core.Entities.UserRole", "FromUserRole")
                         .WithMany()
-                        .HasForeignKey("FromUserRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("FromId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
-                        .HasConstraintName("fk_notifications_user_role_from_user_role_id");
+                        .HasConstraintName("fk_notifications_user_role_from_id");
 
                     b.HasOne("RoadSide.Core.Entities.UserRole", "ToUserRole")
                         .WithMany()
-                        .HasForeignKey("ToUserRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ToId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
-                        .HasConstraintName("fk_notifications_user_role_to_user_role_id");
+                        .HasConstraintName("fk_notifications_user_role_to_id");
+
+                    b.HasOne("RoadSide.Core.Entities.UserRole", null)
+                        .WithMany("Notification")
+                        .HasForeignKey("UserRoleId")
+                        .HasConstraintName("fk_notifications_user_role_user_role_id");
 
                     b.Navigation("FromUserRole");
 
@@ -843,6 +847,11 @@ namespace RoadSide.Migrator.Postgres
                     b.Navigation("Tokens");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("RoadSide.Core.Entities.UserRole", b =>
+                {
+                    b.Navigation("Notification");
                 });
 #pragma warning restore 612, 618
         }

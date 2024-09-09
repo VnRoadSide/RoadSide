@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
 using RoadSide.Core.Services;
+using RoadSide.Domain.Context;
 using ICategoryService = RoadSide.Core.Services.ICategoryService;
 using IPriceService = RoadSide.Core.Services.IPriceService;
 
@@ -14,12 +16,14 @@ public class ProductsController: ControllerBase
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
+    private readonly IAppUserContext _appUserContext;
 
     public ProductsController(ILogger<ProductsController> logger, IProductService productService,
-        ICategoryService categoryService) {
+        ICategoryService categoryService, IAppUserContext appUserContext) {
         _logger = logger;
         _productService = productService;
         _categoryService = categoryService;
+        _appUserContext = appUserContext;
     }
 
     [HttpGet]
@@ -44,20 +48,28 @@ public class ProductsController: ControllerBase
         }
     }
 
-    // [HttpGet]
-    // [Authorize]
-    // [Route("vendor")]
-    // public async Task<ActionResult<ICollection<Products>>> GetProductByVendor()
-    // {
-    //     try
-    //     {
-    //         
-    //     }
-    //     catch (Exception)
-    //     {
-    //         return StatusCode(StatusCodes.Status500InternalServerError);
-    //     }
-    // }
+    [HttpGet]
+    [Authorize]
+    [Route("portal")]
+    public async Task<ActionResult<PagingResult<Products>>> GetProductInPortal([FromQuery] string category = null)
+    {
+        try
+        {
+            var option = new ProductQueryOption
+            {
+                IncludeCategory = true,
+                CategoryUrl = category,
+                IsPortal = true
+            };
+            var products = await _productService.GetAsync(option);
+            
+            return Ok(products);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
     
     // [HttpGet("search")]
     // public async Task<ActionResult<ICollection<Products>>> SearchProducts([Required] string name)

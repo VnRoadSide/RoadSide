@@ -9,3 +9,8 @@ export type Feature = {
   title: string;
   description: string;
 };
+
+export type PagingResult<T> = {
+  data: T[];
+  total: number;
+}

@@ -11,7 +11,6 @@ public class User : JsonBaseEntity<Guid>
         
     public string AvatarUrl { get; set; } = string.Empty;
     public Address Address { get; set; }
-        
     public string UserName { get; set; }
 
     public string NormalizedUserName { get; set; }

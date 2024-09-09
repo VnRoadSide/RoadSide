@@ -1,9 +1,15 @@
+"use client";
+import useCart from "@/lib/hooks/useCart";
 import { Title, Button, Container, Text, Stack } from "@mantine/core";
 import { IconCircleCheck } from "@tabler/icons-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default async function CheckoutSuccess() {
-  
+export default function CheckoutSuccess() {
+  const router = useRouter();
+  const [{ items, session }, setValue] = useCart();
+
+
   return (
     <Stack align="stretch" justify="center" py="lg">
       <Container>

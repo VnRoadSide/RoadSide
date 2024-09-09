@@ -1,6 +1,8 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RoadSide.Core.Extensions;
+using RoadSide.Domain;
+using RoadSide.Domain.Context;
 
 namespace RoadSide.Core.Services;
 
@@ -9,24 +11,22 @@ public class ProductQueryOption : QueryPaging, IQueryFilter
     public bool IncludeCategory { get; set; }
     public string? CategoryUrl { get; set; }
     public string? Search { get; set; }
+    public bool IsPortal { get; set; }
     public ICollection<(string, Sorting)> Filters { get; set; } = new List<(string, Sorting)>();
 }
 
 public interface IProductService : IService<Domain.Products, Entities.Products>
 {
-    ValueTask<ICollection<Domain.Products>> GetAsync(ProductQueryOption option);
-    ValueTask<Domain.Products?> GetByIdAsync(Guid id);
+    ValueTask<PagingResult<Domain.Products>> GetAsync(ProductQueryOption option);
+    ValueTask<Domain.Products> GetByIdAsync(Guid id);
 }
 
-internal class ProductService(ICoreDbContext context, IMapper mapper)
+internal class ProductService(ICoreDbContext context, IMapper mapper, IAppUserContext appUserContext)
     : Service<Domain.Products, Entities.Products>(context, mapper), IProductService
 {
-    public async ValueTask<ICollection<Domain.Products>> GetAsync(ProductQueryOption option)
+    public async ValueTask<PagingResult<Domain.Products>> GetAsync(ProductQueryOption option)
     {
-        var query = GetQueryable().GetFilter(option).GetPaging(option)
-            .Include(x => x.Vouchers)
-            .Include(x => x.Vendor)
-            .AsNoTracking();
+        var query = GetQueryable().GetFilter(option);
 
         if (option.IncludeCategory)
         {
@@ -38,13 +38,20 @@ internal class ProductService(ICoreDbContext context, IMapper mapper)
             }
         }
 
-        var result = mapper.Map<IList<Domain.Products>>(await query.ToListAsync());
-        foreach (var item in result)
+        if (option.IsPortal)
         {
-            item.DiscountedPrice = CalculateDiscount(item);
+            
         }
 
-        return result;
+        return new PagingResult<Domain.Products>
+        {
+            Total = query.Count(),
+            Data = mapper.Map<ICollection<Domain.Products>>(await query.ToListAsync()).Select(item =>
+            {
+                item.DiscountedPrice = CalculateDiscount(item);
+                return item;
+            }).ToList()
+        };
     }
 
     public async ValueTask<Domain.Products?> GetByIdAsync(Guid id)

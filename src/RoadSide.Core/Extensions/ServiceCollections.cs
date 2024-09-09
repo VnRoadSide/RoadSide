@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using RoadSide.Core.Services.AppSettings;
-using RoadSide.Core.Services.Users;
 using RoadSide.Core.Services;
 
 namespace RoadSide.Core.Extensions;
@@ -21,8 +20,6 @@ public static class ServiceCollections
         // services.AddScoped<IPriceService, PricesService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IVoucherService, VoucherService>();
-
-        services.AddScoped<IUsersService, UsersService>();
         
         // You can also configure services using the configuration parameter
         // var someConfigValue = configuration.GetValue<string>("SomeConfigKey");

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RoadSide.Core.Extensions;
+using RoadSide.Domain.Context;
 using RoadSide.Infrastructure.Identity;
 using RoadSide.Infrastructure.Jwt;
 using RoadSide.Infrastructure.Repository;

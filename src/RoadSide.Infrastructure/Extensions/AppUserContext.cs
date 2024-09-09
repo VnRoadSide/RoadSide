@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using RoadSide.Core.Extensions;
 using RoadSide.Domain;
+using RoadSide.Domain.Context;
 using RoadSide.Infrastructure.Identity;
 
 namespace RoadSide.Infrastructure.Extensions;

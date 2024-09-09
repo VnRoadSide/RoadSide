@@ -1,6 +1,4 @@
-using RoadSide.Domain;
-
-namespace RoadSide.Core.Extensions;
+namespace RoadSide.Domain.Context;
 
 public interface IAppUserContext
 {

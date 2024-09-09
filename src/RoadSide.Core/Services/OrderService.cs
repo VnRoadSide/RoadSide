@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using RoadSide.Core.Extensions;
 using RoadSide.Domain;
+using RoadSide.Domain.Cache;
 
 namespace RoadSide.Core.Services;
 
@@ -18,20 +19,21 @@ public class SessionCheckout
     
 }
 
-public interface IOrderService : IService<Domain.Orders, Entities.Orders>
+public interface IOrderService : IService<Orders, Entities.Orders>
 {
-    Task<(Guid, List<Domain.Orders>)> CreateCheckoutSessionAsync(ICollection<OrderItem> orderItem);
-    Task<ICollection<Domain.Orders>> GetAllAsync(QueryOrderOptions option);
-    Task<ICollection<Domain.OrderItem>> GetForPortalAsync(QueryOrderOptions option);
+    Task<Guid> CreateCheckoutSessionAsync(ICollection<OrderItem> orderItem);
+    Task<ICollection<Orders>> GetAllAsync(QueryOrderOptions option);
+    Task<ICollection<OrderItem>> GetForPortalAsync(QueryOrderOptions option);
 
-    Task BulkAddAsync(List<Domain.Orders> orders);
-    Task<List<Domain.Orders>> RevalidateOrders(object dataObject);
+    Task BulkAddAsync(ICollection<Orders> orders);
+    Task<ICollection<Orders>> ValidateOrders(Guid sessionId);
+    Task<ICollection<Orders>> RevalidateOrders(object dataObject);
 }
 
-internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService)
-    : Service<Domain.Orders, Entities.Orders>(context, mapper), IOrderService
+internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService,  ICache cache)
+    : Service<Orders, Entities.Orders>(context, mapper), IOrderService
 {
-    public async Task<(Guid, List<Domain.Orders>)> CreateCheckoutSessionAsync(ICollection<OrderItem> orderItem)
+    public async Task<Guid> CreateCheckoutSessionAsync(ICollection<OrderItem> orderItem)
     {
         foreach (var item in orderItem)
         {
@@ -40,16 +42,17 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
         }
         
         // map order items by vendorid
-        var items = orderItem.GroupBy(x => x.Product.Vendor).Select(x => new Domain.Orders
+        var items = orderItem.GroupBy(x => x.Product.Vendor).Select(x => new Orders
         {
             Items = x.ToList(),
             TotalPrice = x.Sum(data => data.Quantity * data.Product.BaseUnitPrice)
         });
         var sessionId = Guid.NewGuid();
-        return (sessionId, items.ToList());
+        await cache.GetOrCreateAsync(sessionId.ToString(), () => Task.FromResult(items.ToList()));
+        return sessionId;
     }
 
-    public async Task<ICollection<Domain.Orders>> GetAllAsync(QueryOrderOptions option)
+    public async Task<ICollection<Orders>> GetAllAsync(QueryOrderOptions option)
     {
         var query = GetQueryable()
             .Where(order => order.UserId == option.UserId)
@@ -58,20 +61,20 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
             .Include(q => q.User)
             .AsNoTracking();
         query = query.Include(q => q.Items).ThenInclude(q => q.Product).ThenInclude(q => q.Vendor);
-        return mapper.Map<IList<Domain.Orders>>(await query.ToListAsync());
+        return mapper.Map<IList<Orders>>(await query.ToListAsync());
     }
 
-    public async Task<ICollection<Domain.OrderItem>> GetForPortalAsync(QueryOrderOptions option)
+    public async Task<ICollection<OrderItem>> GetForPortalAsync(QueryOrderOptions option)
     {
         var query = context.Set<Entities.OrderItem>()
             .Include(o => o.Product)
             .Where(o => o.Product.VendorId == option.UserId)
             .AsNoTracking();
         
-        return mapper.Map<IList<Domain.OrderItem>>(await query.ToListAsync());
+        return mapper.Map<IList<OrderItem>>(await query.ToListAsync());
     }
 
-    public async Task BulkAddAsync(List<Domain.Orders> orders)
+    public async Task BulkAddAsync(ICollection<Orders> orders)
     {
         var entities = mapper.Map<ICollection<Entities.Orders>>(orders);
         
@@ -80,20 +83,26 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
         await context.SaveChangesAsync();
     }
 
-    public Task<List<Domain.Orders>> RevalidateOrders(object dataObject)
+    public Task<ICollection<Orders>> ValidateOrders(Guid sessionId)
     {
-        List<Domain.Orders> orderItems = [];
+        var orders = cache.Get<ICollection<Orders>>(sessionId.ToString());
+        return Task.FromResult(orders);
+    }
+
+    public Task<ICollection<Orders>> RevalidateOrders(object dataObject)
+    {
+        List<Orders> orderItems = [];
 
         var type = dataObject.GetType();
         if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(List<>))
-            return Task.FromResult(orderItems);
+            return Task.FromResult<ICollection<Orders>>(orderItems);
         var genericList = (IList)dataObject;
         foreach (var item in genericList)
         {
             if (item is JObject jObject)
             {
                 // Process the order
-                var order = jObject.ToObject<Domain.Orders>();
+                var order = jObject.ToObject<Orders>();
                 if (order is not null)
                 {
                     order.Items = order.Items.Select(i => new OrderItem
@@ -106,6 +115,6 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
             }
         }
 
-        return Task.FromResult(orderItems);
+        return Task.FromResult<ICollection<Orders>>(orderItems);
     }
 }

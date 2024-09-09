@@ -3,6 +3,7 @@ using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
 using RoadSide.Core.Extensions;
 using RoadSide.Core.Services;
+using RoadSide.Domain.Context;
 using RoadSide.Web.DTO;
 
 namespace RoadSide.Web.Controllers;
@@ -30,9 +31,8 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var (sessionId, ordersList) = await _ordersService.CreateCheckoutSessionAsync(orderItems);
+            var sessionId = await _ordersService.CreateCheckoutSessionAsync(orderItems);
             var user = _appUserContext.User;
-            user.AdditionalProperties["Checkout"] = ordersList;
             user.AdditionalProperties["CheckoutSessionId"] = sessionId;
             await _userService.UpdateAsync(user);
 
@@ -52,13 +52,7 @@ public class OrdersController : ControllerBase
         {
             var user = _appUserContext.User;
             Guid.TryParse(user.AdditionalProperties["CheckoutSessionId"].ToString(), out var parsedGuid);
-            user.AdditionalProperties.TryGetValue("Checkout", out var checkoutValue);
-            if (checkoutValue is null || parsedGuid != sessionId)
-            {
-                return NotFound();
-            }
-            
-            var orderItems = await _ordersService.RevalidateOrders(checkoutValue);
+            var orderItems = await _ordersService.ValidateOrders(parsedGuid);
 
             return Ok(orderItems);
         }
@@ -80,13 +74,12 @@ public class OrdersController : ControllerBase
             }
             var user = _appUserContext.User;
             Guid.TryParse(user.AdditionalProperties["CheckoutSessionId"].ToString(), out var parsedGuid);
-            user.AdditionalProperties.TryGetValue("Checkout", out var checkoutValue);
-            if (checkoutValue is null || parsedGuid != sessionId)
+            if (parsedGuid != sessionId)
             {
                 return NotFound();
             }
             
-            var orderItems = await _ordersService.RevalidateOrders(checkoutValue);
+            var orderItems = await _ordersService.ValidateOrders(parsedGuid);
 
             foreach (var order in orderItems)
             {
@@ -95,7 +88,6 @@ public class OrdersController : ControllerBase
 
             await _ordersService.BulkAddAsync(orderItems);
             user.AdditionalProperties["Checkout"] = null;
-            user.AdditionalProperties["CheckoutSessionId"] = null;
             await _userService.UpdateAsync(user);
             return Ok(new StatusAction{ Success = true});
         }

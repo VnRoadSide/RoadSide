@@ -81,6 +81,16 @@ public class CoreDbContext : DbContext, ICoreDbContext
             .IsRequired(); // This makes sure that OrderId is a required field
         modelBuilder.Entity<OrderItem>()
             .HasIndex(oi => oi.ProductId).IsUnique(false);
+        modelBuilder.Entity<Notifications>()
+            .HasOne(n => n.FromUserRole)
+            .WithMany()
+            .HasForeignKey(n => n.FromId)
+            .OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<Notifications>()
+            .HasOne(n => n.ToUserRole)
+            .WithMany()
+            .HasForeignKey(n => n.ToId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
     
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
