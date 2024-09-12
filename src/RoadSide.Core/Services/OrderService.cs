@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using RoadSide.Core.Extensions;
 using RoadSide.Domain;
-using RoadSide.Domain.Cache;
 
 namespace RoadSide.Core.Services;
 
@@ -27,10 +26,9 @@ public interface IOrderService : IService<Orders, Entities.Orders>
 
     Task BulkAddAsync(ICollection<Orders> orders);
     Task<ICollection<Orders>> ValidateOrders(Guid sessionId);
-    Task<ICollection<Orders>> RevalidateOrders(object dataObject);
 }
 
-internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService,  ICache cache)
+internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService,  ICacheService cacheService)
     : Service<Orders, Entities.Orders>(context, mapper), IOrderService
 {
     public async Task<Guid> CreateCheckoutSessionAsync(ICollection<OrderItem> orderItem)
@@ -48,7 +46,7 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
             TotalPrice = x.Sum(data => data.Quantity * data.Product.BaseUnitPrice)
         });
         var sessionId = Guid.NewGuid();
-        await cache.GetOrCreateAsync(sessionId.ToString(), () => Task.FromResult(items.ToList()));
+        await cacheService.GetOrCreateAsync(sessionId.ToString(), () => Task.FromResult(items.ToList()));
         return sessionId;
     }
 
@@ -85,36 +83,7 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
 
     public Task<ICollection<Orders>> ValidateOrders(Guid sessionId)
     {
-        var orders = cache.Get<ICollection<Orders>>(sessionId.ToString());
+        var orders = cacheService.Get<ICollection<Orders>>(sessionId.ToString());
         return Task.FromResult(orders);
-    }
-
-    public Task<ICollection<Orders>> RevalidateOrders(object dataObject)
-    {
-        List<Orders> orderItems = [];
-
-        var type = dataObject.GetType();
-        if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(List<>))
-            return Task.FromResult<ICollection<Orders>>(orderItems);
-        var genericList = (IList)dataObject;
-        foreach (var item in genericList)
-        {
-            if (item is JObject jObject)
-            {
-                // Process the order
-                var order = jObject.ToObject<Orders>();
-                if (order is not null)
-                {
-                    order.Items = order.Items.Select(i => new OrderItem
-                    {
-                        Product = i.Product,
-                        Quantity = i.Quantity,
-                    }).ToList();
-                    orderItems.Add(order);
-                }
-            }
-        }
-
-        return Task.FromResult<ICollection<Orders>>(orderItems);
     }
 }

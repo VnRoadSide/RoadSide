@@ -17,7 +17,6 @@ export interface Order {
 }
 
 export async function createCheckoutSession(items: OrderItem[]) {
-  console.log("createCheckoutSession", items);
   const { post } = useApi();
   const { data, error } = await post<string>("/orders/checkout", items);
   console.log(data, error)

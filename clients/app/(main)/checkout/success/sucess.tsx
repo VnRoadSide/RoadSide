@@ -4,11 +4,20 @@ import { Title, Button, Container, Text, Stack } from "@mantine/core";
 import { IconCircleCheck } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 export default function CheckoutSuccess() {
   const router = useRouter();
   const [{ items, session }, setValue] = useCart();
 
+  useMemo(() => {
+    if (!session) {
+      router.push("/");
+      return;
+    }
+
+    setValue({ items: [], session: null });
+  }, [session, router]);
 
   return (
     <Stack align="stretch" justify="center" py="lg">

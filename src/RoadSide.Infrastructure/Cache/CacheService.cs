@@ -1,10 +1,11 @@
 using System.Text.Json;
-using RoadSide.Domain.Cache;
+using System.Text.Json.Serialization;
+using RoadSide.Core.Services;
 using StackExchange.Redis;
 
 namespace RoadSide.Infrastructure.Cache;
 
-internal class CacheService : ICache
+internal class CacheService : ICacheService
 {
     private readonly IDatabase _redis;
 
@@ -16,27 +17,29 @@ internal class CacheService : ICache
     // Retrieve from cache or create if it doesn't exist
     public async Task<T> GetOrCreateAsync<T>(string cacheKey, Func<Task<T>> retrieveDataFunc, TimeSpan? slidingExpiration = null)
     {
-        // Try to get data from cache
         var cachedData = await _redis.StringGetAsync(cacheKey);
 
         if (!cachedData.IsNullOrEmpty)
         {
-            // Deserialize the cached data to the required type
-            return JsonSerializer.Deserialize<T>(cachedData);
+            return JsonSerializer.Deserialize<T>(cachedData, new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve, // Handle object references
+                PropertyNameCaseInsensitive = true // Handle property name case insensitivity if needed
+            });
         }
 
-        // Cache miss, so retrieve the data using the provided function
         var data = await retrieveDataFunc();
 
-        // Serialize the data
-        var serializedData = JsonSerializer.Serialize(data);
+        var serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions
+        {
+            ReferenceHandler = ReferenceHandler.Preserve,
+            PropertyNameCaseInsensitive = true
+        });
 
-        // Set data in cache with optional sliding expiration
         await _redis.StringSetAsync(cacheKey, serializedData, slidingExpiration);
 
         return data;
     }
-
     // Invalidate the cache by key
     public async Task InvalidateAsync<T>(string cacheKey)
     {
@@ -50,10 +53,13 @@ internal class CacheService : ICache
 
         if (!cachedData.IsNullOrEmpty)
         {
-            return JsonSerializer.Deserialize<T>(cachedData);
+            return JsonSerializer.Deserialize<T>(cachedData, new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve, // Handle object references
+                PropertyNameCaseInsensitive = true // Ensure case-insensitive deserialization
+            });
         }
 
-        // Return default if no data found in cache
         return default(T);
     }
 }

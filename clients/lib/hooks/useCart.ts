@@ -28,7 +28,12 @@ function useCart(initial: OrderItem[] = []): [CartHook, CartAction, () => Promis
   const [isClient, setIsClient] = useState(false);
 
   const getSession = async () => {
-    return await createCheckoutSession(value.items);
+    if (value.items.some(p => p.selected)) {
+      const session = await createCheckoutSession(value.items.filter(p => p.selected));
+      setValue({ ...value, session });
+      return session
+    }
+    return value.session
   }
 
   useEffect(() => {

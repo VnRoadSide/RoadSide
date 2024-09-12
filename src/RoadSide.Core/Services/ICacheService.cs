@@ -1,6 +1,6 @@
-namespace RoadSide.Domain.Cache;
+namespace RoadSide.Core.Services;
 
-public interface ICache
+public interface ICacheService
 {
     Task<T> GetOrCreateAsync<T>(
         string cacheKey,

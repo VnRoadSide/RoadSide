@@ -177,13 +177,8 @@ export default function Cart() {
     const newSession = await getSession();
     console.log("newSession", newSession);
     if (!newSession) {
-      console.log("hit")
       return;
     }
-    setValue({
-      items,
-      session: newSession,
-    });
     router.push(`/checkout/${newSession}`);
   };
 
@@ -252,7 +247,7 @@ export default function Cart() {
               style={{ display: "flex", justifyContent: "flex-end" }}
             >
               <Button
-                disabled={selected === 0}
+                disabled={!items.some((p) => p.selected)}
                 onClick={handleCheckout}
                 size="md"
               >

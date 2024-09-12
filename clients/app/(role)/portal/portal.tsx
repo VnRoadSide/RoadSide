@@ -1,4 +1,5 @@
 "use client";
+import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { OrderItem} from "@/models";
 import {
   Table,
@@ -68,7 +69,7 @@ export function OrderView({orders}: {orders: OrderItem[]}) {
             <Card key={index} shadow="sm" padding="lg" mb="md">
               <Group justify="space-between">
                 <Title order={4}>Đơn hàng {index + 1}</Title>
-                <Badge>Chờ xác nhận</Badge>
+                <OrderStatusBadge orderStatus={data.orderStatus} />
               </Group>
               <Table>
                 <TableThead>
@@ -97,7 +98,7 @@ export function OrderView({orders}: {orders: OrderItem[]}) {
                       <TableTd>{data.quantity}</TableTd>
                       <TableTd>
                         {(
-                          data.product.baseUnitPrice * data.quantity
+                          (data.product?.baseUnitPrice ?? 0) * data.quantity
                         ).toLocaleString()}
                       </TableTd>
                     </TableTr>
@@ -107,14 +108,14 @@ export function OrderView({orders}: {orders: OrderItem[]}) {
                     <TableTd></TableTd>
                     <TableTd></TableTd>
                     <TableTd></TableTd>
-                    <TableTd>
+                    {/* <TableTd>
                       <Title order={4}>Thành tiền:</Title>
                     </TableTd>
                     <TableTd>
                       <Title order={4}>
                         
                       </Title>
-                    </TableTd>
+                    </TableTd> */}
                   </TableTr>
                 </TableTbody>
               </Table>

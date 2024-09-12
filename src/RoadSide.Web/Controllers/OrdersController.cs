@@ -31,6 +31,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
+            _logger.LogInformation($"Trigger {nameof(CreateCheckoutSessionAsync)}");
             var sessionId = await _ordersService.CreateCheckoutSessionAsync(orderItems);
             var user = _appUserContext.User;
             user.AdditionalProperties["CheckoutSessionId"] = sessionId;

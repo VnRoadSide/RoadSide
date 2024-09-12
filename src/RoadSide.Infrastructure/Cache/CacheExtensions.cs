@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Configuration;
-using RoadSide.Domain.Cache;
+using RoadSide.Core.Services;
 using StackExchange.Redis;
 
 namespace RoadSide.Infrastructure.Cache;
@@ -36,7 +36,7 @@ public static class CachingServiceCollectionExtensions
                 break;
         }
 
-        services.AddSingleton<ICache, CacheService>();
+        services.AddSingleton<ICacheService, CacheService>();
 
         return services;
     }
