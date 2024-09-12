@@ -1,3 +1,4 @@
+import { User } from "@/lib/auth";
 import { Vouchers } from "./orders";
 
 export interface Product {
@@ -10,7 +11,7 @@ export interface Product {
   dateCreated: Date | string;
   dateModified: Date | string;
   category: Category;
-  vendor: string;
+  vendor: User;
   vouchers: Vouchers[];
   sale?: number;
   rate?: number;

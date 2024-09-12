@@ -52,13 +52,13 @@ public class AppUserManager : UserManager<User>
         };
     }
 
-    public async Task<IdentityResult> CreateAsync(RoadSide.Domain.User user)
+    public async Task<IdentityResult> CreateAsync(RoadSide.Domain.User user, string password)
     {
         // Mapping domain user to entity user
         var appUser = _mapper.Map<User>(user);
         
         // Attempt to create the user
-        var result = await base.CreateAsync(appUser, user.PasswordHash);
+        var result = await base.CreateAsync(appUser, password);
         if (result.Succeeded)
         {
             try

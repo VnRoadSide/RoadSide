@@ -33,10 +33,9 @@ namespace RoadSide.Web.Controllers
             {   
                 var user = new User {
                     UserName = account.UserName, 
-                    Email = account.Email, 
-                    PasswordHash = account.Password
+                    Email = account.Email
                 };
-                var result = await _manager.CreateAsync(user);
+                var result = await _manager.CreateAsync(user, account.Password);
                 if (result.Succeeded)
                 {
                     var token = await _jwtService.GenerateTokenAsyncUser(user);
