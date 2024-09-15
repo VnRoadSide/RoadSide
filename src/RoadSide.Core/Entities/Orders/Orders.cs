@@ -13,8 +13,8 @@ public class Orders
     
     [ForeignKey("User")]
     public Guid UserId { get; set; }
-    public virtual User User { get; set; }
-    
-    public virtual ICollection<OrderItem> Items { get; set; }
+    public virtual User? User { get; set; }
+
+    public virtual ICollection<OrderItem> Items { get; set; } = [];
     public OrderStatus OrderStatus { get; set; }
 }

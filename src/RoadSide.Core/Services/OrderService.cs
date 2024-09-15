@@ -31,6 +31,9 @@ public interface IOrderService : IService<Orders, Entities.Orders>
 internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService,  ICacheService cacheService)
     : Service<Orders, Entities.Orders>(context, mapper), IOrderService
 {
+    private readonly ICoreDbContext _context = context;
+    private readonly IMapper _mapper = mapper;
+
     public async Task<Guid> CreateCheckoutSessionAsync(ICollection<OrderItem> orderItem)
     {
         foreach (var item in orderItem)
@@ -59,26 +62,26 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
             .Include(q => q.User)
             .AsNoTracking();
         query = query.Include(q => q.Items).ThenInclude(q => q.Product).ThenInclude(q => q.Vendor);
-        return mapper.Map<IList<Orders>>(await query.ToListAsync());
+        return _mapper.Map<IList<Orders>>(await query.ToListAsync());
     }
 
     public async Task<ICollection<OrderItem>> GetForPortalAsync(QueryOrderOptions option)
     {
-        var query = context.Set<Entities.OrderItem>()
+        var query = _context.Set<Entities.OrderItem>()
             .Include(o => o.Product)
             .Where(o => o.Product.VendorId == option.UserId)
             .AsNoTracking();
         
-        return mapper.Map<IList<OrderItem>>(await query.ToListAsync());
+        return _mapper.Map<IList<OrderItem>>(await query.ToListAsync());
     }
 
     public async Task BulkAddAsync(ICollection<Orders> orders)
     {
-        var entities = mapper.Map<ICollection<Entities.Orders>>(orders);
+        var entities = _mapper.Map<ICollection<Entities.Orders>>(orders);
         
         await DbSet.AddRangeAsync(entities);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
 
     public Task<ICollection<Orders>> ValidateOrders(Guid sessionId)

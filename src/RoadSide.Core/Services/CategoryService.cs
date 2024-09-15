@@ -19,6 +19,8 @@ public interface ICategoryService: IService<Domain.Category, Entities.Category>
 internal class CategoryService(ICoreDbContext context, IMapper mapper)
     : Service<Domain.Category, Entities.Category>(context, mapper), ICategoryService
 {
+    private readonly IMapper _mapper = mapper;
+
     public async ValueTask<ICollection<Domain.Category>> GetAsync(CategoryQueryOption option)
     {
         var query = GetQueryable();
@@ -37,7 +39,7 @@ internal class CategoryService(ICoreDbContext context, IMapper mapper)
             query = query.Where(c => c.Categories.Count == 0);
         }
 
-        return mapper.Map<ICollection<Domain.Category>>(await query.ToListAsync());
+        return _mapper.Map<ICollection<Domain.Category>>(await query.ToListAsync());
     }
 
     public ValueTask<Domain.Category> GetByIdAsync(Guid id)

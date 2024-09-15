@@ -16,7 +16,7 @@ public class AppUserContext: IAppUserContext
         _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;
     }
-
+    public Guid UserId => User.Id;
     public User User => _userManager.GetDomainUserAsync(_httpContextAccessor.HttpContext?.User).GetAwaiter().GetResult();
     public List<OrderItem> Cart => new();
     public List<Orders> Checkout { get; set; } = new();

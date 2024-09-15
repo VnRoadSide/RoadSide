@@ -8,26 +8,27 @@ public class User
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
+    [MaxLength(Int16.MaxValue)]
     public string FullName { get; set; } = string.Empty;
     public Gender Gender { get; set; }
     public DateTimeOffset DateOfBirth { get; set; }
-    
-    [MaxLength(Int32.MaxValue)]
-    public string UserName { get; set; }
+
+    [MaxLength(Int32.MaxValue)] 
+    public string UserName { get; set; } = string.Empty;
 
     [MaxLength(Int32.MaxValue)]
-    public string NormalizedUserName { get; set; }
+    public string NormalizedUserName { get; set; } = string.Empty;
 
     [MaxLength(Int32.MaxValue)]
-    public string Email { get; set; }
+    public string Email { get; set; } = string.Empty;
 
     [MaxLength(Int32.MaxValue)]
-    public string NormalizedEmail { get; set; }
+    public string NormalizedEmail { get; set; } = string.Empty;
 
     public bool EmailConfirmed { get; set; }
 
     [MaxLength(Int32.MaxValue)]
-    public string PasswordHash { get; set; }
+    public string PasswordHash { get; set; } = string.Empty;
 
     [MaxLength(Int32.MaxValue)] 
     public string PhoneNumber { get; set; } = string.Empty;
@@ -40,7 +41,7 @@ public class User
     public string ConcurrencyStamp { get; set; } = string.Empty;
 
     [MaxLength(Int32.MaxValue)]
-    public string SecurityStamp { get; set; }
+    public string SecurityStamp { get; set; } = string.Empty;
 
     public bool LockoutEnabled { get; set; }
 
@@ -52,11 +53,11 @@ public class User
 
     public Guid AzureAdB2CUserId { get; set; }
 
-    public IList<UserTokens> Tokens { get; set; }
+    public IList<UserTokens> Tokens { get; set; } = [];
 
-    public IList<UserClaims> Claims { get; set; }
+    public IList<UserClaims> Claims { get; set; } = [];
 
-    public IList<UserRole> UserRoles { get; set; }
+    public IList<UserRole> UserRoles { get; set; } = [];
 
     [MaxLength(Int32.MaxValue)]
     public string AvatarUrl { get; set; } = string.Empty;
@@ -64,4 +65,7 @@ public class User
     public string AddressJson { get; set; } = string.Empty;
     [MaxLength(Int32.MaxValue)]
     public string AdditionalPropertiesJson { get; set; }= string.Empty;
+
+    [MaxLength(512)]
+    public string? SessionId { get; set; }
 }

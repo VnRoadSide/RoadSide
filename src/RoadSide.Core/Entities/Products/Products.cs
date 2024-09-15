@@ -24,7 +24,7 @@ public class Products
     
     [ForeignKey("Vendor")]
     public Guid VendorId { get; set; }
-    public virtual User Vendor { get; set; }
+    public virtual User? Vendor { get; set; }
     
     public virtual ICollection<Voucher>? Vouchers { get; set; }
 

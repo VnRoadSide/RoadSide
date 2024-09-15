@@ -17,9 +17,12 @@ public interface INotificationService : IService<Notifications, Entities.Notific
 internal class NotificationsService(ICoreDbContext context, IMapper mapper, IAppUserContext appUserContext)
     : Service<Notifications, Entities.Notifications>(context, mapper), INotificationService
 {
+    private readonly IMapper _mapper = mapper;
+
     public async ValueTask<PagingResult<Notifications>> GetAllAsync(QueryNotifications option)
     {
         var query = GetQueryable()
+            .Include(x => x.ToUserRole)
             .Where(x => x.ToUserRole.UserId == appUserContext.User.Id)
             .OrderByDescending(x => x.CreatedOn)
             .AsNoTracking();
@@ -29,7 +32,7 @@ internal class NotificationsService(ICoreDbContext context, IMapper mapper, IApp
         return new PagingResult<Notifications>
         {
             Total = query.Count(),
-            Data = mapper.Map<ICollection<Notifications>>(pagedData)
+            Data = _mapper.Map<ICollection<Notifications>>(pagedData)
         };
     }
 }

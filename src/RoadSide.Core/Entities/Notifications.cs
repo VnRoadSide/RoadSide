@@ -15,11 +15,11 @@ public class Notifications
     
     [ForeignKey("From")]
     public Guid FromId { get; set; }
-    public virtual UserRole FromUserRole { get; set; }
+    public virtual required UserRole FromUserRole { get; set; }
     
     [ForeignKey("To")]
     public Guid ToId { get; set; }
-    public virtual UserRole ToUserRole { get; set; }
+    public virtual required UserRole ToUserRole { get; set; }
 
     [MaxLength(Int16.MaxValue)] 
     public string Content { get; set; } = string.Empty;

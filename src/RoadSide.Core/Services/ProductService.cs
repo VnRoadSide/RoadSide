@@ -21,9 +21,11 @@ public interface IProductService : IService<Domain.Products, Entities.Products>
     ValueTask<Domain.Products> GetByIdAsync(Guid id);
 }
 
-internal class ProductService(ICoreDbContext context, IMapper mapper, IAppUserContext appUserContext)
+internal class ProductService(ICoreDbContext context, IMapper mapper)
     : Service<Domain.Products, Entities.Products>(context, mapper), IProductService
 {
+    private readonly IMapper _mapper = mapper;
+
     public async ValueTask<PagingResult<Domain.Products>> GetAsync(ProductQueryOption option)
     {
         var query = GetQueryable().GetFilter(option);
@@ -46,7 +48,7 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppUserCo
         return new PagingResult<Domain.Products>
         {
             Total = query.Count(),
-            Data = mapper.Map<ICollection<Domain.Products>>(await query.ToListAsync()).Select(item =>
+            Data = _mapper.Map<ICollection<Domain.Products>>(await query.ToListAsync()).Select(item =>
             {
                 item.DiscountedPrice = CalculateDiscount(item);
                 return item;
@@ -54,14 +56,14 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppUserCo
         };
     }
 
-    public async ValueTask<Domain.Products?> GetByIdAsync(Guid id)
+    public async ValueTask<Domain.Products> GetByIdAsync(Guid id)
     {
         var entity = await GetQueryable()
             .Include(x => x.Vouchers)
             .Include(x => x.Vendor)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id);
-        var result = mapper.Map<Domain.Products>(entity);
+        var result = _mapper.Map<Domain.Products>(entity);
         result.DiscountedPrice = CalculateDiscount(result);
         return result;
     }

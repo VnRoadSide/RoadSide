@@ -17,11 +17,11 @@ public class OrderItem
     
     [ForeignKey("Product")]
     public Guid ProductId { get; set; }
-    public virtual Products Product { get; set; }
+    public virtual required Products Product { get; set; }
     
     [ForeignKey("Order")]
     public Guid OrderId { get; set; }
-    public virtual Orders Order { get; set; }
+    public virtual required Orders Order { get; set; }
     
     public OrderStatus OrderStatus { get; set; }
 }

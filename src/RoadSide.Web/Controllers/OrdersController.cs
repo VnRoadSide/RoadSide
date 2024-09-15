@@ -16,14 +16,28 @@ public class OrdersController : ControllerBase
     private readonly IOrderService _ordersService;
     private readonly IAppUserContext _appUserContext;
     private readonly IUserService _userService;
+    private readonly INotificationService _notificationService;
 
-    public OrdersController(ILogger<OrdersController> logger, IOrderService ordersService, IAppUserContext appUserContext, IUserService userService)
+    public OrdersController(ILogger<OrdersController> logger, IOrderService ordersService, IAppUserContext appUserContext, IUserService userService, INotificationService notificationService)
     {
         _logger = logger;
         _ordersService = ordersService;
         _appUserContext = appUserContext;
         _userService = userService;
+        _notificationService = notificationService;
     }
+    
+    private Notifications OrderSuccess() => new()
+    {
+        To = new User { Id = _appUserContext.UserId },
+        Content = "Đơn hàng của bạn đã được đặt thành công! Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi. Chúng tôi sẽ liên hệ với bạn để giao hàng sớm nhất."
+    };
+
+    private Notifications OrderFailed() => new()
+    {
+        To = new User { Id = _appUserContext.UserId },
+        Content = "Xin lỗi, đã xảy ra lỗi trong quá trình đặt hàng. Vui lòng thử lại hoặc liên hệ với bộ phận hỗ trợ của chúng tôi để được giúp đỡ."
+    };
 
     [Authorize]
     [HttpPost("checkout")]
@@ -33,10 +47,7 @@ public class OrdersController : ControllerBase
         {
             _logger.LogInformation($"Trigger {nameof(CreateCheckoutSessionAsync)}");
             var sessionId = await _ordersService.CreateCheckoutSessionAsync(orderItems);
-            var user = _appUserContext.User;
-            user.AdditionalProperties["CheckoutSessionId"] = sessionId;
-            await _userService.UpdateAsync(user);
-
+            await _userService.AddSessionIdAsync(_appUserContext.UserId, sessionId.ToString());
             return Ok(sessionId);
         }
         catch (Exception)
@@ -51,9 +62,11 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var user = _appUserContext.User;
-            Guid.TryParse(user.AdditionalProperties["CheckoutSessionId"].ToString(), out var parsedGuid);
-            var orderItems = await _ordersService.ValidateOrders(parsedGuid);
+            if (!await _userService.ValidateSessionIdAsync(_appUserContext.UserId, sessionId.ToString()))
+            {
+                return NotFound("Session not found!");
+            }
+            var orderItems = await _ordersService.ValidateOrders(sessionId);
 
             return Ok(orderItems);
         }
@@ -65,35 +78,33 @@ public class OrdersController : ControllerBase
 
     [Authorize]
     [HttpPost("{sessionId}")]
-    public async ValueTask<ActionResult<StatusAction>> ProceedOrderAsync(Guid? sessionId)
+    public async ValueTask<ActionResult<StatusAction>> ProceedOrderAsync(Guid sessionId)
     {
         try
         {
-            if (sessionId is null)
+
+            if (!await _userService.ValidateSessionIdAsync(_appUserContext.UserId, sessionId.ToString()))
             {
-                return BadRequest("Session id required!");
-            }
-            var user = _appUserContext.User;
-            Guid.TryParse(user.AdditionalProperties["CheckoutSessionId"].ToString(), out var parsedGuid);
-            if (parsedGuid != sessionId)
-            {
-                return NotFound();
+                return NotFound("Session not found!");
             }
             
-            var orderItems = await _ordersService.ValidateOrders(parsedGuid);
+            var orderItems = await _ordersService.ValidateOrders(sessionId);
 
             foreach (var order in orderItems)
             {
-                order.User = user;
+                order.User = new User
+                {
+                    Id = _appUserContext.UserId
+                };
             }
-
             await _ordersService.BulkAddAsync(orderItems);
-            user.AdditionalProperties["Checkout"] = null;
-            await _userService.UpdateAsync(user);
+            await _userService.AddSessionIdAsync(_appUserContext.UserId);
+            await _notificationService.AddAsync(OrderSuccess());
             return Ok(new StatusAction{ Success = true});
         }
         catch (Exception)
         {
+            await _notificationService.AddAsync(OrderFailed());
             return Ok(new StatusAction{ Success = false});
         }
     }

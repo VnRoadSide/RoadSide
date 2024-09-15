@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using RoadSide.Core.Services.AppSettings;
 using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
+using RoadSide.Core.Services;
 
 namespace RoadSide.Web.Controllers;
 
@@ -10,13 +10,13 @@ namespace RoadSide.Web.Controllers;
 public class AppSettingsController: ControllerBase
 {
     private readonly ILogger<AppSettingsController> _logger;
-    private readonly IAppSettingsService _appSettingsService;
+    private readonly ISettingService _settingService;
     
 
-    public AppSettingsController(ILogger<AppSettingsController> logger, IAppSettingsService appSettingsService)
+    public AppSettingsController(ILogger<AppSettingsController> logger, ISettingService settingService)
     {
         _logger = logger;
-        _appSettingsService = appSettingsService;
+        _settingService = settingService;
     }
 
     [HttpGet]
@@ -24,7 +24,7 @@ public class AppSettingsController: ControllerBase
     {
         try
         {
-            var settings=  await _appSettingsService.GetAllAsync();
+            var settings=  await _settingService.GetAllAsync();
             return Ok(settings);
         }
         catch (Exception)
@@ -38,7 +38,7 @@ public class AppSettingsController: ControllerBase
     {
         try
         {
-            var result = await _appSettingsService.AddAsync(setting);
+            var result = await _settingService.AddAsync(setting);
             return Ok(result);
         }
         catch (ValidationException ex)
@@ -52,11 +52,11 @@ public class AppSettingsController: ControllerBase
     }
     
     [HttpPost("update")]
-    public async ValueTask<IActionResult> UpdateSettings([FromBody] ICollection<AppSettings> settings)
+    public async ValueTask<IActionResult> UpdateSettings([FromBody] AppSettings settings)
     {
         try
         {
-            await _appSettingsService.UpdateAsync(settings);
+            await _settingService.UpdateAsync(settings);
             return Ok();
         }
         catch (ValidationException ex)
@@ -74,7 +74,7 @@ public class AppSettingsController: ControllerBase
     {
         try
         {
-            await _appSettingsService.Remove(id);
+            await Task.Run(() => _settingService.RemoveAsync(id));
             return Ok();
         }
         catch (ValidationException ex)

@@ -32,7 +32,7 @@ public class AppRoleStore: IRoleStore<Role>
         return IdentityResult.Success;
     }
 
-    public async Task<IdentityResult> DeleteAsync(Role role, CancellationToken cancellationToken)
+    public Task<IdentityResult> DeleteAsync(Role role, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -42,7 +42,7 @@ public class AppRoleStore: IRoleStore<Role>
         }
 
         _roleRepository.Delete(role);
-        return IdentityResult.Success;
+        return Task.FromResult(IdentityResult.Success);
     }
 
     public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
