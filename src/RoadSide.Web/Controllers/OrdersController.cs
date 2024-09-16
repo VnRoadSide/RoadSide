@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
-using RoadSide.Core.Extensions;
 using RoadSide.Core.Services;
 using RoadSide.Domain.Context;
 using RoadSide.Web.DTO;
@@ -27,14 +26,16 @@ public class OrdersController : ControllerBase
         _notificationService = notificationService;
     }
     
-    private Notifications OrderSuccess() => new()
+    private Notification OrderSuccess() => new()
     {
+        IsPersonal = true,
         To = new User { Id = _appUserContext.UserId },
         Content = "Đơn hàng của bạn đã được đặt thành công! Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi. Chúng tôi sẽ liên hệ với bạn để giao hàng sớm nhất."
     };
 
-    private Notifications OrderFailed() => new()
+    private Notification OrderFailed() => new()
     {
+        IsPersonal = true,
         To = new User { Id = _appUserContext.UserId },
         Content = "Xin lỗi, đã xảy ra lỗi trong quá trình đặt hàng. Vui lòng thử lại hoặc liên hệ với bộ phận hỗ trợ của chúng tôi để được giúp đỡ."
     };

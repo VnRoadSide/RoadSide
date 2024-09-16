@@ -67,8 +67,8 @@ public class AutoMapperProfile : Profile
         CreateMap<Entities.Category, Category>();
         CreateMap<Prices, Entities.Prices>();
         CreateMap<Entities.Prices, Prices>();
-        CreateMap<Entities.Notifications, Notifications>()
-            .ForMember(dest => dest.From, act => act.MapFrom(src => src.FromUserRole.User))
-            .ForMember(dest => dest.To, act => act.MapFrom(src => src.ToUserRole.User));
+        CreateMap<Notification, Entities.Notifications>()
+            .ForMember(dest => dest.To, act => act.Ignore());
+        CreateMap<Entities.Notifications, Notification>();
     }
 }

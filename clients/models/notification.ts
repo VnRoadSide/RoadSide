@@ -1,6 +1,7 @@
+import { User } from "@/lib/auth";
 
 export type Notification = {
-  dateCreated : Date | string;
-  description: string;
+  createdOn: Date | string;
+  content: string;
   url: string;
-}
+};

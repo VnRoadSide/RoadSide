@@ -20,11 +20,11 @@ public class CacheService : ICacheService
 
     public async Task<T> GetOrCreateAsync<T>(string cacheKey, Func<Task<T>> retrieveDataFunc, TimeSpan? slidingExpiration = null)
     {
-        // First check the in-memory cache
-        if (_memoryCache.TryGetValue(cacheKey, out T memoryCacheData))
-        {
-            return memoryCacheData;
-        }
+        // // First check the in-memory cache
+        // if (_memoryCache.TryGetValue(cacheKey, out T memoryCacheData))
+        // {
+        //     return memoryCacheData;
+        // }
 
         // If not in memory cache, check Redis
         var cachedData = await _redis.StringGetAsync(cacheKey);
@@ -37,8 +37,8 @@ public class CacheService : ICacheService
                 PropertyNameCaseInsensitive = true // Ensure case-insensitive deserialization
             });
 
-            // Cache the data in memory as well
-            _memoryCache.Set(cacheKey, redisData, _defaultMemoryCacheExpiration);
+            // // Cache the data in memory as well
+            // _memoryCache.Set(cacheKey, redisData, _defaultMemoryCacheExpiration);
 
             return redisData;
         }
@@ -55,19 +55,19 @@ public class CacheService : ICacheService
 
         await _redis.StringSetAsync(cacheKey, serializedData, slidingExpiration);
 
-        // Also cache in memory
-        _memoryCache.Set(cacheKey, data, _defaultMemoryCacheExpiration);
+        // // Also cache in memory
+        // _memoryCache.Set(cacheKey, data, _defaultMemoryCacheExpiration);
 
         return data;
     }
 
     public T Get<T>(string cacheKey)
     {
-        // First check the in-memory cache
-        if (_memoryCache.TryGetValue(cacheKey, out T memoryCacheData))
-        {
-            return memoryCacheData;
-        }
+        // // First check the in-memory cache
+        // if (_memoryCache.TryGetValue(cacheKey, out T memoryCacheData))
+        // {
+        //     return memoryCacheData;
+        // }
 
         // If not in memory cache, check Redis
         var cachedData = _redis.StringGet(cacheKey);
@@ -80,8 +80,8 @@ public class CacheService : ICacheService
                 PropertyNameCaseInsensitive = true
             });
 
-            // Cache in memory
-            _memoryCache.Set(cacheKey, redisData, _defaultMemoryCacheExpiration);
+            // // Cache in memory
+            // _memoryCache.Set(cacheKey, redisData, _defaultMemoryCacheExpiration);
 
             return redisData;
         }
@@ -92,7 +92,7 @@ public class CacheService : ICacheService
     public async Task InvalidateAsync<T>(string cacheKey)
     {
         // Remove from both caches
-        _memoryCache.Remove(cacheKey);
+        // _memoryCache.Remove(cacheKey);
         await _redis.KeyDeleteAsync(cacheKey);
     }
 }

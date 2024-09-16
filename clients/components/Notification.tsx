@@ -1,5 +1,6 @@
 "use client";
 import { toNormalDate } from "@/lib/hooks";
+import { Notification, PagingResult } from "@/models";
 import {
   Text,
   TableTr,
@@ -15,25 +16,13 @@ import {
   Table,
   TableTbody,
   Pagination,
+  Center,
+  Image
 } from "@mantine/core";
 import { IconReceipt, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
 
-type Notification = {
-  dateCreated: Date | string;
-  description: string;
-  url: string;
-};
-
-type NotificationProps = {
-  notifications: Notification[];
-  totalPage: number;
-};
-
-export function NotificationView({
-  notifications,
-  totalPage,
-}: NotificationProps) {
+export function NotificationView({ data, total }: PagingResult<Notification>) {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const startIndex = (currentPage - 1) * pageSize;
@@ -42,17 +31,18 @@ export function NotificationView({
   const handleChangePage = (page: number) => {
     setCurrentPage(page);
   };
-  const rows = notifications.map((item, key) => (
+
+  const rows = data.map((item, key) => (
     <TableTr key={key}>
       <TableTd>
-        <Text fz="sm">{toNormalDate(item.dateCreated)}</Text>
+        <Text fz="sm">{toNormalDate(item.createdOn)}</Text>
       </TableTd>
 
       <TableTd>
         <Flex gap="sm">
           <IconReceipt size={40} color="green" />
           <Text span fz="sm" fw={500}>
-            {item.description}{" "}
+            {item.content}{" "}
             <Text
               fz="sm"
               fw={500}
@@ -82,32 +72,39 @@ export function NotificationView({
   ));
 
   return (
-    <Stack align={"center"}>
+    <Stack>
       <Box>
         <Title>Thông báo của tôi</Title>
-        <TableScrollContainer minWidth={800}>
-          <Table verticalSpacing="md">
-            <TableTbody>{rows}</TableTbody>
-          </Table>
-        </TableScrollContainer>
+        {total > 0 ? (
+          <TableScrollContainer minWidth={800}>
+            <Table verticalSpacing="md">
+              <TableTbody>{rows}</TableTbody>
+            </Table>
+          </TableScrollContainer>
+        ) : (
+          <Center>
+            <Stack align="center" p="sm">
+              {/* <Image
+                src="/placeholder-image.png" // You can add a placeholder image here or use Mantine's `Image` component
+                width={150}
+                alt="No notifications"
+              /> */}
+              <Text size="lg" c="dimmed">
+                Bạn chưa có thông báo nào.
+              </Text>
+            </Stack>
+          </Center>
+        )}
       </Box>
-      <Flex justify="center">
-        {totalPage && (
+      {total > 0 && (
+        <Flex justify="center">
           <Pagination
             value={currentPage}
-            total={totalPage}
+            total={total}
             onChange={handleChangePage}
           />
-        )}
-        {/* <Modal 
-              centered size="xl"
-              opened={editModalVisible}  
-              onClose={() => setEditModalVisible(false)} 
-              zIndex={1001}
-              >
-                <ProductForm />
-            </Modal> */}
-      </Flex>
+        </Flex>
+      )}
     </Stack>
   );
 }

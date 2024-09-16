@@ -24,15 +24,13 @@ public class NotificationController: ControllerBase
     
     [Authorize]
     [HttpGet]
-    public async ValueTask<ActionResult<PagingResult<Notifications>>> GetNotification([FromQuery] int page, int pageSize)
+    public async ValueTask<ActionResult<PagingResult<Notification>>> GetNotification([FromQuery] int? page, int? pageSize)
     {
         try
         {
-            var options = new QueryNotifications
-            {
-                Page = page,
-                PageSize = pageSize
-            };
+            var options = new QueryNotifications();
+            options.Page = page ?? options.Page;
+            options.PageSize = pageSize ?? options.PageSize;
             var result = await _notificationService.GetAllAsync(options);
             return Ok(result);
         }

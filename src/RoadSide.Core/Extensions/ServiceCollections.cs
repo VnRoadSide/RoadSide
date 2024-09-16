@@ -16,6 +16,7 @@ public static class ServiceCollections
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IVoucherService, VoucherService>();
+        services.AddScoped<INotificationService, NotificationsService>();
         
         services.AddAutoMapper(typeof(AutoMapperProfile));
         return services;

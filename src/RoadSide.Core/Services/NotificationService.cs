@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RoadSide.Core.Extensions;
@@ -9,30 +10,34 @@ public class QueryNotifications : QueryPaging
 {
 }
 
-public interface INotificationService : IService<Notifications, Entities.Notifications>
+public interface INotificationService : IService<Notification, Entities.Notifications>
 {
-    ValueTask<PagingResult<Notifications>> GetAllAsync(QueryNotifications option);
+    ValueTask<PagingResult<Notifier>> GetAllAsync(QueryNotifications option);
 }
 
 internal class NotificationsService(ICoreDbContext context, IMapper mapper, IAppUserContext appUserContext)
-    : Service<Notifications, Entities.Notifications>(context, mapper), INotificationService
+    : Service<Notification, Entities.Notifications>(context, mapper), INotificationService
 {
     private readonly IMapper _mapper = mapper;
+    private readonly ICoreDbContext _context = context;
 
-    public async ValueTask<PagingResult<Notifications>> GetAllAsync(QueryNotifications option)
+    public async ValueTask<PagingResult<Notifier>> GetAllAsync(QueryNotifications option)
     {
         var query = GetQueryable()
-            .Include(x => x.ToUserRole)
-            .Where(x => x.ToUserRole.UserId == appUserContext.User.Id)
+            .Include(x => x.To)
+            .Where(x => x.To.Id == appUserContext.User.Id)
             .OrderByDescending(x => x.CreatedOn)
             .AsNoTracking();
 
         var pagedData = await query.GetPaging(option).ToListAsync();
-
-        return new PagingResult<Notifications>
+        var notifiers = _mapper.Map<ICollection<Notification>>(pagedData)
+            .Cast<Notifier>()
+            .ToList();
+        
+        return new PagingResult<Notifier>
         {
             Total = query.Count(),
-            Data = _mapper.Map<ICollection<Notifications>>(pagedData)
+            Data = notifiers
         };
     }
 }

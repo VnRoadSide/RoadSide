@@ -82,12 +82,7 @@ public class CoreDbContext : DbContext, ICoreDbContext
         modelBuilder.Entity<OrderItem>()
             .HasIndex(oi => oi.ProductId).IsUnique(false);
         modelBuilder.Entity<Notifications>()
-            .HasOne(n => n.FromUserRole)
-            .WithMany()
-            .HasForeignKey(n => n.FromId)
-            .OnDelete(DeleteBehavior.NoAction);
-        modelBuilder.Entity<Notifications>()
-            .HasOne(n => n.ToUserRole)
+            .HasOne(n => n.To)
             .WithMany()
             .HasForeignKey(n => n.ToId)
             .OnDelete(DeleteBehavior.NoAction);

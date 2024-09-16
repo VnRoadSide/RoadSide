@@ -3,7 +3,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using RoadSide.Domain;
 
 namespace RoadSide.Core.Entities;
 
@@ -13,14 +12,14 @@ public class Notifications
     public Guid Id { get; set; }
     public DateTime CreatedOn { get; set; }
     
-    [ForeignKey("From")]
-    public Guid FromId { get; set; }
-    public virtual required UserRole FromUserRole { get; set; }
-    
     [ForeignKey("To")]
     public Guid ToId { get; set; }
-    public virtual required UserRole ToUserRole { get; set; }
+    public virtual required User To { get; set; }
 
     [MaxLength(Int16.MaxValue)] 
     public string Content { get; set; } = string.Empty;
+
+    [MaxLength(Int16.MaxValue)] 
+    public string? Url { get; set; }
+    public bool IsPersonal { get; set; }
 }
