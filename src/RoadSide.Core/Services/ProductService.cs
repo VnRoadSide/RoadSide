@@ -21,7 +21,7 @@ public interface IProductService : IService<Domain.Products, Entities.Products>
     ValueTask<Domain.Products> GetByIdAsync(Guid id);
 }
 
-internal class ProductService(ICoreDbContext context, IMapper mapper)
+internal class ProductService(ICoreDbContext context, IMapper mapper, IAppUserContext appUserContext)
     : Service<Domain.Products, Entities.Products>(context, mapper), IProductService
 {
     private readonly IMapper _mapper = mapper;
@@ -42,7 +42,7 @@ internal class ProductService(ICoreDbContext context, IMapper mapper)
 
         if (option.IsPortal)
         {
-            
+            query = query.Where(x => x.VendorId == appUserContext.User.Id);
         }
 
         return new PagingResult<Domain.Products>

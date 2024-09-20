@@ -39,5 +39,4 @@ public class NotificationController: ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-
 }

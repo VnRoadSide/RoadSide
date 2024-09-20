@@ -17,31 +17,32 @@ import {
   TableTr,
   TabsPanel,
   NavLink,
-  Image
+  Image,
 } from "@mantine/core";
 import { Product } from "@/models";
 
-export function ProductManagement({products}: {products: Product[]}) {
-    const rows = products.map(( item, index) => (
-        <TableTr key={index}>
-          <TableTd>
-            <Image
-              src={item.imageUrl}
-              alt="no image here"
-              height={50}
-              w={50}
-            />
-          </TableTd>
-          <TableTd>{item.name}</TableTd>
-          <TableTd>{item.sale}</TableTd>
-          <TableTd>{item.baseUnitPrice}</TableTd>
-          <TableTd>100</TableTd>
-          <TableTd>{item.description}</TableTd>
-          <TableTd>
-            <Button variant="outline">Xem chi tiết</Button>
-          </TableTd>
-        </TableTr>
-      ));
+export function ProductManagement({
+  data,
+  total,
+}: {
+  data: Product[];
+  total: number;
+}) {
+  const rows = data.map((item, index) => (
+    <TableTr key={index}>
+      <TableTd>
+        <Image src={item.imageUrl} alt="no image here" height={50} w={50} />
+      </TableTd>
+      <TableTd>{item.name}</TableTd>
+      <TableTd>{item.sale}</TableTd>
+      <TableTd>{item.baseUnitPrice}</TableTd>
+      <TableTd>100</TableTd>
+      <TableTd>{item.description}</TableTd>
+      <TableTd>
+        <Button variant="outline">Xem chi tiết</Button>
+      </TableTd>
+    </TableTr>
+  ));
   return (
     <>
       <Title order={2}>Sản phẩm</Title>
@@ -72,7 +73,12 @@ export function ProductManagement({products}: {products: Product[]}) {
             <Button variant="outline" style={{ flex: 0.5 }}>
               Nhập Lại
             </Button>
-            <Button component="a" variant="outline" style={{ flex: 0.5 }} href="/portal/products/new">
+            <Button
+              component="a"
+              variant="outline"
+              style={{ flex: 0.5 }}
+              href="/portal/products/new"
+            >
               Thêm
             </Button>
           </Group>
@@ -81,7 +87,7 @@ export function ProductManagement({products}: {products: Product[]}) {
           <Table mt="md">
             <TableThead>
               <TableTr>
-              <TableTh></TableTh>
+                <TableTh></TableTh>
                 <TableTh>Tên sản phẩm</TableTh>
                 <TableTh>Đã bán</TableTh>
                 <TableTh>Giá</TableTh>
@@ -90,15 +96,12 @@ export function ProductManagement({products}: {products: Product[]}) {
                 <TableTh>Thao tác</TableTh>
               </TableTr>
             </TableThead>
-            <TableTbody>
-              {rows}
-            </TableTbody>
+            <TableTbody>{rows}</TableTbody>
           </Table>
         </TabsPanel>
 
         {/* Repeat Tabs.Panel for each tab with specific content if needed */}
       </Tabs>
-      </>
+    </>
   );
 }
-

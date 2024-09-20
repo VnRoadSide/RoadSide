@@ -12,12 +12,14 @@ public interface IUserService: IService<Domain.User, Entities.User>
 internal class UserService(ICoreDbContext context, IMapper mapper)
     : Service<Domain.User, Entities.User>(context, mapper), IUserService
 {
+    private readonly ICoreDbContext _context = context;
+
     public async Task AddSessionIdAsync(Guid userId, string? sessionId = null)
     {
         var user = await GetByIdAsync(userId);
         ArgumentNullException.ThrowIfNull(user);
         user.SessionId = sessionId;
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
 
     public async Task<bool> ValidateSessionIdAsync(Guid userId, string sessionId)

@@ -15,13 +15,17 @@ const navigation = [
     href: "/portal/products",
   },
   {
+    label: "Thêm Sản Phẩm",
+    href: "/portal/products/new",
+  },
+  {
     label: "Kênh Marketing",
     href: "/portal/marketing",
   },
   {
     label: "Tài Chính",
     href: "/portal/finance",
-  },
+  }
 ];
 
 export default function PortalLayout({ children }: { children: ReactNode }) {

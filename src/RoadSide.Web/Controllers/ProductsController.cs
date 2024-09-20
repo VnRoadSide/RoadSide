@@ -50,7 +50,7 @@ public class ProductsController: ControllerBase
 
     [HttpGet]
     [Authorize]
-    [Route("portal")]
+    [Route("portal/products")]
     public async Task<ActionResult<PagingResult<Products>>> GetProductInPortal([FromQuery] string category = null)
     {
         try

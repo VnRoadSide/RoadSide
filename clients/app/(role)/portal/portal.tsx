@@ -64,63 +64,63 @@ export function OrderView({orders}: {orders: OrderItem[]}) {
             <Button variant="outline">Lịch sử Xuất Báo cáo</Button>
           </Group>
           
-          <TabsPanel value="all">
-          {orders.map((data, index) => (
-            <Card key={index} shadow="sm" padding="lg" mb="md">
-              <Group justify="space-between">
-                <Title order={4}>Đơn hàng {index + 1}</Title>
-                <OrderStatusBadge orderStatus={data.orderStatus} />
-              </Group>
-              <Table>
-                <TableThead>
-                  <TableTr>
-                    <TableTh></TableTh>
-                    <TableTh>Sản Phẩm</TableTh>
-                    <TableTh>Đơn Giá</TableTh>
-                    <TableTh>Số Lượng</TableTh>
-                    <TableTh>Số Tiền</TableTh>
-                  </TableTr>
-                </TableThead>
+          <TabsPanel value="all" pt="md">
+            {orders.map((data, index) => (
+              <Card key={index} shadow="sm" padding="lg" mb="md">
+                <Group justify="space-between">
+                  <Title order={4}>Đơn hàng {index + 1}</Title>
+                  <OrderStatusBadge orderStatus={data.orderStatus} />
+                </Group>
+                <Table>
+                  <TableThead>
+                    <TableTr>
+                      <TableTh></TableTh>
+                      <TableTh>Sản Phẩm</TableTh>
+                      <TableTh>Đơn Giá</TableTh>
+                      <TableTh>Số Lượng</TableTh>
+                      <TableTh>Số Tiền</TableTh>
+                    </TableTr>
+                  </TableThead>
+                    <TableTbody>
+                      <TableTr>
+                        <TableTd>
+                          <Image
+                            src={data.product.imageUrl}
+                            alt="no image here"
+                            height={50}
+                            w={50}
+                          />
+                        </TableTd>
+                        <TableTd>{data.product.name}</TableTd>
+                        <TableTd>
+                          {data.product.baseUnitPrice.toLocaleString()}
+                        </TableTd>
+                        <TableTd>{data.quantity}</TableTd>
+                        <TableTd>
+                          {(
+                            (data.product?.baseUnitPrice ?? 0) * data.quantity
+                          ).toLocaleString()}
+                        </TableTd>
+                      </TableTr>
+                    </TableTbody>
                   <TableTbody>
                     <TableTr>
-                      <TableTd>
-                        <Image
-                          src={data.product.imageUrl}
-                          alt="no image here"
-                          height={50}
-                          w={50}
-                        />
+                      <TableTd></TableTd>
+                      <TableTd></TableTd>
+                      <TableTd></TableTd>
+                      {/* <TableTd>
+                        <Title order={4}>Thành tiền:</Title>
                       </TableTd>
-                      <TableTd>{data.product.name}</TableTd>
                       <TableTd>
-                        {data.product.baseUnitPrice.toLocaleString()}
-                      </TableTd>
-                      <TableTd>{data.quantity}</TableTd>
-                      <TableTd>
-                        {(
-                          (data.product?.baseUnitPrice ?? 0) * data.quantity
-                        ).toLocaleString()}
-                      </TableTd>
+                        <Title order={4}>
+                          
+                        </Title>
+                      </TableTd> */}
                     </TableTr>
                   </TableTbody>
-                <TableTbody>
-                  <TableTr>
-                    <TableTd></TableTd>
-                    <TableTd></TableTd>
-                    <TableTd></TableTd>
-                    {/* <TableTd>
-                      <Title order={4}>Thành tiền:</Title>
-                    </TableTd>
-                    <TableTd>
-                      <Title order={4}>
-                        
-                      </Title>
-                    </TableTd> */}
-                  </TableTr>
-                </TableTbody>
-              </Table>
-            </Card>
-          ))}
+                </Table>
+              </Card>
+            ))}
         </TabsPanel>
       </Tabs>
     </Stack>

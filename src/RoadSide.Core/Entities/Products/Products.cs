@@ -17,15 +17,12 @@ public class Products
     public int Sale { get; set; }
     public int Rate { get; set; }
     public string Url { get; set; } = String.Empty;
-    
     [ForeignKey("Category")]
     public int CategoryId { get; set; }
     public virtual Category? Category { get; set; }
-    
     [ForeignKey("Vendor")]
     public Guid VendorId { get; set; }
     public virtual User? Vendor { get; set; }
-    
     public virtual ICollection<Voucher>? Vouchers { get; set; }
 
     // public IList<Variants> Variants { get; set; }

@@ -1,23 +1,24 @@
 import { ProductManagement } from "./product";
 import { useApi } from "@/lib/hooks";
-import { Product } from "@/models";
+import { PagingResult, Product } from "@/models";
 
 export default async function Page() {
-  const {products} = await getData();
-  return <ProductManagement products={products}/>;
+  const data = await getData();
+  return <ProductManagement {...data} />;
 }
 
 async function getData() {
   const { get } = useApi();
 
-  const { data: products, error: productError } = await get<Product[]>(
-    "/products"
+  const { data, error } = await get<PagingResult<Product>>(
+    "/portal/products"
   );
-  if (productError) {
-    console.error("Error: ", productError);
+  if (error) {
+    return {
+      data: [],
+      total: 0,
+    }
   }
 
-  return {
-      products: products ?? [],
-  };
+  return data!;
 }

@@ -8,6 +8,7 @@ public static class ServiceCollections
     public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IService<,>), typeof(Service<,>));
+        services.AddScoped(typeof(IHttpClient<>), typeof(HttpClient<>));
         services.AddScoped<ISettingService, SettingService>();
         
         services.AddScoped<IOrderService, OrderService>();

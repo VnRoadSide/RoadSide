@@ -70,5 +70,7 @@ public class AutoMapperProfile : Profile
         CreateMap<Notification, Entities.Notifications>()
             .ForMember(dest => dest.To, act => act.Ignore());
         CreateMap<Entities.Notifications, Notification>();
+
+        CreateMap<Entities.Logistics, Logistic>().ReverseMap();
     }
 }

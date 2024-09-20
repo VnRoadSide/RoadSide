@@ -29,11 +29,22 @@ export function RoleView({
   children: ReactNode;
   urls?: Url[];
 }) {
+  const buildBreadcrumb = (pathname: string) => {
+    const breadcrumb: { label: string; href: string }[] = [{ label: "Trang chủ", href: "/" }];
+    let currentPath = "";
+  
+    // Iterate over the navigation and build the breadcrumb chain
+    urls.forEach((item) => {
+      if (pathname.startsWith(item.href)) {
+        currentPath = item.href; // Update current path to match breadcrumb chain
+        breadcrumb.push({ label: item.label, href: currentPath });
+      }
+    });
+  
+    return breadcrumb;
+  };
   const pathname = usePathname();
-  const nav: Url[] = [
-    { label: "Trang chủ", href: "/" },
-    ...urls.filter((item) => item.href === pathname),
-  ];
+  const nav: Url[] = buildBreadcrumb(pathname);
   return (
     <Stack p="xl">
       <Breadcrumbs>
