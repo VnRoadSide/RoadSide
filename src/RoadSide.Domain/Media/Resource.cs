@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Http;
-
 namespace RoadSide.Domain.Media;
 
-public abstract class Resource(IFormFile file, MediaType mediaType)
+public abstract class Resource(FileResource file, MediaType mediaType)
 {
-    public IFormFile File { get; set; } = file;
+    public FileResource File { get; set; } = file;
     public MediaType MediaType { get; set; } = mediaType;
     public int Width { get; set; }
     public int Height { get; set; }
@@ -12,7 +10,7 @@ public abstract class Resource(IFormFile file, MediaType mediaType)
 
 public class ImageResource : Resource
 {
-    public ImageResource(IFormFile file) : base(file, MediaType.Image)
+    public ImageResource(FileResource file) : base(file, MediaType.Image)
     {
         Crop = "fill";
         Gravity = "face";
@@ -26,7 +24,7 @@ public class ImageResource : Resource
 
 public class VideoResource : Resource
 {
-    public VideoResource(IFormFile file) : base(file, MediaType.Video)
+    public VideoResource(FileResource file) : base(file, MediaType.Video)
     {
         Width = 1280;
         Height = 720;

@@ -6,5 +6,5 @@ namespace RoadSide.Core.Services;
 public interface IMediaService
 {
     Task<string> UploadAsync(Resource resource);
-    Task<bool> DeleteAsync(string publicId, MediaType mediaType);
+    Task<bool> DeleteAsync(string publicId);
 }

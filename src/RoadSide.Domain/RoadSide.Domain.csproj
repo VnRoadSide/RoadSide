@@ -10,7 +10,6 @@
 
     <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     </ItemGroup>
 
     <ItemGroup>
