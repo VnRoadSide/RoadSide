@@ -31,8 +31,10 @@ public static class CachingServiceCollectionExtensions
                 });
                 break;
             case "Redis":
-                services.AddSingleton<IConnectionMultiplexer>(
-                    ConnectionMultiplexer.Connect(settings.Distributed.Redis.Configuration));
+                services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = settings.Distributed.Redis.Configuration;
+                });
                 break;
         }
 

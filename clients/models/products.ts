@@ -2,20 +2,29 @@ import { User } from "@/lib/auth";
 import { Vouchers } from "./orders";
 
 export interface Product {
-  id: string;
+  id?: string;
   name: string;
   imageUrl?: string;
   description?: string;
   baseUnitPrice: number;
   unit: string;
-  dateCreated: Date | string;
-  dateModified: Date | string;
-  category: Category;
-  vendor: User;
+  dateCreated?: Date | string;
+  dateModified?: Date | string;
+  category: Category | null;
+  vendor: User | null;
   vouchers: Vouchers[];
   sale?: number;
   rate?: number;
   discountedPrice?: number;
+  brand?: string;
+  origin?: string;
+  quantity: 0,
+  shippingProvider: "",
+  deliveryTime: "",
+  shippingFee: 0,
+  preOrder: false,
+  returnPolicy: "",
+  additionalNotes: "",
 }
 
 export interface Category {

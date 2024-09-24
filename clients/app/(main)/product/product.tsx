@@ -26,7 +26,7 @@ export default function ProductView({ product }: ProductPageProps) {
         {/* Product Details Section */}
         <Box ml="lg">
           <Badge color="green" size="lg">
-            {product.vendor.fullName}
+            {product.vendor?.fullName ?? 'Người bán'}
           </Badge>
 
           <Title order={2} mt="sm">

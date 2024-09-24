@@ -45,6 +45,8 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppUserCo
             query = query.Where(x => x.VendorId == appUserContext.User.Id);
         }
 
+        query = query.Include(x => x.Vouchers);
+
         return new PagingResult<Domain.Products>
         {
             Total = query.Count(),

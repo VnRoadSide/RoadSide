@@ -1,98 +1,105 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using RoadSide.Core.Services;
-using StackExchange.Redis;
 
 namespace RoadSide.Infrastructure.Cache;
 
 public class CacheService : ICacheService
 {
-    private readonly IDatabase _redis;
     private readonly IMemoryCache _memoryCache;
+    private readonly IDistributedCache _distributedCache;
     private readonly TimeSpan _defaultMemoryCacheExpiration = TimeSpan.FromMinutes(5); // Default memory cache expiration
 
-    public CacheService(IConnectionMultiplexer muxer, IMemoryCache memoryCache)
+    public CacheService(IMemoryCache memoryCache, IDistributedCache distributedCache)
     {
-        _redis = muxer.GetDatabase();
         _memoryCache = memoryCache;
+        _distributedCache = distributedCache;
     }
 
     public async Task<T> GetOrCreateAsync<T>(string cacheKey, Func<Task<T>> retrieveDataFunc, TimeSpan? slidingExpiration = null)
     {
-        // // First check the in-memory cache
-        // if (_memoryCache.TryGetValue(cacheKey, out T memoryCacheData))
-        // {
-        //     return memoryCacheData;
-        // }
-
-        // If not in memory cache, check Redis
-        var cachedData = await _redis.StringGetAsync(cacheKey);
-
-        if (!cachedData.IsNullOrEmpty)
+        // First, check the in-memory cache
+        if (_memoryCache.TryGetValue(cacheKey, out T memoryCacheData))
         {
-            var redisData = JsonSerializer.Deserialize<T>(cachedData, new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve, // Handle object references
-                PropertyNameCaseInsensitive = true // Ensure case-insensitive deserialization
-            });
-
-            // // Cache the data in memory as well
-            // _memoryCache.Set(cacheKey, redisData, _defaultMemoryCacheExpiration);
-
-            return redisData;
+            return memoryCacheData;
         }
 
-        // If neither cache contains the data, fetch from source
+        // Next, check the distributed cache
+        var cachedData = await _distributedCache.GetStringAsync(cacheKey);
+
+        if (!string.IsNullOrEmpty(cachedData))
+        {
+            var deserializedData = JsonSerializer.Deserialize<T>(cachedData, new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve, // Handle object references
+                PropertyNameCaseInsensitive = true            // Ensure case-insensitive deserialization
+            });
+
+            // Cache the data in memory as well
+            _memoryCache.Set(cacheKey, deserializedData, _defaultMemoryCacheExpiration);
+
+            return deserializedData;
+        }
+
+        // If neither cache contains the data, fetch from the data source
         var data = await retrieveDataFunc();
 
-        // Cache in Redis
+        // Serialize the data
         var serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions
         {
             ReferenceHandler = ReferenceHandler.Preserve,
             PropertyNameCaseInsensitive = true
         });
 
-        await _redis.StringSetAsync(cacheKey, serializedData, slidingExpiration);
+        // Set cache options
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            SlidingExpiration = slidingExpiration ?? TimeSpan.FromMinutes(60) // Default to 60 minutes if not specified
+        };
 
-        // // Also cache in memory
-        // _memoryCache.Set(cacheKey, data, _defaultMemoryCacheExpiration);
+        // Store in the distributed cache
+        await _distributedCache.SetStringAsync(cacheKey, serializedData, cacheOptions);
+
+        // Also cache in memory
+        _memoryCache.Set(cacheKey, data, _defaultMemoryCacheExpiration);
 
         return data;
     }
 
     public T Get<T>(string cacheKey)
     {
-        // // First check the in-memory cache
-        // if (_memoryCache.TryGetValue(cacheKey, out T memoryCacheData))
-        // {
-        //     return memoryCacheData;
-        // }
-
-        // If not in memory cache, check Redis
-        var cachedData = _redis.StringGet(cacheKey);
-
-        if (!cachedData.IsNullOrEmpty)
+        // First, check the in-memory cache
+        if (_memoryCache.TryGetValue(cacheKey, out T memoryCacheData))
         {
-            var redisData = JsonSerializer.Deserialize<T>(cachedData, new JsonSerializerOptions
+            return memoryCacheData;
+        }
+
+        // Next, check the distributed cache
+        var cachedData = _distributedCache.GetString(cacheKey);
+
+        if (!string.IsNullOrEmpty(cachedData))
+        {
+            var deserializedData = JsonSerializer.Deserialize<T>(cachedData, new JsonSerializerOptions
             {
                 ReferenceHandler = ReferenceHandler.Preserve,
                 PropertyNameCaseInsensitive = true
             });
 
-            // // Cache in memory
-            // _memoryCache.Set(cacheKey, redisData, _defaultMemoryCacheExpiration);
+            // Cache in memory
+            _memoryCache.Set(cacheKey, deserializedData, _defaultMemoryCacheExpiration);
 
-            return redisData;
+            return deserializedData;
         }
 
-        return default(T);
+        return default;
     }
 
     public async Task InvalidateAsync<T>(string cacheKey)
     {
         // Remove from both caches
-        // _memoryCache.Remove(cacheKey);
-        await _redis.KeyDeleteAsync(cacheKey);
+        _memoryCache.Remove(cacheKey);
+        await _distributedCache.RemoveAsync(cacheKey);
     }
 }
