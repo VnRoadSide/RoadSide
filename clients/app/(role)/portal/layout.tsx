@@ -7,6 +7,10 @@ const navigation = [
     href: "/portal",
   },
   {
+    label: "Quản Lý Đơn hàng",
+    href: "/portal/orders",
+  },
+  {
     label: "Thông báo của tôi",
     href: "/portal/notification",
   },

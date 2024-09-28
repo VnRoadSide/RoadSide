@@ -23,8 +23,6 @@ export const validator: Record<string, (value: any) => string | null> = {
     value <= 0 ? "Thời gian giao hàng phải lớn hơn 0" : null,
   shippingFee: (value) =>
     value < 0 ? "Phí vận chuyển không được âm" : null,
-  preOrder: (value) =>
-    value !== "yes" && value !== "no" ? "Vui lòng chọn có hoặc không" : null,
   returnPolicy: (value) =>
     value?.length > 500 ? "Chính sách đổi trả quá dài (tối đa 500 ký tự)" : null,
   additionalNotes: (value) =>

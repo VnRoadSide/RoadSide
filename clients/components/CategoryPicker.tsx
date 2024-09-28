@@ -18,17 +18,19 @@ import {
 } from "@tabler/icons-react";
 
 interface CategoryPickerProps {
+  withAsterisk?: boolean;
   label?: string;
   placeholder?: string;
   nothingFoundMessage?: string;
   categories: Category[];
   onSelect: (
-    value: string | undefined,
-    option: { value: string | undefined; label: string }
+    value: Category | null,
+    option: { value: Category | null; label: string }
   ) => void;
 }
 
 export default function CategoryPicker({
+  withAsterisk = false,
   label = "Select category",
   placeholder = "Pick a category",
   nothingFoundMessage = "No categories found",
@@ -44,7 +46,7 @@ export default function CategoryPicker({
   const handleSelect = (category: Category) => {
     if (!category.categories || category.categories.length === 0) {
       setSelectedCategory(category);
-      onSelect(category.url, { value: category.url, label: category.name });
+      onSelect(category, { value: category, label: category.name });
       setSearchTerm("");
       comboboxStore.closeDropdown();
     }
@@ -120,6 +122,7 @@ export default function CategoryPicker({
       >
         <Combobox.Target>
           <TextInput
+            withAsterisk={withAsterisk}
             label={label}
             placeholder={placeholder}
             value={selectedCategory ? selectedCategory.name : searchTerm}

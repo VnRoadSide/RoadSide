@@ -16,15 +16,19 @@ export interface Product {
   sale?: number;
   rate?: number;
   discountedPrice?: number;
-  brand?: string;
-  origin?: string;
-  quantity: 0,
-  shippingProvider: "",
-  deliveryTime: "",
-  shippingFee: 0,
-  preOrder: false,
-  returnPolicy: "",
-  additionalNotes: "",
+  brand: string;
+  origin: string;
+  quantity: number;
+  shippingProvider: string;
+  deliveryTime: string;
+  shippingFee: number;
+  shippingNote: string;
+  preOrder: boolean;
+  returnPolicy: string;
+  additionalNotes: string;
+  temperatureControlRequired: boolean;
+  storageTemperature?: number;
+  packagingRequirements: string;
 }
 
 export interface Category {
