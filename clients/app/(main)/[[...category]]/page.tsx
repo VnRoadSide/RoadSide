@@ -149,7 +149,7 @@ export default async function Page({ params }: { params?: { category: string[] }
 }
 
 async function getData(categoryUrl?: string) {
-  const features: Feature[] | null = await fetchData("features");
+  // const features: Feature[] | null = await fetchData("features");
 
   const { get } = useApi();
 
@@ -168,7 +168,7 @@ async function getData(categoryUrl?: string) {
   }
 
   return {
-    features: features ?? [],
+    features: [],
     products: products ?? { data: [] },
     categories: categories ?? [],
   };
