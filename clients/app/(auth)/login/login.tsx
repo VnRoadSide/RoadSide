@@ -26,7 +26,7 @@ export default function Login() {
     },
     validate: {
       credential: validator.email,
-      password: validator.password
+      password: validator.password,
     },
   });
 
@@ -56,16 +56,25 @@ export default function Login() {
           </Box>
           <Space h="md" />
           <Paper withBorder shadow="sm" p="md">
-            <form onSubmit={form.onSubmit((values) => signIn("credentials", values))}>
+            <form
+              onSubmit={form.onSubmit((values) =>
+                signIn("credentials", values)
+              )}
+            >
               <TextInput
                 label="Email"
                 placeholder="m@example.com"
                 type="email"
                 required
-                key={form.key('credential')}
-                {...form.getInputProps('credential')}
+                key={form.key("credential")}
+                {...form.getInputProps("credential")}
               />
-              <PasswordInput label="Mật khẩu" required key={form.key('password')}  {...form.getInputProps('password')} />
+              <PasswordInput
+                label="Mật khẩu"
+                required
+                key={form.key("password")}
+                {...form.getInputProps("password")}
+              />
               <Link
                 href="/forgot-password"
                 style={{
@@ -79,10 +88,7 @@ export default function Login() {
               >
                 Quên mật khẩu?
               </Link>
-              <Button
-                type="submit"
-                fullWidth
-              >
+              <Button type="submit" fullWidth>
                 Đăng Nhập
               </Button>
             </form>
@@ -107,7 +113,7 @@ export default function Login() {
         }}
       >
         <Image
-          src="/logo.svg"
+          src="/asset/logo.svg"
           alt="Image"
           width={1920}
           height={1080}

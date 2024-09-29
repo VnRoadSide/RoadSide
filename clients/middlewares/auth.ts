@@ -9,7 +9,8 @@ const anonymousRoutes = [
   "/login",
   "/signup",
   "/reset-password",
-  "/logout"
+  "/logout",
+  "/asset"
 ]; // The whitelisted routes
 
 export const withAuth = defineMiddleware(async (request) => {

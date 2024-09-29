@@ -22,7 +22,6 @@ type SignupProps = SignUpForm & {
   confirmPassword: string;
 };
 
-
 export default function Signup() {
   const form = useForm({
     mode: "uncontrolled",
@@ -114,7 +113,7 @@ export default function Signup() {
         }}
       >
         <Image
-          src="/placeholder.svg"
+          src="/asset/placeholder.svg"
           alt="Image"
           width={1920}
           height={1080}

@@ -1,6 +1,5 @@
 import {  NextResponse } from "next/server";
 import { defineMiddleware } from "./factory";
-import { auth } from "@/auth";
 
 export const header = defineMiddleware(async (request) => {
   // Clone the request headers and set a new header `x-hello-from-middleware1`

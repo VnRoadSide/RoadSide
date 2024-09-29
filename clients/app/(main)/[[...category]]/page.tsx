@@ -24,11 +24,7 @@ import { fetchData } from "@/lib/fetch";
 function CategorySection({ categories }: { categories: Category[] }) {
   function CategoryItem({ category }: { category: Category }) {
     return (
-      <NavLink
-        component={Link}
-        href={`/${category.url}`}
-        label={category.name}
-      >
+      <NavLink component={Link} href={`/${category.url}`} label={category.name}>
         {category.categories && category.categories.length > 0 ? (
           <CategorySection categories={category.categories} />
         ) : null}
@@ -75,7 +71,7 @@ function HeroSection() {
       <Container>
         <Image
           radius="md"
-          src={"logo_full.svg"}
+          src={"/asset/logo_full.svg"}
           h={180}
           w="auto"
           fit="contain"
@@ -121,11 +117,13 @@ function ProductSection({ products }: { products: Product[] }) {
   );
 }
 
-export default async function Page({ params }: { params?: { category: string[] } }) {
+export default async function Page({
+  params,
+}: {
+  params?: { category: string[] };
+}) {
   const categoryUrl = params?.category?.join("/");
-  const { features, products, categories } = await getData(
-    categoryUrl
-  );
+  const { features, products, categories } = await getData(categoryUrl);
   return (
     <Stack p="xl">
       <Group grow preventGrowOverflow={false} wrap="nowrap" align="start">
@@ -153,9 +151,9 @@ async function getData(categoryUrl?: string) {
 
   const { get } = useApi();
 
-  const { data: products, error: productError } = await get<PagingResult<Product>>(
-    `/products/${categoryUrl ?? ""}`
-  );
+  const { data: products, error: productError } = await get<
+    PagingResult<Product>
+  >(`/products/${categoryUrl ?? ""}`);
   const { data: categories, error: categoryError } = await get<Category[]>(
     "/category"
   );

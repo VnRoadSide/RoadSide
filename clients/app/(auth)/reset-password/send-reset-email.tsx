@@ -50,19 +50,18 @@ export default function EmailVerification() {
           </Box>
           <Space h="md" />
           <Paper withBorder shadow="sm" p="md">
-            <form onSubmit={form.onSubmit((values) => resetPassword(values.email))}>
+            <form
+              onSubmit={form.onSubmit((values) => resetPassword(values.email))}
+            >
               <TextInput
                 label="Email"
                 placeholder="m@example.com"
                 // type="email"
                 required
-                key={form.key('email')}
+                key={form.key("email")}
               />
               <Space h="md" />
-              <Button
-                type="submit"
-                fullWidth
-              >
+              <Button type="submit" fullWidth>
                 Đặt lại mật khẩu
               </Button>
             </form>
@@ -84,7 +83,7 @@ export default function EmailVerification() {
         }}
       >
         <Image
-          src="/placeholder.svg"
+          src="/asset/placeholder.svg"
           alt="Image"
           width={1920}
           height={1080}

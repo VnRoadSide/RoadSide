@@ -1,6 +1,5 @@
 "use client";
 import { Footer } from "@/components/Footer";
-import NavBar from "@/components/NavBar";
 import theme from "@/theme";
 import { AppShell, AppShellHeader, AppShellMain, Button, ColorSchemeScript, MantineProvider } from "@mantine/core";
 import { NavigationProgress } from "@mantine/nprogress";
