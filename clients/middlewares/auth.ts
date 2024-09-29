@@ -16,7 +16,7 @@ const anonymousRoutes = [
 export const withAuth = defineMiddleware(async (request) => {
   const session = await auth();
   const pathname = request.nextUrl.pathname;
-  if (!session && !anonymousRoutes.includes(pathname)) {
+  if (!session && !anonymousRoutes.includes(pathname) && !publicFileRegex.test(pathname)) {
     const newUrl = new URL("/login", environment.appUrl);
     return NextResponse.redirect(newUrl);
   }
