@@ -1,5 +1,6 @@
 import { environment } from "@/environment";
 import { Marketing } from "./marketing";
+import { fetchData } from "@/lib/fetch";
 
 export default async function Page() {
   const {marketing} = await getData();
@@ -7,9 +8,7 @@ export default async function Page() {
 }
 
 async function getData() {
-  const data = await fetch(`${environment.appUrl}/api/marketing`)
-    .then((r) => r.json())
-    .catch((err) => console.error(err));
+  const data: any[] | null = await fetchData("marketing");
 
   return {
     marketing: data ?? [],

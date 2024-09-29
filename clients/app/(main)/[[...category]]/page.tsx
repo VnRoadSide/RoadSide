@@ -19,6 +19,7 @@ import {
   rem,
 } from "@mantine/core";
 import Link from "next/link";
+import { fetchData } from "@/lib/fetch";
 
 function CategorySection({ categories }: { categories: Category[] }) {
   function CategoryItem({ category }: { category: Category }) {
@@ -148,10 +149,7 @@ export default async function Page({ params }: { params?: { category: string[] }
 }
 
 async function getData(categoryUrl?: string) {
-  console.log(categoryUrl);
-  const features: Feature[] = await fetch(`${environment.appUrl}/api/feature`)
-    .then((r) => r.json())
-    .catch((err) => console.error(err));
+  const features: Feature[] | null = await fetchData("features");
 
   const { get } = useApi();
 

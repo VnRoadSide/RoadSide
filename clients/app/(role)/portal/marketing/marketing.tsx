@@ -3,10 +3,10 @@ import { DynamicIcon } from "@/components/Icon";
 import { Card, SimpleGrid, Stack, ThemeIcon, Title, Text} from "@mantine/core";
 
 type Marketing = {
-    icon: string;
-    title: string;
-    description: string;
-  };
+  icon: string;
+  title: string;
+  description: string;
+};
 
 export function Marketing({ marketing }: { marketing: Marketing[] }) {
     return (

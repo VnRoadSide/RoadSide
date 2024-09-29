@@ -1,21 +1,21 @@
 
 import { NotificationView } from "@/components/Notification";
-import { environment } from "@/environment";
+import { useApi } from "@/lib/hooks";
+import { Notification, PagingResult } from "@/models";
 
 
-export default async function NotificationPage() {
+export default async function Page() {
   const data = await getData();
+  if (!data) return <NotificationView data={[]} total={0} />;
   return <NotificationView {...data} />
 }
 
 async function getData() {
-  const notification = await fetch(
-    `${environment.appUrl}/api/notification`
-  )
-    .then((r) => r.json())
-    .catch((err) => console.error(err));
-
-  return {
-      ...notification
-  };
-};
+  const { get } = useApi();
+  const { data, error } = await get<PagingResult<Notification>>("/notification/portal");
+  
+  if (error) {
+    console.error("Error: ", error);
+  }
+  return data;
+}

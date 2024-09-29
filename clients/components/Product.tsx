@@ -41,9 +41,10 @@ export function ProductCard({ product }: { product: Product }) {
     <Card withBorder radius="md" padding="xs" miw="12rem" shadow="none">
       <CardSection component={Link} href={`/product?id=${product.id}`}>
         <Image
-          src={product.imageUrl ?? "https://i.imgur.com/ZL52Q2D.png"}
+          src={product.imageUrl}
           alt={product.name}
           height={120}
+          fallbackSrc="https://placehold.co/600x400?text=Placeholder"
         />
       </CardSection>
 
