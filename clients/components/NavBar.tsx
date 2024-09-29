@@ -48,7 +48,7 @@ export default function NavBar({
           <Group gap={4}>
             <Anchor href="/" underline="never">
               <Group gap={4} align="end">
-                <Image src={"/logo.png"} alt="logo" h={35} fetchPriority="high" />
+                <Image src={"/asset/logo.png"} alt="logo" h={35} fetchPriority="high" />
                 <Text variant="gradient" fw={900} size="1.8rem">
                   {"RoadSide"}
                 </Text>

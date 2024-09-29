@@ -6,9 +6,11 @@ import { environment } from "@/environment";
 const publicFileRegex = /\.(.*)$/;
 const anonymousRoutes = [
   "/",
+  "/product",
   "/login",
   "/signup",
   "/reset-password",
+  "/forgot-password",
   "/logout",
   "/asset"
 ]; // The whitelisted routes
