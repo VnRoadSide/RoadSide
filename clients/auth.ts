@@ -1,6 +1,6 @@
 import NextAuth, { NextAuthConfig, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { signInUser } from "./lib/auth";
+import { signInUser, signOutUser } from "./lib/auth";
 
 const publicFileRegex = /\.(.*)$/;
 const anonymousRoutes = [
@@ -69,6 +69,12 @@ const config: NextAuthConfig = {
     newUser: "/signup",
     signOut: "/logout",
   },
+  events: {
+    signOut: () => {
+      // Additional post processing after signout and the session is cleared...
+      signOutUser();
+    }
+  }
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(config);
