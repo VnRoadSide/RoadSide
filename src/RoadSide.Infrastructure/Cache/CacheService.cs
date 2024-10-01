@@ -40,7 +40,7 @@ public class CacheService : ICacheService
         {
             var deserializedData = JsonSerializer.Deserialize<T>(cachedData, _jsonOptions);
 
-            // Cache the data in memory with size specification
+            // Cache the data in memory as well, with size specification
             _memoryCache.Set(cacheKey, deserializedData, new MemoryCacheEntryOptions
             {
                 Size = GetSizeOfObject(deserializedData), // Specify the size of the entry
@@ -65,7 +65,7 @@ public class CacheService : ICacheService
         // Store in the distributed cache
         await _distributedCache.SetStringAsync(cacheKey, serializedData, cacheOptions);
 
-        // Also cache in memory with size specification
+        // Also cache in memory, with size specification
         _memoryCache.Set(cacheKey, data, new MemoryCacheEntryOptions
         {
             Size = GetSizeOfObject(data), // Specify the size of the entry
@@ -90,7 +90,7 @@ public class CacheService : ICacheService
         {
             var deserializedData = JsonSerializer.Deserialize<T>(cachedData, _jsonOptions);
 
-            // Cache in memory with size specification
+            // Cache in memory, with size specification
             _memoryCache.Set(cacheKey, deserializedData, new MemoryCacheEntryOptions
             {
                 Size = GetSizeOfObject(deserializedData), // Specify the size of the entry

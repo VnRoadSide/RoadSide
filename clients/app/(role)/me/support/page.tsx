@@ -27,7 +27,7 @@ function SupportCenter() {
     {
       icon: IconPhone,
       label: "Hotline",
-      content: "1900-6035",
+      content: "1900-1005",
       detail: "1000 đ/phút, 8h-21h kể cả thứ 7, CN",
       action: "Call",
     },
@@ -42,7 +42,7 @@ function SupportCenter() {
       icon: IconMail,
       label: "Gửi yêu cầu hỗ trợ",
       content: "Tạo đơn yêu cầu",
-      detail: "Hoặc email đến hotro@tiki.vn",
+      detail: "Hoặc email đến hotro@roadside.vn",
       action: "Create",
     },
   ];
@@ -63,7 +63,7 @@ function SupportCenter() {
     {
       icon: IconUser,
       label: "Tài khoản của tôi",
-      content: "Cách đăng ký tài khoản Tiki, chỉnh sửa thông tin cá nhân",
+      content: "Cách đăng ký tài khoản Roadside, chỉnh sửa thông tin cá nhân",
       link: "Xem chi tiết",
     },
     {
@@ -74,9 +74,9 @@ function SupportCenter() {
     },
     {
       icon: IconInfoCircle,
-      label: "Thông tin về Tiki",
+      label: "Thông tin về Roadside",
       content:
-        "Quy chế hoạt động và chính sách của sàn thương mại điện tử Tiki",
+        "Quy chế hoạt động và chính sách của sàn thương mại điện tử Roadside",
       link: "Xem chi tiết",
     },
   ];

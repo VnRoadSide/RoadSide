@@ -14,8 +14,10 @@ public class Products
     public DateTimeOffset DateCreated { get; set; }
     public DateTimeOffset DateModified { get; set; }
     public string ImageUrl { get; set; } = String.Empty;
-    public int Sale { get; set; }
-    public int Rate { get; set; }
+    public int Sale { get; set; } = 0;
+    public int Rate { get; set; } = 0;
+    public int Quantity { get; set; }
+    public string Unit { get; set; } = String.Empty;
     public string Url { get; set; } = String.Empty;
     [ForeignKey("Category")]
     public int CategoryId { get; set; }

@@ -36,7 +36,7 @@ export function ProductManagement({
       <TableTd>{item.name}</TableTd>
       <TableTd>{item.sale}</TableTd>
       <TableTd>{item.baseUnitPrice}</TableTd>
-      <TableTd>100</TableTd>
+      <TableTd>{item.quantity}</TableTd>
       <TableTd>{item.description}</TableTd>
       <TableTd>
         <Button variant="outline">Xem chi tiết</Button>
@@ -52,7 +52,7 @@ export function ProductManagement({
           <TabsTab value="all">Tất cả</TabsTab>
           <TabsTab value="active">Đang hoạt động</TabsTab>
           <TabsTab value="violations">Vi phạm</TabsTab>
-          <TabsTab value="pending">Chờ duyệt bởi Shopee</TabsTab>
+          <TabsTab value="pending">Chờ duyệt</TabsTab>
           <TabsTab value="unpublished">Chưa được đăng</TabsTab>
         </TabsList>
 

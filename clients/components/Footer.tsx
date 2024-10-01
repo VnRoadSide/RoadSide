@@ -67,12 +67,12 @@ export const Footer = () => {
       <Paper shadow="xs" withBorder>
         <Group mx={50} my={30}>
           <Flex direction="column" align="center" gap="md">
-            <Image src="/logo.png" alt="logo" width={100} height={100} />
+            <Image src="/asset/logo.png" alt="logo" width={100} height={100} />
             <span className="font-bold">
               Trường Đại học Bách Khoa ĐHQG - HCM
             </span>
             <Flex gap="small" align="center">
-              <Text component="a">demeter_ec@gmail.com</Text>
+              <Text component="a">roadside_ec@gmail.com</Text>
               <Text component="a">+84 1234 56789</Text>
             </Flex>
           </Flex>
@@ -80,7 +80,7 @@ export const Footer = () => {
         </Group>
         <Group mx={50} my={30}>
           <Text size="sm">
-            © 2024 demeter.com. All rights reserved.
+            © 2024 roadside.com. All rights reserved.
           </Text>
           <Group gap={0}>
             <ActionIcon size="lg" color="gray" variant="subtle">

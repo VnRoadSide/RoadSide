@@ -13,6 +13,8 @@ public class Products: BaseEntity<Guid>
     public string ImageUrl { get; set; }
     public int Sale { get; set; }
     public int Rate { get; set; }
+    public int Quantity { get; set; }
+    public string Unit { get; set; } 
     public string Url { get; set; }
     public Category Category { get; set; }
     public User Vendor { get; set; }

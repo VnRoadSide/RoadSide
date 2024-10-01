@@ -18,6 +18,7 @@ import {
   Radio,
   Image,
   Checkbox,
+  FileInput,
 } from "@mantine/core";
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
@@ -98,7 +99,7 @@ export function AddProductView({ categories }: ProductViewProps) {
         {/* Thông tin cơ bản */}
         <Card>
           <Title order={2}>Thông tin cơ bản</Title>
-          <SimpleGrid cols={2}>
+          <SimpleGrid cols={2}  mt="md" spacing="md">
             <Text>Hình ảnh sản phẩm</Text>
             <Card radius="md" shadow="md" withBorder>
               <Dropzone
@@ -195,7 +196,7 @@ export function AddProductView({ categories }: ProductViewProps) {
         <Card>
           <Title order={2}>Thông tin bán hàng</Title>
           <SimpleGrid cols={2} spacing="md" mt="md">
-            <TextInput
+            {/* <TextInput
               label="Thương hiệu"
               placeholder="Vui lòng nhập"
               withAsterisk
@@ -206,7 +207,7 @@ export function AddProductView({ categories }: ProductViewProps) {
               placeholder="Vui lòng nhập"
               withAsterisk
               {...form.getInputProps("origin")}
-            />
+            /> */}
             <TextInput
               label="Đơn vị bán"
               placeholder="kg / hộp / 100g"
@@ -235,7 +236,11 @@ export function AddProductView({ categories }: ProductViewProps) {
         <Card>
           <Title order={2}>Vận chuyển</Title>
           <SimpleGrid cols={2} spacing="md" mt="md">
-            <Select
+            <Text>Đơn vị vận chuyển: Giao hàng nhanh</Text>
+            <Text>Thời gian giao hàng dự kiến: trong 2 giờ</Text>
+            <Text>Phí vận chuyển: Miễn phí</Text>
+
+            {/* <Select
               label="Chọn đơn vị vận chuyển"
               placeholder="Chọn đơn vị"
               data={[
@@ -253,6 +258,7 @@ export function AddProductView({ categories }: ProductViewProps) {
               withAsterisk
               {...form.getInputProps("shippingProvider")}
             />
+
 
             <Checkbox
               label="Yêu cầu kiểm soát nhiệt độ"
@@ -298,12 +304,12 @@ export function AddProductView({ categories }: ProductViewProps) {
               label="Lưu ý về vận chuyển"
               placeholder="Nhập các lưu ý (nếu có)"
               {...form.getInputProps("shippingNote")}
-            />
+            />*/}
           </SimpleGrid>
         </Card>
 
         {/* Thông tin khác */}
-        <Card>
+        {/* <Card>
           <Title order={2}>Thông tin khác</Title>
           <SimpleGrid cols={2} spacing="md" mt="md">
             <Checkbox
@@ -324,7 +330,7 @@ export function AddProductView({ categories }: ProductViewProps) {
               {...form.getInputProps("additionalNotes")}
             />
           </SimpleGrid>
-        </Card>
+        </Card> */}
 
         <Group mt="md">
           <Button type="submit">Thêm sản phẩm</Button>
