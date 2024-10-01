@@ -57,15 +57,15 @@ public class AutoMapperProfile : Profile
         CreateMap<Entities.OrderItem, OrderItem>();
         CreateMap<Voucher, Entities.Voucher>()
             .ForMember(dest => dest.AppliedProducts, act => act.Ignore());
-        CreateMap<Entities.Voucher, Voucher>();
+        CreateMap<Entities.Voucher, Voucher>()
+            .MaxDepth(1) // Set depth to 1
+            .PreserveReferences(); // Prevent circular reference errors;
 
         CreateMap<Products, Entities.Products>()
             .ForMember(dest => dest.Vendor, act => act.Ignore())
             .ForMember(dest => dest.VendorId, act => act.MapFrom(src => src.Vendor.Id));
 
-        CreateMap<Entities.Products, Products>()
-            .MaxDepth(1) // Set depth to 1
-            .PreserveReferences(); // Prevent circular reference errors;
+        CreateMap<Entities.Products, Products>();
         CreateMap<Category, Entities.Category>();
         CreateMap<Entities.Category, Category>();
         CreateMap<Prices, Entities.Prices>();

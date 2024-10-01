@@ -16,14 +16,12 @@ public class ProductsController: ControllerBase
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
-    private readonly IAppUserContext _appUserContext;
 
     public ProductsController(ILogger<ProductsController> logger, IProductService productService,
-        ICategoryService categoryService, IAppUserContext appUserContext) {
+        ICategoryService categoryService) {
         _logger = logger;
         _productService = productService;
         _categoryService = categoryService;
-        _appUserContext = appUserContext;
     }
 
     [HttpGet]
