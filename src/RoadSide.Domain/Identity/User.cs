@@ -23,5 +23,5 @@ public class User : JsonBaseEntity<Guid>
 
     public bool TwoFactorEnabled { get; set; }
 
-    public List<Role> Roles { get; set; }
+    public ICollection<Role> Roles { get; set; }
 }

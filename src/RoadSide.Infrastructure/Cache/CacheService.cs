@@ -12,6 +12,13 @@ public class CacheService : ICacheService
     private readonly IDistributedCache _distributedCache;
     private readonly TimeSpan _defaultMemoryCacheExpiration = TimeSpan.FromMinutes(5); // Default memory cache expiration
 
+    // JsonSerializerOptions with ReferenceHandler.Preserve for handling circular references
+    private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+    {
+        ReferenceHandler = ReferenceHandler.Preserve,   // This handles the object references and cycles
+        PropertyNameCaseInsensitive = true,            // Ensures case-insensitive property matching
+    };
+
     public CacheService(IMemoryCache memoryCache, IDistributedCache distributedCache)
     {
         _memoryCache = memoryCache;
@@ -31,14 +38,14 @@ public class CacheService : ICacheService
 
         if (!string.IsNullOrEmpty(cachedData))
         {
-            var deserializedData = JsonSerializer.Deserialize<T>(cachedData, new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve, // Handle object references
-                PropertyNameCaseInsensitive = true            // Ensure case-insensitive deserialization
-            });
+            var deserializedData = JsonSerializer.Deserialize<T>(cachedData, _jsonOptions);
 
-            // Cache the data in memory as well
-            _memoryCache.Set(cacheKey, deserializedData, _defaultMemoryCacheExpiration);
+            // Cache the data in memory with size specification
+            _memoryCache.Set(cacheKey, deserializedData, new MemoryCacheEntryOptions
+            {
+                Size = GetSizeOfObject(deserializedData), // Specify the size of the entry
+                SlidingExpiration = _defaultMemoryCacheExpiration
+            });
 
             return deserializedData;
         }
@@ -46,12 +53,8 @@ public class CacheService : ICacheService
         // If neither cache contains the data, fetch from the data source
         var data = await retrieveDataFunc();
 
-        // Serialize the data
-        var serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions
-        {
-            ReferenceHandler = ReferenceHandler.Preserve,
-            PropertyNameCaseInsensitive = true
-        });
+        // Serialize the data with ReferenceHandler.Preserve
+        var serializedData = JsonSerializer.Serialize(data, _jsonOptions);
 
         // Set cache options
         var cacheOptions = new DistributedCacheEntryOptions
@@ -62,8 +65,12 @@ public class CacheService : ICacheService
         // Store in the distributed cache
         await _distributedCache.SetStringAsync(cacheKey, serializedData, cacheOptions);
 
-        // Also cache in memory
-        _memoryCache.Set(cacheKey, data, _defaultMemoryCacheExpiration);
+        // Also cache in memory with size specification
+        _memoryCache.Set(cacheKey, data, new MemoryCacheEntryOptions
+        {
+            Size = GetSizeOfObject(data), // Specify the size of the entry
+            SlidingExpiration = _defaultMemoryCacheExpiration
+        });
 
         return data;
     }
@@ -81,14 +88,14 @@ public class CacheService : ICacheService
 
         if (!string.IsNullOrEmpty(cachedData))
         {
-            var deserializedData = JsonSerializer.Deserialize<T>(cachedData, new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                PropertyNameCaseInsensitive = true
-            });
+            var deserializedData = JsonSerializer.Deserialize<T>(cachedData, _jsonOptions);
 
-            // Cache in memory
-            _memoryCache.Set(cacheKey, deserializedData, _defaultMemoryCacheExpiration);
+            // Cache in memory with size specification
+            _memoryCache.Set(cacheKey, deserializedData, new MemoryCacheEntryOptions
+            {
+                Size = GetSizeOfObject(deserializedData), // Specify the size of the entry
+                SlidingExpiration = _defaultMemoryCacheExpiration
+            });
 
             return deserializedData;
         }
@@ -101,5 +108,15 @@ public class CacheService : ICacheService
         // Remove from both caches
         _memoryCache.Remove(cacheKey);
         await _distributedCache.RemoveAsync(cacheKey);
+    }
+
+    /// <summary>
+    /// Estimates the size of an object for caching. You can customize this method as per your requirements.
+    /// </summary>
+    private long GetSizeOfObject<T>(T obj)
+    {
+        // Estimate the size in a simple way. You can adjust this logic based on your actual data structure.
+        var json = JsonSerializer.Serialize(obj);
+        return json.Length;
     }
 }

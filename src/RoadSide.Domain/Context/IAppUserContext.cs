@@ -4,6 +4,6 @@ public interface IAppUserContext
 {
     Guid UserId { get; }
     User User { get; }
-    List<OrderItem> Cart { get; }
-    List<Orders> Checkout { get; set; }
+    ICollection<OrderItem> Cart { get; }
+    ICollection<Orders> Checkout { get; set; }
 }

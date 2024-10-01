@@ -14,5 +14,5 @@ public class Voucher
     public DateTimeOffset EndDate { get; set; }
     public bool Active { get; set; }
     public int UsageLimit { get; set; }
-    public virtual List<Products>? AppliedProducts { get; set; }
+    public virtual ICollection<Products> AppliedProducts { get; set; } = [];
 }

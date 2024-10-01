@@ -18,6 +18,6 @@ public class AppUserContext: IAppUserContext
     }
     public Guid UserId => User.Id;
     public User User => _userManager.GetDomainUserAsync(_httpContextAccessor.HttpContext?.User).GetAwaiter().GetResult();
-    public List<OrderItem> Cart => new();
-    public List<Orders> Checkout { get; set; } = new();
+    public ICollection<OrderItem> Cart => [];
+    public ICollection<Orders> Checkout { get; set; } = [];
 }

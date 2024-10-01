@@ -10,5 +10,5 @@ public class Voucher: BaseEntity<Guid>
     public DateTimeOffset EndDate { get; set; }
     public bool Active { get; set; }
     public int UsageLimit { get; set; }
-    public List<Products> AppliedProducts { get; set; }
+    public ICollection<Products> AppliedProducts { get; set; }
 }
