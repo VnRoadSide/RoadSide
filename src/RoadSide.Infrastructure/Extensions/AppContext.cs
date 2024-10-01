@@ -6,12 +6,12 @@ using RoadSide.Infrastructure.Identity;
 
 namespace RoadSide.Infrastructure.Extensions;
 
-public class AppUserContext: IAppUserContext
+public class AppContext: IAppContext
 {
     private IHttpContextAccessor _httpContextAccessor;
     private AppUserManager _userManager;
 
-    public AppUserContext(IHttpContextAccessor httpContextAccessor, AppUserManager userManager)
+    public AppContext(IHttpContextAccessor httpContextAccessor, AppUserManager userManager)
     {
         _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;

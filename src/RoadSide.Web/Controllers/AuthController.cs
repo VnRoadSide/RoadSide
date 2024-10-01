@@ -17,13 +17,13 @@ namespace RoadSide.Web.Controllers
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthController> _logger;
         private readonly AppUserManager _manager;
-        private readonly IAppUserContext _appUserContext;
-        public AuthController(IJwtService jwtService, ILogger<AuthController> logger, AppUserManager manager, IAppUserContext appUserContext)
+        private readonly IAppContext _appContext;
+        public AuthController(IJwtService jwtService, ILogger<AuthController> logger, AppUserManager manager, IAppContext appContext)
         {
             _jwtService = jwtService;
             _logger = logger;
             _manager = manager;
-            _appUserContext = appUserContext;
+            _appContext = appContext;
         }
 
         [HttpPost("signup")]
@@ -83,7 +83,7 @@ namespace RoadSide.Web.Controllers
         [HttpGet("me")]
         public Task<IActionResult> Me()
         {
-            var user = _appUserContext.User;
+            var user = _appContext.User;
             var result = new CurrentUserDto
             {
                 Id = user!.Id,

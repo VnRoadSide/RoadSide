@@ -13,32 +13,18 @@ public class OrdersController : ControllerBase
 {
     private readonly ILogger<OrdersController> _logger;
     private readonly IOrderService _ordersService;
-    private readonly IAppUserContext _appUserContext;
+    private readonly IAppContext _appContext;
     private readonly IUserService _userService;
     private readonly INotificationService _notificationService;
 
-    public OrdersController(ILogger<OrdersController> logger, IOrderService ordersService, IAppUserContext appUserContext, IUserService userService, INotificationService notificationService)
+    public OrdersController(ILogger<OrdersController> logger, IOrderService ordersService, IAppContext appContext, IUserService userService, INotificationService notificationService)
     {
         _logger = logger;
         _ordersService = ordersService;
-        _appUserContext = appUserContext;
+        _appContext = appContext;
         _userService = userService;
         _notificationService = notificationService;
     }
-    
-    private Notification OrderSuccess() => new()
-    {
-        IsPersonal = true,
-        To = new User { Id = _appUserContext.UserId },
-        Content = "Đơn hàng của bạn đã được đặt thành công! Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi. Chúng tôi sẽ liên hệ với bạn để giao hàng sớm nhất."
-    };
-
-    private Notification OrderFailed() => new()
-    {
-        IsPersonal = true,
-        To = new User { Id = _appUserContext.UserId },
-        Content = "Xin lỗi, đã xảy ra lỗi trong quá trình đặt hàng. Vui lòng thử lại hoặc liên hệ với bộ phận hỗ trợ của chúng tôi để được giúp đỡ."
-    };
 
     [Authorize]
     [HttpPost("checkout")]
@@ -48,7 +34,7 @@ public class OrdersController : ControllerBase
         {
             _logger.LogInformation($"Trigger {nameof(CreateCheckoutSessionAsync)}");
             var sessionId = await _ordersService.CreateCheckoutSessionAsync(orderItems);
-            await _userService.AddSessionIdAsync(_appUserContext.UserId, sessionId.ToString());
+            await _userService.AddOrUpdateSessionIdAsync(sessionId.ToString());
             return Ok(sessionId);
         }
         catch (Exception)
@@ -63,7 +49,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            if (!await _userService.ValidateSessionIdAsync(_appUserContext.UserId, sessionId.ToString()))
+            if (!await _userService.ValidateSessionIdAsync(sessionId.ToString()))
             {
                 return NotFound("Session not found!");
             }
@@ -83,32 +69,54 @@ public class OrdersController : ControllerBase
     {
         try
         {
-
-            if (!await _userService.ValidateSessionIdAsync(_appUserContext.UserId, sessionId.ToString()))
+            if (!await _userService.ValidateSessionIdAsync(sessionId.ToString()))
             {
                 return NotFound("Session not found!");
             }
+        
+            var orders = await _ordersService.ValidateOrders(sessionId);
+        
+            await _ordersService.BulkAddAsync(orders);
             
-            var orderItems = await _ordersService.ValidateOrders(sessionId);
+            // Get the list of unique vendors from the orders
+            var vendors = orders
+                .SelectMany(order => order.Items)
+                .Select(item => item.Product.Vendor)
+                .DistinctBy(v => v.Id)
+                .ToList();
 
-            foreach (var order in orderItems)
+            // Create notifications for each vendor
+            var notifications = vendors.Select(vendor => new Notification
             {
-                order.User = new User
-                {
-                    Id = _appUserContext.UserId
-                };
-            }
-            await _ordersService.BulkAddAsync(orderItems);
-            await _userService.AddSessionIdAsync(_appUserContext.UserId);
-            await _notificationService.AddAsync(OrderSuccess());
-            return Ok(new StatusAction{ Success = true});
+                IsPersonal = false,
+                To = vendor,
+                Content = "Bạn có đơn hàng mới. Vui lòng kiểm tra đơn hàng của bạn."
+            }).ToList();
+            notifications.Add(new()
+            {
+                IsPersonal = true,
+                To = new User { Id = _appContext.UserId },
+                Content = "Đơn hàng của bạn đã được đặt thành công! Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi. Chúng tôi sẽ liên hệ với bạn để giao hàng sớm nhất."
+            });
+
+            // Send notifications to vendors
+            await _notificationService.NotifyAsync(notifications);
+
+            await _userService.AddOrUpdateSessionIdAsync();
+            return Ok(new StatusAction { Success = true });
         }
         catch (Exception)
         {
-            await _notificationService.AddAsync(OrderFailed());
-            return Ok(new StatusAction{ Success = false});
+            await _notificationService.AddAsync(new()
+            {
+                IsPersonal = true,
+                To = new User { Id = _appContext.UserId },
+                Content = "Xin lỗi, đã xảy ra lỗi trong quá trình đặt hàng. Vui lòng thử lại hoặc liên hệ với bộ phận hỗ trợ của chúng tôi để được giúp đỡ."
+            });
+            return Ok(new StatusAction { Success = false });
         }
     }
+
     
     [HttpGet("portal")]
     public async ValueTask<ActionResult<ICollection<Orders>>> GetOrderForPortalAsync([FromQuery] int page, int pageSize)
@@ -119,7 +127,7 @@ public class OrdersController : ControllerBase
             {
                 Page = page,
                 PageSize = pageSize,
-                UserId = _appUserContext.User.Id
+                UserId = _appContext.User.Id
             };
 
             var orders = await _ordersService.GetForPortalAsync(option);
@@ -141,7 +149,7 @@ public class OrdersController : ControllerBase
             {
                 Page = page,
                 PageSize = pageSize,
-                UserId = _appUserContext.User.Id
+                UserId = _appContext.User.Id
             };
 
             var orders = await _ordersService.GetAllAsync(option);

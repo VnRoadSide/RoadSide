@@ -1,6 +1,6 @@
 namespace RoadSide.Domain.Context;
 
-public interface IAppUserContext
+public interface IAppContext
 {
     Guid UserId { get; }
     User User { get; }

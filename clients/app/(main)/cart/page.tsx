@@ -85,7 +85,7 @@ function ProductRow({
       </TableTd>
       <TableTd w={100}>
         <Text>
-          ₫{(item.product.baseUnitPrice * item.quantity).toLocaleString()}
+          ₫{((item.product.discountedPrice ?? item.product.baseUnitPrice) * item.quantity).toLocaleString()}
         </Text>
       </TableTd>
       <TableTd>
@@ -184,7 +184,7 @@ export default function Cart() {
 
   const total = items.reduce(
     (total, item) =>
-      total + (item.selected ? item.product.baseUnitPrice * item.quantity : 0),
+      total + (item.selected ? (item.product.discountedPrice ?? item.product.baseUnitPrice) * item.quantity : 0),
     0
   );
   const selected = items.reduce((total, item) => total + item.quantity, 0);

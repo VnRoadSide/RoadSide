@@ -49,7 +49,7 @@ public static class ServiceCollections
             .GetSection(nameof(JwtSettings))
             .Get<JwtSettings>();
         services.AddHttpContextAccessor();
-        services.AddScoped<IAppUserContext, AppUserContext>();
+        services.AddScoped<IAppContext, AppContext>();
 
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IUserClaimsPrincipalFactory<User>, AppUserClaimsPrincipleFactory>();

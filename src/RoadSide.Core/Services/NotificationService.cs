@@ -8,14 +8,16 @@ using RoadSide.Domain.Context;
 namespace RoadSide.Core.Services;
 public class QueryNotifications : QueryPaging
 {
+    public bool IsPersonal { get; set; }
 }
 
 public interface INotificationService : IService<Notification, Entities.Notifications>
 {
     ValueTask<PagingResult<Notifier>> GetAllAsync(QueryNotifications option);
+    ValueTask NotifyAsync(ICollection<Notification> notifier);
 }
 
-internal class NotificationsService(ICoreDbContext context, IMapper mapper, IAppUserContext appUserContext)
+internal class NotificationsService(ICoreDbContext context, IMapper mapper, IAppContext appContext)
     : Service<Notification, Entities.Notifications>(context, mapper), INotificationService
 {
     private readonly IMapper _mapper = mapper;
@@ -24,8 +26,8 @@ internal class NotificationsService(ICoreDbContext context, IMapper mapper, IApp
     public async ValueTask<PagingResult<Notifier>> GetAllAsync(QueryNotifications option)
     {
         var query = GetQueryable()
-            .Include(x => x.To)
-            .Where(x => x.To.Id == appUserContext.User.Id)
+            .Where(x => x.IsPersonal == option.IsPersonal)
+            .Where(x => x.ToId == appContext.User.Id)
             .OrderByDescending(x => x.CreatedOn)
             .AsNoTracking();
 
@@ -39,5 +41,11 @@ internal class NotificationsService(ICoreDbContext context, IMapper mapper, IApp
             Total = query.Count(),
             Data = notifiers
         };
+    }
+    
+    public async ValueTask NotifyAsync(ICollection<Notification> notifier)
+    {
+        await _context.Notification.AddRangeAsync(_mapper.Map<ICollection<Entities.Notifications>>(notifier));
+        await _context.SaveChangesAsync();
     }
 }

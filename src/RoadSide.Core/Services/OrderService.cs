@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using RoadSide.Core.Extensions;
 using RoadSide.Domain;
+using RoadSide.Domain.Context;
 
 namespace RoadSide.Core.Services;
 
@@ -28,7 +29,7 @@ public interface IOrderService : IService<Orders, Entities.Orders>
     Task<ICollection<Orders>> ValidateOrders(Guid sessionId);
 }
 
-internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService,  ICacheService cacheService)
+internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService,  ICacheService cacheService, IAppContext appContext)
     : Service<Orders, Entities.Orders>(context, mapper), IOrderService
 {
     private readonly ICoreDbContext _context = context;
@@ -87,6 +88,13 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
     public Task<ICollection<Orders>> ValidateOrders(Guid sessionId)
     {
         var orders = cacheService.Get<ICollection<Orders>>(sessionId.ToString());
+        foreach (var order in orders)
+        {
+            order.User = new User
+            {
+                Id = appContext.UserId
+            };
+        }
         return Task.FromResult(orders);
     }
 }

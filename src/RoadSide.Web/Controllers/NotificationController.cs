@@ -13,11 +13,11 @@ public class NotificationController: ControllerBase
 {
     private readonly ILogger<AppSettingsController> _logger;
     private readonly INotificationService _notificationService;
-    private readonly IAppUserContext _appUserContext;
+    private readonly IAppContext _appContext;
 
-    public NotificationController(IAppUserContext appUserContext, INotificationService notificationService, ILogger<AppSettingsController> logger)
+    public NotificationController(IAppContext appContext, INotificationService notificationService, ILogger<AppSettingsController> logger)
     {
-        _appUserContext = appUserContext;
+        _appContext = appContext;
         _notificationService = notificationService;
         _logger = logger;
     }
@@ -28,7 +28,31 @@ public class NotificationController: ControllerBase
     {
         try
         {
-            var options = new QueryNotifications();
+            var options = new QueryNotifications
+            {
+                IsPersonal = true
+            };
+            options.Page = page ?? options.Page;
+            options.PageSize = pageSize ?? options.PageSize;
+            var result = await _notificationService.GetAllAsync(options);
+            return Ok(result);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+    
+    [Authorize]
+    [HttpGet("portal")]
+    public async ValueTask<ActionResult<PagingResult<Notification>>> GetNotificationForPortal([FromQuery] int? page, int? pageSize)
+    {
+        try
+        {
+            var options = new QueryNotifications
+            {
+                IsPersonal = false
+            };
             options.Page = page ?? options.Page;
             options.PageSize = pageSize ?? options.PageSize;
             var result = await _notificationService.GetAllAsync(options);
