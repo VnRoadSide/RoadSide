@@ -45,7 +45,7 @@ public class OrdersController : ControllerBase
 
     [Authorize]
     [HttpGet("checkout/{sessionId}")]
-    public async Task<ActionResult<ICollection<Orders>>> GetCheckoutSessionAsync(Guid sessionId)
+    public async Task<ActionResult<Orders>> GetCheckoutSessionAsync(Guid sessionId)
     {
         try
         {
@@ -53,9 +53,9 @@ public class OrdersController : ControllerBase
             {
                 return NotFound("Session not found!");
             }
-            var orderItems = await _ordersService.ValidateOrders(sessionId);
+            var order = await _ordersService.ValidateOrders(sessionId);
 
-            return Ok(orderItems);
+            return Ok(order);
         }
         catch (Exception)
         {
@@ -74,13 +74,12 @@ public class OrdersController : ControllerBase
                 return NotFound("Session not found!");
             }
         
-            var orders = await _ordersService.ValidateOrders(sessionId);
+            var order = await _ordersService.ValidateOrders(sessionId);
         
-            await _ordersService.BulkAddAsync(orders);
+            await _ordersService.AddAsync(order);
             
             // Get the list of unique vendors from the orders
-            var vendors = orders
-                .SelectMany(order => order.Items)
+            var vendors = order.Items
                 .Select(item => item.Product.Vendor)
                 .DistinctBy(v => v.Id)
                 .ToList();

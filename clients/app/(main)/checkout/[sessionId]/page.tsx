@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 async function getData(sessionId: string) {
   const { get } = useApi();
-  const { data, error } = await get<Order[]>(`/orders/checkout/${sessionId}`);
+  const { data, error } = await get<Order>(`/orders/checkout/${sessionId}`);
   console.log(sessionId, error, data);
   if (!data) {
     redirect(`/checkout`) // Navigate to the new post page
@@ -16,8 +16,8 @@ async function getData(sessionId: string) {
 
 export default async function CheckoutPage({ params }: { params: { sessionId: string } }) {
   const session = await auth();
-  const orders = await getData(params.sessionId);
+  const order = await getData(params.sessionId);
   return (
-    <CheckoutView session={session} orders={orders} checkoutSessionId={params.sessionId} />
+    <CheckoutView session={session} order={order} checkoutSessionId={params.sessionId} />
   );
 }

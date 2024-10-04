@@ -23,6 +23,7 @@ import {
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
+import { getCurrentPrice } from "@/lib/product";
 
 function ProductRow({
   item,
@@ -69,9 +70,7 @@ function ProductRow({
         </Text>
         <Text>
           ₫
-          {(
-            item.product.discountedPrice ?? item.product.baseUnitPrice
-          ).toLocaleString()}
+          {getCurrentPrice(item.product).toLocaleString()}
         </Text>
       </TableTd>
       <TableTd>
@@ -85,7 +84,7 @@ function ProductRow({
       </TableTd>
       <TableTd w={100}>
         <Text>
-          ₫{((item.product.discountedPrice ?? item.product.baseUnitPrice) * item.quantity).toLocaleString()}
+          ₫{(getCurrentPrice(item.product) * item.quantity).toLocaleString()}
         </Text>
       </TableTd>
       <TableTd>

@@ -1,4 +1,5 @@
 "use client";
+import { getCurrentPrice } from "@/lib/product";
 import { Orders } from "@/models/orders";
 import {
   Autocomplete,
@@ -72,12 +73,12 @@ export function OrderView({ orders }: { orders: Orders[] }) {
                       </TableTd>
                       <TableTd>{data.product.name}</TableTd>
                       <TableTd>
-                        {data.product.baseUnitPrice.toLocaleString()}
+                       {getCurrentPrice(data.product).toLocaleString()}
                       </TableTd>
                       <TableTd>{data.quantity}</TableTd>
                       <TableTd>
                         {(
-                          data.product.baseUnitPrice * data.quantity
+                         getCurrentPrice(data.product) * data.quantity
                         ).toLocaleString()}
                       </TableTd>
                     </TableTr>

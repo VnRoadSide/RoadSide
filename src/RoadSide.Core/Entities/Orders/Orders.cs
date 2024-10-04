@@ -4,7 +4,7 @@ using RoadSide.Domain;
 
 namespace RoadSide.Core.Entities;
 
-public class Orders
+public class Orders : IAuditing<Guid>
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
@@ -17,4 +17,7 @@ public class Orders
 
     public virtual ICollection<OrderItem> Items { get; set; } = [];
     public OrderStatus OrderStatus { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime LastModifiedOn { get; set; }
+    public Guid LastModifiedBy { get; set; }
 }

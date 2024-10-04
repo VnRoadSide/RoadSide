@@ -39,7 +39,7 @@ export function ProductManagement({
       <TableTd>{item.quantity}</TableTd>
       <TableTd>{item.description}</TableTd>
       <TableTd>
-        <Button variant="outline">Xem chi tiết</Button>
+        <Button variant="outline" color="red"> Xoá </Button>
       </TableTd>
     </TableTr>
   ));

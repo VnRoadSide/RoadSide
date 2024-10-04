@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using RoadSide.Domain;
 using Microsoft.AspNetCore.Mvc;
 using RoadSide.Core.Services;
-using RoadSide.Domain.Context;
 using ICategoryService = RoadSide.Core.Services.ICategoryService;
-using IPriceService = RoadSide.Core.Services.IPriceService;
-
 namespace RoadSide.Web.Controllers;
 
 [ApiController]
@@ -68,7 +65,27 @@ public class ProductsController: ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-    
+
+    [HttpDelete]
+    [Authorize]
+    [Route("portal/products")]
+    public async Task<ActionResult> DeleteProductInPortal([Required] Guid id)
+    {
+        try
+        {
+            await _productService.RemoveAsync(id);
+            return Ok();
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
     // [HttpGet("search")]
     // public async Task<ActionResult<ICollection<Products>>> SearchProducts([Required] string name)
     // {

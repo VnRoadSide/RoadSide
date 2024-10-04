@@ -50,11 +50,7 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
         return new PagingResult<Domain.Products>
         {
             Total = query.Count(),
-            Data = _mapper.Map<ICollection<Domain.Products>>(await query.ToListAsync()).Select(item =>
-            {
-                item.DiscountedPrice = CalculateDiscount(item);
-                return item;
-            }).ToList()
+            Data = _mapper.Map<ICollection<Domain.Products>>(await query.ToListAsync())
         };
     }
 
@@ -66,18 +62,6 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id);
         var result = _mapper.Map<Domain.Products>(entity);
-        result.DiscountedPrice = CalculateDiscount(result);
         return result;
-    }
-
-    private int? CalculateDiscount(RoadSide.Domain.Products product)
-    {
-        var activeVoucher = product.Vouchers
-            .Where(v => v.Active && v.StartDate <= DateTimeOffset.UtcNow && v.EndDate >= DateTimeOffset.UtcNow)
-            .MaxBy(v => v.Discount);
-
-        return (activeVoucher != null)
-            ? product.BaseUnitPrice * (100 - activeVoucher.Discount) / 100
-            : null;
     }
 }

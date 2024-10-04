@@ -9,11 +9,12 @@ export default async function Page() {
 
 async function getData() {
   const { get } = useApi();
-  const {data: orders, error: OrderError} = await get<Orders[]>("/orders?page=1&pageSize=10");
+  const {data: orders, error: OrderError} = await get<Orders[]>("/orders?page=1&pageSize=100");
 
   if (OrderError) {
     console.error("Error: ", OrderError);
   }
+  console.log(orders[0].items);
 
   return {
     orders: orders ?? [],

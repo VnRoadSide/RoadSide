@@ -11,7 +11,7 @@ public interface IService<TDomain, TEntity>
     Task<List<T1>> ToListAsync<T1>(IQueryable<T1> query);
     Task<TDomain> AddAsync(TDomain domain, CancellationToken cancellationToken = default);
     Task<TDomain> UpdateAsync(TDomain domain, CancellationToken cancellationToken = default);
-    void RemoveAsync<TId>(TId id, CancellationToken cancellationToken = default);
+    Task RemoveAsync<TId>(TId id, CancellationToken cancellationToken = default);
 }
 
 internal class Service<TDomain, TEntity> : IService<TDomain, TEntity>
@@ -69,7 +69,7 @@ internal class Service<TDomain, TEntity> : IService<TDomain, TEntity>
         return domain;
     }
 
-    public async void RemoveAsync<TId>(TId id, CancellationToken cancellationToken = default)
+    public async Task RemoveAsync<TId>(TId id, CancellationToken cancellationToken = default)
     {
         var entityToRemove = await GetByIdAsync(id);
         ArgumentNullException.ThrowIfNull(entityToRemove);

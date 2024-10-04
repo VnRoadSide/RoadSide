@@ -6,14 +6,12 @@ using RoadSide.Domain;
 namespace RoadSide.Core.Entities;
 
 [Index(nameof(OrderItem.ProductId), IsUnique = false)]
-public class OrderItem
+public class OrderItem: IAuditing<Guid>
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int OrderItemId { get; set; }
     public int Quantity { get; set; }
-    
-    public DateTimeOffset DateCreated { get; set; }
     
     [ForeignKey("Product")]
     public Guid ProductId { get; set; }
@@ -21,7 +19,11 @@ public class OrderItem
     
     [ForeignKey("Order")]
     public Guid OrderId { get; set; }
-    public virtual required Orders Order { get; set; }
+    public virtual Orders Order { get; set; }
     
     public OrderStatus OrderStatus { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public Guid UserId { get; set; }
+    public DateTime LastModifiedOn { get; set; }
+    public Guid LastModifiedBy { get; set; }
 }

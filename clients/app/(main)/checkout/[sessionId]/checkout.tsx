@@ -14,6 +14,9 @@ import {
   TableTd,
   TableTr,
   TableTbody,
+  Flex,
+  rem,
+  em,
 } from "@mantine/core";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
@@ -23,46 +26,47 @@ function OrderPart({ order }: { order: Order }) {
     const price = item.product.discountedPrice ?? item.product.baseUnitPrice;
     const subtotal = item.quantity * price;
     return (
-      <TableTr key={index}>
-        <TableTd>
-          <Text w={500}>{item.product.name}</Text>
-          <Text size="xs" c="dimmed">
-            Loại: {item.product.name}
-          </Text>
-        </TableTd>
-        <TableTd>
-          <Text>₫{price.toLocaleString()}</Text>
-        </TableTd>
-        <TableTd>
-          <Text>{item.quantity}</Text>
-        </TableTd>
-        <TableTd>
-          <Text>₫{subtotal.toLocaleString()}</Text>
-        </TableTd>
-      </TableTr>
+      <>
+        <TableTr key={index}>
+          <TableTd>
+            <Group w={500}>
+              <Text>{item.product.name}</Text>{" "}
+              {item.product.discountedPrice && (
+                <Badge color="pink" variant="light">
+                  Giảm ₫
+                  {(
+                    item.product.baseUnitPrice - item.product.discountedPrice
+                  ).toLocaleString()}{" "}
+                  - Voucher của Shop
+                </Badge>
+              )}
+            </Group>
+            <Text size="xs" c="dimmed">
+              Loại: {item.product.name}
+            </Text>
+          </TableTd>
+
+          <TableTd>
+            <Text>₫{price.toLocaleString()}</Text>
+          </TableTd>
+          <TableTd>
+            <Text>{item.quantity}</Text>
+          </TableTd>
+          <TableTd>
+            <Text>₫{subtotal.toLocaleString()}</Text>
+          </TableTd>
+        </TableTr>
+      </>
     );
   });
   return (
-    <>
-      <Table>
-        <TableTbody>{rows}</TableTbody>
-      </Table>
-      {rows.length > 0 && (
-        <Group>
-          <Badge color="pink" variant="light">
-            Giảm ₫11.000 - Voucher của Shop
-          </Badge>
-
-          <Button variant="subtle" size="xs">
-            Chọn Voucher Khác
-          </Button>
-        </Group>
-      )}
-    </>
+    <Table>
+      <TableTbody>{rows}</TableTbody>
+    </Table>
   );
 }
 
-function CheckoutSection({ orders }: { orders: Order[] }) {
+function CheckoutSection({ order }: { order: Order }) {
   const totalShippingCost = 0;
   return (
     <Box>
@@ -71,9 +75,7 @@ function CheckoutSection({ orders }: { orders: Order[] }) {
           Sản phẩm
         </Text>
         <Divider my="sm" />
-        {orders.map((order) => (
-          <OrderPart key={order.id} order={order} />
-        ))}
+        {order &&<OrderPart key={order.id} order={order} />}
       </Card>
 
       <Card shadow="sm" p="lg" radius="md" mt="md">
@@ -82,7 +84,7 @@ function CheckoutSection({ orders }: { orders: Order[] }) {
         </Text>
         <Divider my="sm" />
         <Text>Vận Chuyển Nhanh - ₫{totalShippingCost.toLocaleString()}</Text>
-        <Text size="xs">Dự kiến nhận hàng từ 26 Tháng 7 - 31 Tháng 7</Text>
+        <Text size="xs">Dự kiến nhận hàng trong 4 giờ kể từ lúc đặt hàng</Text>
       </Card>
 
       <Card shadow="sm" p="lg" radius="md" mt="md">
@@ -94,12 +96,12 @@ function CheckoutSection({ orders }: { orders: Order[] }) {
 
 export function CheckoutView({
   session,
-  orders,
-  checkoutSessionId
+  order,
+  checkoutSessionId,
 }: {
   session: Session | null;
-  orders: Order[];
-  checkoutSessionId: string
+  order: Order;
+  checkoutSessionId: string;
 }) {
   const address = {
     name: "Trần Hà Tuấn Kiệt",
@@ -108,18 +110,6 @@ export function CheckoutView({
       "Tầng 5, Tòa Nhà Pijico, Số 186, Điện Biên Phủ, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh",
   };
   const router = useRouter();
-
-  const totalCost = orders.reduce(
-    (total, order) => total + order.totalPrice,
-    0
-  );
-
-  const totalProducts = orders.reduce(
-    (total, order) =>
-      total + order.items.reduce((total, item) => total + item.quantity, 0),
-    0
-  );
-
 
   const handleConfirm = async () => {
     console.log("handleConfirm");
@@ -148,15 +138,17 @@ export function CheckoutView({
         </Group>
       </Card>
 
-      <CheckoutSection orders={orders} />
+      <CheckoutSection order={order} />
 
       <Card shadow="sm" p="lg" radius="md" mt="md">
         <Group justify="space-between">
           <Text size="lg" w={500}>
-            Tổng số tiền ({totalProducts} sản phẩm): ₫
-            {totalCost.toLocaleString()}
+            Tổng số tiền ({order?.items.length ?? 0} sản phẩm): ₫
+            {(order.totalPrice ?? 0).toLocaleString()}
           </Text>
-          <Button variant="outline" onClick={handleConfirm}>Thanh toán</Button>
+          <Button variant="outline" onClick={handleConfirm}>
+            Đặt hàng
+          </Button>
         </Group>
       </Card>
     </Box>

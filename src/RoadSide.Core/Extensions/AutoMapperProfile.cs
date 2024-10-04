@@ -48,13 +48,14 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.User.Id));
         
         CreateMap<Entities.Orders, Orders>();
+        
         CreateMap<OrderItem, Entities.OrderItem>()
             .ForMember(dest => dest.Product, act => act.Ignore())
-            .ForMember(dest => dest.ProductId, act => act.MapFrom(src => src.Product.Id))
+            .ForMember(dest => dest.ProductId, act => act.MapFrom(src => src.Product == null ? Guid.Empty : src.Product.Id))
             .ForMember(dest => dest.Order, act => act.Ignore())
-            .ForMember(dest => dest.OrderId, act => act.MapFrom(src => src.Order.Id));
-        
+            .ForMember(dest => dest.OrderId, act => act.MapFrom(src => src.Order == null ? Guid.Empty : src.Order.Id));
         CreateMap<Entities.OrderItem, OrderItem>();
+        
         CreateMap<Voucher, Entities.Voucher>()
             .ForMember(dest => dest.AppliedProducts, act => act.Ignore());
         CreateMap<Entities.Voucher, Voucher>()

@@ -6,7 +6,19 @@ public class Products: BaseEntity<Guid>
     public string Name { get; set; }
     public string Description { get; set; }
     public int BaseUnitPrice { get; set; }
-    public int? DiscountedPrice { get; set; }
+    public int? DiscountedPrice
+    {
+        get
+        {
+            var activeVoucher = Vouchers
+                .Where(v => v.Active && v.StartDate <= DateTimeOffset.UtcNow && v.EndDate >= DateTimeOffset.UtcNow)
+                .MaxBy(v => v.Discount);
+
+            return (activeVoucher != null)
+                ? BaseUnitPrice * (100 - activeVoucher.Discount) / 100
+                : null;
+        }
+    }
 
     public DateTimeOffset DateCreated { get; set; }
     public DateTimeOffset DateModified { get; set; }
