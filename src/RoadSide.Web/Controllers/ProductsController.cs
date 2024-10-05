@@ -13,12 +13,17 @@ public class ProductsController: ControllerBase
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
+    private readonly ISearchProvider _searchProvider;
+    private readonly ISettingService _settingService;
+    private readonly TimeSpan _reindexInterval = TimeSpan.FromMinutes(1); // Set your desired interval
 
     public ProductsController(ILogger<ProductsController> logger, IProductService productService,
-        ICategoryService categoryService) {
+        ICategoryService categoryService, ISearchProvider searchProvider, ISettingService settingService) {
         _logger = logger;
         _productService = productService;
         _categoryService = categoryService;
+        _searchProvider = searchProvider;
+        _settingService = settingService;
     }
 
     [HttpGet]
@@ -31,10 +36,22 @@ public class ProductsController: ControllerBase
             var option = new ProductQueryOption
             {
                 IncludeCategory = true,
-                CategoryUrl = categoryUrl
+                CategoryUrl = categoryUrl,
             };
-            var products = await _productService.GetAsync(option);
             
+            var products = await _productService.GetAsync(option);
+            var createdOn = DateTime.UtcNow;
+            var reindexStatus = await _settingService.GetAsync("AlgoliaReindexStatus");
+            if (categoryUrl is null && (reindexStatus == null  || createdOn - reindexStatus.CreatedOn > _reindexInterval))
+            {
+                await _searchProvider.IndexAsync(products.Data);
+                await _settingService.AddAsync(new AppSettings
+                {
+                    ReferenceKey = "AlgoliaReindexStatus",
+                    Value = "Success",
+                    CreatedOn = createdOn
+                });
+            }
             return Ok(products);
         }
         catch (Exception)
@@ -46,7 +63,7 @@ public class ProductsController: ControllerBase
     [HttpGet]
     [Authorize]
     [Route("portal/products")]
-    public async Task<ActionResult<PagingResult<Products>>> GetProductInPortal([FromQuery] string category = null)
+    public async Task<ActionResult<Paging<Products>>> GetProductInPortal([FromQuery] string category = null)
     {
         try
         {

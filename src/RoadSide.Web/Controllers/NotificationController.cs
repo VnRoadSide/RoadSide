@@ -24,7 +24,7 @@ public class NotificationController: ControllerBase
     
     [Authorize]
     [HttpGet]
-    public async ValueTask<ActionResult<PagingResult<Notification>>> GetNotification([FromQuery] int? page, int? pageSize)
+    public async ValueTask<ActionResult<Paging<Notification>>> GetNotification([FromQuery] int? page, int? pageSize)
     {
         try
         {
@@ -45,7 +45,7 @@ public class NotificationController: ControllerBase
     
     [Authorize]
     [HttpGet("portal")]
-    public async ValueTask<ActionResult<PagingResult<Notification>>> GetNotificationForPortal([FromQuery] int? page, int? pageSize)
+    public async ValueTask<ActionResult<Paging<Notification>>> GetNotificationForPortal([FromQuery] int? page, int? pageSize)
     {
         try
         {

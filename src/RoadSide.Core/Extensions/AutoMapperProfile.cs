@@ -43,9 +43,7 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.AdditionalProperties, opt => opt.MapFrom<AdditionalPropertiesResolver>());
         CreateMap<Role, Entities.Role>().ReverseMap();
 
-        CreateMap<Orders, Entities.Orders>()
-            .ForMember(dest => dest.User, act => act.Ignore())
-            .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.User.Id));
+        CreateMap<Orders, Entities.Orders>();
         
         CreateMap<Entities.Orders, Orders>();
         

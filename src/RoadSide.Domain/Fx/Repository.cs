@@ -1,8 +1,4 @@
-namespace RoadSide.Core.Repositories;
-
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+namespace RoadSide.Domain.Fx;
 
 public interface IRepository<TEntity> where TEntity : class
 {

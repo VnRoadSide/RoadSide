@@ -7,6 +7,7 @@ using RoadSide.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using RoadSide.Core.Services;
 using RoadSide.Infrastructure.Extensions;
 
 namespace RoadSide.Infrastructure.Jwt
@@ -15,18 +16,20 @@ namespace RoadSide.Infrastructure.Jwt
     {
         private readonly IUserClaimsPrincipalFactory<User> _claimsPrincipal;
         private readonly JwtSettings _jwtSettings;
-        private readonly UserManager<User> _UserManager;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
+        private readonly ICacheService _cacheService;
 
-        public JwtService(IUserClaimsPrincipalFactory<User> claimsPrincipal, IOptions<JwtSettings> jwtSettings, UserManager<User> UserManager, IMapper mapper)
+        public JwtService(IUserClaimsPrincipalFactory<User> claimsPrincipal, IOptions<JwtSettings> jwtSettings, UserManager<User> userManager, IMapper mapper, ICacheService cacheService)
         {
             _claimsPrincipal = claimsPrincipal;
             _jwtSettings = jwtSettings.Value;
-            _UserManager = UserManager;
+            _userManager = userManager;
             _mapper = mapper;
+            _cacheService = cacheService;
         }
 
-        public async ValueTask<Token> GenerateTokenAsync(User entity)
+        private async ValueTask<Token> GenerateTokenAsync(User entity)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -58,21 +61,48 @@ namespace RoadSide.Infrastructure.Jwt
             return result;
         }
 
-        private async Task<IEnumerable<Claim>> _getClaimsAsync(User User)
+
+        public ValueTask<bool> RevokeTokenAsync(string token)
         {
-            var result = await _claimsPrincipal.CreateAsync(User);
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(token))
+            {
+                throw new ArgumentException("Invalid JWT token", nameof(token));
+            }
+
+            var jwtToken = handler.ReadJwtToken(token);
+            var expirationTime = jwtToken.ValidTo;
+
+            if (expirationTime <= DateTime.UtcNow)
+            {
+                // Token has already expired
+                return new ValueTask<bool>(false);
+            }
+
+            var cacheKey = $"revoked_tokens:{token}";
+            var slidingExpiration = expirationTime - DateTime.UtcNow;
+
+            // Store the token in the cache with expiration matching the token's expiry
+            _cacheService.GetOrCreateAsync(cacheKey, () => Task.FromResult(true), slidingExpiration);
+
+            return new ValueTask<bool>(true);
+        }
+
+        private async Task<IEnumerable<Claim>> _getClaimsAsync(User user)
+        {
+            var result = await _claimsPrincipal.CreateAsync(user);
             return result.Claims;
         }
 
         public async ValueTask<Token> GenerateTokenFromUserName(string userName)
         {
-            var User = await _UserManager.FindByNameAsync(userName);
-            if (User == null)
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
             {
                 throw new ArgumentException("Invalid user name", nameof(userName));
             }
 
-            return await GenerateTokenAsync(User);
+            return await GenerateTokenAsync(user);
         }
     }
 }

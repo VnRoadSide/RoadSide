@@ -8,33 +8,23 @@ using RoadSide.Domain.Context;
 
 namespace RoadSide.Core.Services;
 
-public class QueryOrderOptions: QueryPaging
-{
-    public Guid UserId { get; set; }
-}
-
-public class SessionCheckout
-{
-    public Guid Id { get; set; }
-    
-}
+public class QueryOrderOptions : QueryPaging;
 
 public interface IOrderService : IService<Orders, Entities.Orders>
 {
     Task<Guid> CreateCheckoutSessionAsync(ICollection<OrderItem> orderItem);
     Task<ICollection<Orders>> GetAllAsync(QueryOrderOptions option);
-    Task<ICollection<OrderItem>> GetForPortalAsync(QueryOrderOptions option);
+    Task<ICollection<Orders>> GetForPortalAsync(QueryOrderOptions option);
 
     Task BulkAddAsync(ICollection<Orders> orders);
     Task<Orders> ValidateOrders(Guid sessionId);
 }
 
-internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService,  ICacheService cacheService, IAppContext appContext)
+internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService,  ICacheService cacheService, IAppContext appContext, IService<OrderItem, Entities.OrderItem> orderItemService)
     : Service<Orders, Entities.Orders>(context, mapper), IOrderService
 {
     private readonly ICoreDbContext _context = context;
     private readonly IMapper _mapper = mapper;
-
     public async Task<Guid> CreateCheckoutSessionAsync(ICollection<OrderItem> orderItem)
     {
         foreach (var item in orderItem)
@@ -50,10 +40,9 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
     public async Task<ICollection<Orders>> GetAllAsync(QueryOrderOptions option)
     {
         var query = GetQueryable()
-            .Where(order => order.UserId == option.UserId)
+            .Where(order => order.CreatedBy == appContext.UserId)
             .OrderByDescending(order => order.CreatedOn)
             .GetPaging(option)
-            .Include(q => q.User)
             .AsNoTracking();
         query = query.Include(q => q.Items)
             .ThenInclude(q => q.Product)
@@ -64,14 +53,19 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
         return _mapper.Map<IList<Orders>>(await query.ToListAsync());
     }
 
-    public async Task<ICollection<OrderItem>> GetForPortalAsync(QueryOrderOptions option)
+    public async Task<ICollection<Orders>> GetForPortalAsync(QueryOrderOptions option)
     {
-        var query = _context.Set<Entities.OrderItem>()
-            .Include(o => o.Product)
-            .Where(o => o.Product.VendorId == option.UserId)
-            .AsNoTracking();
-        
-        return _mapper.Map<IList<OrderItem>>(await query.ToListAsync());
+        var query = GetQueryable()
+            .Include(order => order.Items)
+            .ThenInclude(item => item.Product)
+            .Include(order => order.Items.Where(item => item.Product.VendorId == appContext.UserId));
+        var result = _mapper.Map<IList<Orders>>(await query.ToListAsync());
+        foreach (var item in result)
+        {
+            item.TotalPrice = item.Items.Sum(o => (o.Product.DiscountedPrice ?? o.Product.BaseUnitPrice) * o.Quantity);
+        }
+
+        return result;
     }
 
     public async Task BulkAddAsync(ICollection<Orders> orders)
@@ -92,10 +86,7 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
                 o.UserId = appContext.UserId;
                 return o;
             }).ToList(),
-            User = new User
-            {
-                Id = appContext.UserId
-            },
+            CreatedBy = appContext.UserId,
             TotalPrice = orderItems.Sum(o => (o.Product.DiscountedPrice ?? o.Product.BaseUnitPrice)* o.Quantity)
         };
         return Task.FromResult(order);

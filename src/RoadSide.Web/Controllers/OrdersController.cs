@@ -128,7 +128,6 @@ public class OrdersController : ControllerBase
             {
                 Page = page,
                 PageSize = pageSize,
-                UserId = _appContext.User.Id
             };
 
             var orders = await _ordersService.GetForPortalAsync(option);
@@ -150,7 +149,6 @@ public class OrdersController : ControllerBase
             {
                 Page = page,
                 PageSize = pageSize,
-                UserId = _appContext.User.Id
             };
 
             var orders = await _ordersService.GetAllAsync(option);

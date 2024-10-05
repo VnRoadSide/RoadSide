@@ -9,7 +9,7 @@ public class Notification: Notifier
     public User To { get; set; }
 }
 
-public class Notifier : INotifier
+public class Notifier
 {
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     public string Content { get; set; }

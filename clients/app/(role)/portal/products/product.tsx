@@ -23,15 +23,21 @@ import { Product } from "@/models";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { deleteProduct } from "@/lib/product";
 
-export function ProductManagement({
-  data,
-  total,
+function ProductRow({
+  item,
+  key,
+  onDelete,
 }: {
-  data: Product[];
-  total: number;
+  item: Product;
+  key: number;
+  onDelete: () => void;
 }) {
-  const rows = data.map((item, index) => (
-    <TableTr key={index}>
+  const handleDelete = async () => {
+    onDelete();
+    await deleteProduct(item.id);
+  };
+  return (
+    <TableTr key={key}>
       <TableTd>
         <Image src={item.imageUrl} alt="no image here" height={50} w={50} />
       </TableTd>
@@ -41,13 +47,31 @@ export function ProductManagement({
       <TableTd>{item.quantity}</TableTd>
       <TableTd>{item.description}</TableTd>
       <TableTd>
-        <Button variant="outline" color="blue"> <IconEdit/> Chỉnh sửa </Button>
+        <Button variant="outline" color="blue">
+          {" "}
+          <IconEdit /> Chỉnh sửa{" "}
+        </Button>
       </TableTd>
       <TableTd>
-        <Button variant="outline" color="red" onClick={handleDelete}> <IconTrash/> Xoá </Button>
+        <Button variant="outline" color="red" onClick={handleDelete}>
+          {" "}
+          <IconTrash /> Xoá{" "}
+        </Button>
       </TableTd>
     </TableTr>
-  ));
+  );
+}
+
+export function ProductManagement({
+  data,
+  total,
+}: {
+  data: Product[];
+  total: number;
+}) {
+  const handleDelete = (key: number) => {
+    data.splice(key, 1);
+  }
   return (
     <>
       <Title order={2}>Sản phẩm</Title>
@@ -101,7 +125,11 @@ export function ProductManagement({
                 <TableTh>Thao tác</TableTh>
               </TableTr>
             </TableThead>
-            <TableTbody>{rows}</TableTbody>
+            <TableTbody>
+              {data.map((item, index) => (
+                <ProductRow key={index} item={item} onDelete={() => handleDelete(index)} />
+              ))}
+            </TableTbody>
           </Table>
         </TabsPanel>
 
@@ -110,4 +138,3 @@ export function ProductManagement({
     </>
   );
 }
-

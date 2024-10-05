@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using RoadSide.Domain.Fx;
 
 namespace RoadSide.Core.Entities;
 
-public class AppSettings
+public class AppSettings: ITimestamp
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
@@ -22,4 +23,7 @@ public class AppSettings
     /// Gets or sets the Type
     /// </summary>
     public string Type { get; set; } = String.Empty;
+
+    public DateTime CreatedOn { get; set; }
+    public DateTime LastModifiedOn { get; set; }
 }

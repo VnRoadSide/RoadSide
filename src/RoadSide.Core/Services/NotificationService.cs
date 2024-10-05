@@ -13,7 +13,7 @@ public class QueryNotifications : QueryPaging
 
 public interface INotificationService : IService<Notification, Entities.Notifications>
 {
-    ValueTask<PagingResult<Notifier>> GetAllAsync(QueryNotifications option);
+    ValueTask<Paging<Notifier>> GetAllAsync(QueryNotifications option);
     ValueTask NotifyAsync(ICollection<Notification> notifier);
 }
 
@@ -23,7 +23,7 @@ internal class NotificationsService(ICoreDbContext context, IMapper mapper, IApp
     private readonly IMapper _mapper = mapper;
     private readonly ICoreDbContext _context = context;
 
-    public async ValueTask<PagingResult<Notifier>> GetAllAsync(QueryNotifications option)
+    public async ValueTask<Paging<Notifier>> GetAllAsync(QueryNotifications option)
     {
         var query = GetQueryable()
             .Where(x => x.IsPersonal == option.IsPersonal)
@@ -36,7 +36,7 @@ internal class NotificationsService(ICoreDbContext context, IMapper mapper, IApp
             .Cast<Notifier>()
             .ToList();
         
-        return new PagingResult<Notifier>
+        return new Paging<Notifier>
         {
             Total = query.Count(),
             Data = notifiers

@@ -17,7 +17,7 @@ public class ProductQueryOption : QueryPaging, IQueryFilter
 
 public interface IProductService : IService<Domain.Products, Entities.Products>
 {
-    ValueTask<PagingResult<Domain.Products>> GetAsync(ProductQueryOption option);
+    ValueTask<Paging<Domain.Products>> GetAsync(ProductQueryOption option);
     ValueTask<Domain.Products> GetByIdAsync(Guid id);
 }
 
@@ -26,7 +26,7 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
 {
     private readonly IMapper _mapper = mapper;
 
-    public async ValueTask<PagingResult<Domain.Products>> GetAsync(ProductQueryOption option)
+    public async ValueTask<Paging<Domain.Products>> GetAsync(ProductQueryOption option)
     {
         var query = GetQueryable().GetFilter(option);
 
@@ -47,7 +47,7 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
 
         query = query.Include(x => x.Vouchers);
 
-        return new PagingResult<Domain.Products>
+        return new Paging<Domain.Products>
         {
             Total = query.Count(),
             Data = _mapper.Map<ICollection<Domain.Products>>(await query.ToListAsync())

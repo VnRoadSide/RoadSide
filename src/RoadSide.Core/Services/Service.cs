@@ -11,6 +11,7 @@ public interface IService<TDomain, TEntity>
     Task<List<T1>> ToListAsync<T1>(IQueryable<T1> query);
     Task<TDomain> AddAsync(TDomain domain, CancellationToken cancellationToken = default);
     Task<TDomain> UpdateAsync(TDomain domain, CancellationToken cancellationToken = default);
+    Task<TDomain> UpsertAsync(TDomain domain, CancellationToken cancellationToken = default);
     Task RemoveAsync<TId>(TId id, CancellationToken cancellationToken = default);
 }
 
@@ -69,11 +70,42 @@ internal class Service<TDomain, TEntity> : IService<TDomain, TEntity>
         return domain;
     }
 
+    public async Task<TDomain> UpsertAsync(TDomain domain, CancellationToken cancellationToken = default)
+    {
+        var entity = _mapper.Map<TEntity>(domain);
+        var entityId = GetEntityId(entity); 
+
+        if (await GetByIdAsync(entityId) is null)
+        {
+            return await AddAsync(domain, cancellationToken);
+        }
+
+        return await UpdateAsync(domain, cancellationToken);
+    }
+
+
     public async Task RemoveAsync<TId>(TId id, CancellationToken cancellationToken = default)
     {
         var entityToRemove = await GetByIdAsync(id);
         ArgumentNullException.ThrowIfNull(entityToRemove);
         _context.Set<TEntity>().Remove(entityToRemove);
         await _context.SaveChangesAsync(cancellationToken);
+    }
+    
+    private object GetEntityId(TEntity entity)
+    {
+        var entityIdProperty = typeof(TEntity).GetProperty("Id");
+        if (entityIdProperty == null)
+        {
+            throw new InvalidOperationException("Entity does not have an Id property");
+        }
+
+        var entityId = entityIdProperty.GetValue(entity);
+        if (entityId == null)
+        {
+            throw new InvalidOperationException("Entity Id cannot be null");
+        }
+
+        return entityId;
     }
 }

@@ -1,5 +1,4 @@
 "use client";
-import { signOut } from "next-auth/react"
 import useCart from "@/lib/hooks/useCart";
 import {
   Group,
@@ -27,6 +26,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCounter } from "@mantine/hooks";
+import FuzzySearch from "./Search";
 
 export default function NavBar({
   session,
@@ -55,7 +55,7 @@ export default function NavBar({
                 </Text>
               </Group>
             </Anchor>
-            {/* <FuzzySearch/> */}
+            <FuzzySearch indexName="product"/>
           </Group>
 
           <Group gap={0} align="center">

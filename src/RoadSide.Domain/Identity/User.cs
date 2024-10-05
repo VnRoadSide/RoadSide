@@ -25,3 +25,14 @@ public class User : JsonBaseEntity<Guid>
 
     public ICollection<Role> Roles { get; set; }
 }
+
+public class CurrentUser
+{
+    public Guid Id { get; set; }
+    public string Email { get; set; }
+    public string UserName { get; set; }
+    public ICollection<string> RoleName { get; set; }
+    public string Name { get; set; }
+    public string Avatar { get; set; }
+    public string PhoneNumber { get; set; }
+}

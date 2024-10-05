@@ -72,19 +72,26 @@ namespace RoadSide.Web.Controllers
 
         [Authorize]
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<ActionResult<bool>> Logout()
         {
-            // Implement logout logic if needed (e.g., invalidating tokens)
-            
-            return Ok("Logged out successfully");
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Trim();
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest("No token provided.");
+            }
+
+            await _jwtService.RevokeTokenAsync(token);
+
+            return Ok("Logged out successfully.");
         }
 
         [Authorize]
         [HttpGet("me")]
-        public Task<IActionResult> Me()
+        public async Task<ActionResult<CurrentUser>> Me()
         {
-            var user = _appContext.User;
-            var result = new CurrentUserDto
+            var user = await _manager.GetDomainUserAsync(User);
+            var result = new CurrentUser
             {
                 Id = user!.Id,
                 UserName = user.UserName,
@@ -94,7 +101,7 @@ namespace RoadSide.Web.Controllers
                 PhoneNumber = user.PhoneNumber,
                 Avatar = user.AvatarUrl
             };
-            return Task.FromResult<IActionResult>(Ok(result));
+            return Ok(result);
         }
     }
 }

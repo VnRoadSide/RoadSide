@@ -5,6 +5,7 @@ using RoadSide.Migrator;
 using Microsoft.OpenApi.Models;
 using RoadSide.Infrastructure.Cache;
 using RoadSide.Infrastructure.Media;
+using RoadSide.Infrastructure.Search;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ builder.Services.AddCoreServices();
 
 builder.Services.AddCaches(builder.Configuration);
 builder.Services.AddMedia(builder.Configuration);
+builder.Services.AddSearchProvider(builder.Configuration);
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = 
         Newtonsoft.Json.ReferenceLoopHandling.Ignore);

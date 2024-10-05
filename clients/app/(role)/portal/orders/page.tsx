@@ -11,7 +11,7 @@ export default async function Page() {
 
 async function getData() {
   const { get } = useApi();
-  const {data: orders, error: OrderError} = await get<OrderItem[]>("/orders/portal?page=1&pageSize=10");
+  const {data: orders, error: OrderError} = await get<Orders[]>("/orders/portal?page=1&pageSize=10");
   console.log(orders)
   if (OrderError) {
     console.error("Error: ", OrderError);

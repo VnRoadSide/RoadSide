@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using RoadSide.Domain;
+using RoadSide.Domain.Fx;
 
 namespace RoadSide.Core.Entities;
 
@@ -23,7 +24,7 @@ public class OrderItem: IAuditing<Guid>
     
     public OrderStatus OrderStatus { get; set; }
     public DateTime CreatedOn { get; set; }
-    public Guid UserId { get; set; }
+    public Guid CreatedBy { get; set; }
     public DateTime LastModifiedOn { get; set; }
     public Guid LastModifiedBy { get; set; }
 }

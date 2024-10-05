@@ -1,6 +1,8 @@
+using RoadSide.Domain.Fx;
+
 namespace RoadSide.Domain;
 
-public class AppSettings : BaseEntity<Guid>
+public class AppSettings : BaseEntity<Guid>, ITimestamp
 {
     /// <summary>
     /// Gets or sets the ReferenceKey
@@ -18,4 +20,7 @@ public class AppSettings : BaseEntity<Guid>
     /// Gets or sets the Type
     /// </summary>
     public string Type { get; set; } = String.Empty;
+    
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+    public DateTime LastModifiedOn { get; set; } = DateTime.UtcNow;
 }
