@@ -88,12 +88,14 @@ public class OrdersController : ControllerBase
             var notifications = vendors.Select(vendor => new Notification
             {
                 IsPersonal = false,
+                Url = "/portal/orders",
                 To = vendor,
                 Content = "Bạn có đơn hàng mới. Vui lòng kiểm tra đơn hàng của bạn."
             }).ToList();
             notifications.Add(new()
             {
                 IsPersonal = true,
+                Url = "/me/orders",
                 To = new User { Id = _appContext.UserId },
                 Content = "Đơn hàng của bạn đã được đặt thành công! Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi. Chúng tôi sẽ liên hệ với bạn để giao hàng sớm nhất."
             });

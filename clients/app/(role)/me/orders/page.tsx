@@ -14,7 +14,7 @@ async function getData() {
   if (OrderError) {
     console.error("Error: ", OrderError);
   }
-  console.log(orders[0].items);
+  // console.log(orders[0].items);
 
   return {
     orders: orders ?? [],

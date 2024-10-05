@@ -26,6 +26,7 @@ import { Session } from "next-auth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useCounter } from "@mantine/hooks";
 
 export default function NavBar({
   session,

@@ -50,6 +50,7 @@ public class ProductsController: ControllerBase
     {
         try
         {
+            _logger.LogInformation("Trigger GetProductInPortal");
             var option = new ProductQueryOption
             {
                 IncludeCategory = true,
@@ -69,10 +70,11 @@ public class ProductsController: ControllerBase
     [HttpDelete]
     [Authorize]
     [Route("portal/products")]
-    public async Task<ActionResult> DeleteProductInPortal([Required] Guid id)
+    public async Task<ActionResult> DeleteProductInPortal([FromQuery] Guid id)
     {
         try
         {
+            _logger.LogInformation("Trigger DeleteProductInPortal");
             await _productService.RemoveAsync(id);
             return Ok();
         }

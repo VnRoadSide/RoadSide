@@ -20,6 +20,8 @@ import {
   Image,
 } from "@mantine/core";
 import { Product } from "@/models";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { deleteProduct } from "@/lib/product";
 
 export function ProductManagement({
   data,
@@ -39,7 +41,10 @@ export function ProductManagement({
       <TableTd>{item.quantity}</TableTd>
       <TableTd>{item.description}</TableTd>
       <TableTd>
-        <Button variant="outline" color="red"> Xoá </Button>
+        <Button variant="outline" color="blue"> <IconEdit/> Chỉnh sửa </Button>
+      </TableTd>
+      <TableTd>
+        <Button variant="outline" color="red" onClick={handleDelete}> <IconTrash/> Xoá </Button>
       </TableTd>
     </TableTr>
   ));
@@ -105,3 +110,4 @@ export function ProductManagement({
     </>
   );
 }
+

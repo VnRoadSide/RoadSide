@@ -333,7 +333,7 @@ export function AddProductView({ categories }: ProductViewProps) {
         </Card> */}
 
         <Group mt="md">
-          <Button type="submit">Thêm sản phẩm</Button>
+          <Button type="submit" onClick={() => form.onSubmit(onSubmit)}>Thêm sản phẩm</Button>
         </Group>
       </form>
     </Stack>
