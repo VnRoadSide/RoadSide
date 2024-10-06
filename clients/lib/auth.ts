@@ -1,16 +1,11 @@
 import { auth } from "@/auth";
 import { useApi } from "./hooks";
 
-export type SignUpForm = {
-  password: string;
-  email: string;
-  phone: string;
-};
 
-export type SignInForm = {
-  credential: string;
+export type AuthForm = {
+  email: string;
   password: string;
-}
+};
 
 export interface User {
   accessToken: User | null | undefined;
@@ -44,8 +39,7 @@ export type Authorization = {
   user: CurrentUser;
   accessToken: string;
   expiresIn: number;
-}
-
+};
 
 declare module "next-auth" {
   interface User extends Authorization {}
@@ -55,13 +49,17 @@ declare module "next-auth" {
   }
 }
 
-export async function signUp(form: SignUpForm) {
+export async function signUpUser(form: AuthForm) {
   const { post } = useApi();
-  const { data } = await post<Authorization>("/auth/signup", form);
+  console.log("hit", form);
+  const { data, error } = await post<Authorization>("/auth/signup", form);
+  if (!error) {
+  }
+  console.log(data);
   return data;
 }
 
-export async function signInUser(form: SignInForm) {
+export async function signInUser(form: AuthForm) {
   const { post } = useApi();
   const { data, error } = await post<Authorization>("/auth/login", form);
   return data;

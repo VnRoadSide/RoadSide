@@ -1,6 +1,7 @@
-import NextAuth, { NextAuthConfig, User } from "next-auth";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { signInUser, signOutUser } from "./lib/auth";
+import { signInUser, signOutUser, signUpUser } from "./lib/auth";
+import { NextApiRequest } from "next";
 
 const publicFileRegex = /\.(.*)$/;
 const anonymousRoutes = [
@@ -11,22 +12,44 @@ const anonymousRoutes = [
   "/logout"
 ]; // The whitelisted routes
 
+const isRegistration = (req: NextApiRequest): boolean => {
+  if (
+    req.query.nextauth &&
+    req.query.nextauth.length === 2 &&
+    req.query.nextauth[0] === 'signin' &&
+    req.query.nextauth[1] === 'email'
+  ) {
+    return req.query.signin_type === 'registration'
+  }
+  return false
+}
+
 const config: NextAuthConfig = {
   providers: [
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
       // e.g. domain, username, password, 2FA token, etc.
       credentials: {
-        credential: { label: "Email", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
+        actionType: { label: "Action Type", type: "hidden" } // Include this to differentiate sign-in and sign-up
       },
       authorize: async (credentials) => {
-        const result = await signInUser({
-          credential: credentials?.credential as string,
-          password: credentials?.password as string
-        });
-
-        return result;
+        if (credentials?.actionType === "signup") {
+          // Call your sign-up API function
+          const result = await signUpUser({
+            email: credentials?.email as string,
+            password: credentials?.password as string
+          });
+          return result;
+        } else {
+          // Call your sign-in API function
+          const result = await signInUser({
+            email: credentials?.email as string,
+            password: credentials?.password as string
+          });
+          return result;
+        }
       }
     })
   ],

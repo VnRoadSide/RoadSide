@@ -63,13 +63,14 @@ builder.Services.AddSwaggerGen(opt =>
     });
 });
 
-
+builder.Services.AddCustomCors(builder.Configuration);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseCors(CorsPolicyExtensions.AllowedOriginsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();

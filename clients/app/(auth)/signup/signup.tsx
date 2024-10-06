@@ -15,10 +15,11 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { useForm } from "@mantine/form";
-import { SignUpForm, signUp } from "@/lib/auth";
+import { AuthForm, signUpUser } from "@/lib/auth";
 import { validator } from "@/lib/validator";
+import { signIn } from "next-auth/react";
 
-type SignupProps = SignUpForm & {
+type SignUpForm = AuthForm & {
   confirmPassword: string;
 };
 
@@ -29,10 +30,10 @@ export default function Signup() {
       email: "",
       password: "",
       confirmPassword: "",
-      phone: "",
-    } as SignupProps,
+    } as SignUpForm,
     validate: {
-      ...validator,
+      email: validator.email,
+      password: validator.password,
       confirmPassword: (value, values) =>
         value !== values.password
           ? "Confirm password does not match with password"
@@ -44,7 +45,6 @@ export default function Signup() {
     <Grid
       style={{
         minHeight: "600px",
-        "@media (min-width: 1200px)": { minHeight: "800px" },
       }}
     >
       <GridCol
@@ -67,29 +67,32 @@ export default function Signup() {
           </Box>
           <Space h="md" />
           <Paper withBorder shadow="sm" p="md">
-            <form onSubmit={form.onSubmit((values) => signUp({ ...values }))}>
-              <Stack>
-                <TextInput
-                  label="Email"
-                  placeholder="m@example.com"
-                  // type="email"
-                  required
-                  key={form.key("email")}
-                />
-                <PasswordInput
-                  label="Mật khẩu"
-                  required
-                  key={form.key("password")}
-                />
-                <PasswordInput
-                  label="Xác nhận mật khẩu"
-                  required
-                  key={form.key("confirmPassword")}
-                />
-                <Button type="submit" fullWidth>
-                  Đăng Ký
-                </Button>
-              </Stack>
+            <form
+              onSubmit={form.onSubmit((values) => signIn("credentials", {
+                ...values,
+                actionType: "signup",  // Mark this as a sign-up action
+              }))}
+            >
+              <TextInput
+                label="Email"
+                placeholder="m@example.com"
+                type="email"
+                required
+                {...form.getInputProps("email")}
+              />
+              <PasswordInput
+                label="Mật khẩu"
+                required
+                {...form.getInputProps("password")}
+              />
+              <PasswordInput
+                label="Xác nhận mật khẩu"
+                required
+                {...form.getInputProps("confirmPassword")}
+              />
+              <Button type="submit" fullWidth>
+                Đăng Ký
+              </Button>
             </form>
             <Space h="md" />
             <Button variant="outline" fullWidth>
@@ -109,7 +112,6 @@ export default function Signup() {
         span={0}
         style={{
           display: "none",
-          "@media (min-width: 1024px)": { display: "block" },
         }}
       >
         <Image

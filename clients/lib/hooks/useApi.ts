@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import { environment } from "@/environment";
 import { Session } from "next-auth";
 
