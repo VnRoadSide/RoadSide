@@ -11,11 +11,13 @@ import {
   Text,
   Image,
   GridCol,
+  LoadingOverlay,
 } from "@mantine/core";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useForm } from "@mantine/form";
 import { validator } from "@/lib/validator";
+import { useDisclosure } from "@mantine/hooks";
 
 export default function Login() {
   const form = useForm({
@@ -30,12 +32,16 @@ export default function Login() {
     },
   });
 
+  const [visible, { toggle }] = useDisclosure(false);
+
   return (
     <Grid
       style={{
         minHeight: "600px",
+        position: "relative",
       }}
     >
+      <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
       <GridCol
         span={12}
         style={{
@@ -57,9 +63,10 @@ export default function Login() {
           <Space h="md" />
           <Paper withBorder shadow="sm" p="md">
             <form
-              onSubmit={form.onSubmit((values) =>
-                signIn("credentials", values)
-              )}
+              onSubmit={form.onSubmit((values) => {
+                toggle();
+                signIn("credentials", values);
+              })}
             >
               <TextInput
                 label="Email"

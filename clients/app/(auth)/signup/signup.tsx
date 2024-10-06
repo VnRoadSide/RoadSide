@@ -12,11 +12,13 @@ import {
   Image,
   GridCol,
   Stack,
+  LoadingOverlay,
 } from "@mantine/core";
 import Link from "next/link";
 import { useForm } from "@mantine/form";
 import { SignUpForm, signUp } from "@/lib/auth";
 import { validator } from "@/lib/validator";
+import { useDisclosure } from "@mantine/hooks";
 
 type SignupProps = SignUpForm & {
   confirmPassword: string;
@@ -33,20 +35,21 @@ export default function Signup() {
     } as SignupProps,
     validate: {
       ...validator,
-      confirmPassword: (value, values) =>
-        value !== values.password
-          ? "Confirm password does not match with password"
-          : null,
+      confirmPassword: (value, values) => (value !== values.password ? "Confirm password does not match with password" : null),
     },
   });
+
+  const [visible, { toggle }] = useDisclosure(false);
 
   return (
     <Grid
       style={{
         minHeight: "600px",
         "@media (min-width: 1200px)": { minHeight: "800px" },
+        position: "relative",
       }}
     >
+      <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
       <GridCol
         span={12}
         style={{
@@ -67,7 +70,12 @@ export default function Signup() {
           </Box>
           <Space h="md" />
           <Paper withBorder shadow="sm" p="md">
-            <form onSubmit={form.onSubmit((values) => signUp({ ...values }))}>
+          <form
+              onSubmit={form.onSubmit((values) => {
+                toggle();
+                signUp({ ...values })
+              })}
+            >
               <Stack>
                 <TextInput
                   label="Email"
