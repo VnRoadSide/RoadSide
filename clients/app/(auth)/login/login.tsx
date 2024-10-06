@@ -58,7 +58,10 @@ export default function Login() {
           <Paper withBorder shadow="sm" p="md">
             <form
               onSubmit={form.onSubmit((values) =>
-                signIn("credentials", values)
+                signIn("credentials", {
+                  ...values,
+                  actionType: "signin",
+                })
               )}
             >
               <TextInput

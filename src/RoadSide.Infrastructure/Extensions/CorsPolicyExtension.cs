@@ -7,7 +7,7 @@ namespace RoadSide.Infrastructure.Extensions;
 
 public static class CorsPolicyExtensions
 {
-    public static string AllowedOriginsPolicy = "AllowedOriginsPolicy";
+    public static readonly string AllowedOriginsPolicy = "AllowedOriginsPolicy";
     public static IServiceCollection AddCustomCors(this IServiceCollection services, IConfiguration configuration)
     {
         // Load the AllowedOrigins from appsettings.json
