@@ -40,18 +40,7 @@ public class ProductsController: ControllerBase
             };
             
             var products = await _productService.GetAsync(option);
-            var createdOn = DateTime.UtcNow;
-            var reindexStatus = await _settingService.GetAsync("AlgoliaReindexStatus");
-            if (categoryUrl is null && (reindexStatus == null  || createdOn - reindexStatus.CreatedOn > _reindexInterval))
-            {
-                await _searchProvider.IndexAsync(products.Data);
-                await _settingService.AddAsync(new AppSettings
-                {
-                    ReferenceKey = "AlgoliaReindexStatus",
-                    Value = "Success",
-                    CreatedOn = createdOn
-                });
-            }
+            await _searchProvider.ReIndexOperationsAsync(products.Data);
             return Ok(products);
         }
         catch (Exception)
@@ -160,7 +149,7 @@ public class ProductsController: ControllerBase
             }
             if (isLeaf.HasValue)
             {
-                option.isLeaf = isLeaf.Value;
+                option.IsLeaf = isLeaf.Value;
             }
             var categories = await _categoryService.GetAsync(option);
             return Ok(categories);

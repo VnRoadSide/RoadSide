@@ -46,7 +46,7 @@ export default function NavBar({
     <Paper shadow="sm" variant="gradient">
       <Container fluid>
         <Group component="nav" justify="space-between" h="60" px="sm">
-          <Group gap={4}>
+          <Group gap={"lg"}>
             <Anchor href="/" underline="never">
               <Group gap={4} align="end">
                 <Image src={"/asset/logo.png"} alt="logo" h={35} fetchPriority="high" />

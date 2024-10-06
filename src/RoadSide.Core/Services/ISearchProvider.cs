@@ -8,6 +8,7 @@ public interface ISearchProvider
     Task<SearchResult<T>> SearchAsync<T>(string query, SearchOptions options = null);
     Task UpdateAsync<T>(IEnumerable<T> items);
     Task DeleteAsync<T>(IEnumerable<string> objectIds);
+    Task ReIndexOperationsAsync<T>(IEnumerable<T> items) where T : class;
 }
 
 public class SearchOptions

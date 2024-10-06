@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RoadSide.Core.Extensions;
+using RoadSide.Domain;
 
 namespace RoadSide.Core.Services;
 
@@ -8,25 +9,27 @@ namespace RoadSide.Core.Services;
 public class CategoryQueryOption
 {
     public bool FromBase { get; set; } = true;
-    public bool Flatten { get; set; } = false;
-    public bool isLeaf { get; set; } = false;
+    public bool Flatten { get; set; }
+    public bool IsLeaf { get; set; }
 }
-public interface ICategoryService: IService<Domain.Category, Entities.Category>
+public interface ICategoryService: IService<Category, Entities.Category>
 {
-    ValueTask<ICollection<Domain.Category>> GetAsync(CategoryQueryOption option);
-    ValueTask<Domain.Category> GetByIdAsync(Guid id);
+    ValueTask<ICollection<Category>> GetAsync(CategoryQueryOption option);
+    ValueTask<Category> GetByIdAsync(Guid id);
 }
 internal class CategoryService(ICoreDbContext context, IMapper mapper)
-    : Service<Domain.Category, Entities.Category>(context, mapper), ICategoryService
+    : Service<Category, Entities.Category>(context, mapper), ICategoryService
 {
     private readonly IMapper _mapper = mapper;
 
-    public async ValueTask<ICollection<Domain.Category>> GetAsync(CategoryQueryOption option)
+    public async ValueTask<ICollection<Category>> GetAsync(CategoryQueryOption option)
     {
-        var query = GetQueryable();
+        var query = GetQueryable()
+            .Include(c => c.Categories)
+            .AsNoTracking();
         if (option.FromBase)
         {
-            query = query.Where(c => c.BaseCategory == null);
+            query = query.Where(c => c.BaseCategoryId == null);
         }
 
         if (!option.Flatten)
@@ -34,15 +37,15 @@ internal class CategoryService(ICoreDbContext context, IMapper mapper)
             query = query.Include(c => c.Categories);
         }
         
-        if (option.isLeaf)
+        if (option.IsLeaf)
         {
             query = query.Where(c => c.Categories.Count == 0);
         }
 
-        return _mapper.Map<ICollection<Domain.Category>>(await query.ToListAsync());
+        return _mapper.Map<ICollection<Category>>(await query.ToListAsync());
     }
 
-    public ValueTask<Domain.Category> GetByIdAsync(Guid id)
+    public ValueTask<Category> GetByIdAsync(Guid id)
     {
         throw new NotImplementedException();
     }

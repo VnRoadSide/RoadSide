@@ -4,8 +4,11 @@ using RoadSide.Domain;
 
 namespace RoadSide.Infrastructure.Search;
 
-public class AlgoliaService(SearchClient client) : ISearchProvider
+public class AlgoliaService(SearchClient client, ISettingService settingService) : ISearchProvider
 {
+    private readonly TimeSpan _reindexInterval = TimeSpan.FromMinutes(1);
+    private const string Prefix = "ReindexStatus_{0}";
+
     public async Task IndexAsync<T>(IEnumerable<T> items) where T : class
     {
         var indexName = typeof(T).Name.ToLowerInvariant();
@@ -92,5 +95,32 @@ public class AlgoliaService(SearchClient client) : ISearchProvider
         var objectIDs = objectIds.ToList();
 
         await client.DeleteObjectsAsync(indexName, objectIDs);
+    }
+
+    public async Task ReIndexOperationsAsync<T>(IEnumerable<T> items) where T : class
+    {
+        var referenceKey = string.Format(Prefix, typeof(T).Name.ToLowerInvariant());
+        var createdOn = DateTime.UtcNow;
+        var reindexStatus = await settingService.GetAsync(referenceKey);
+        if (reindexStatus == null  || createdOn - reindexStatus.CreatedOn > _reindexInterval)
+        {
+            try {
+                await IndexAsync(items);
+                await settingService.AddAsync(new AppSettings
+                {
+                    ReferenceKey = referenceKey,
+                    Value = OperationResult.Success.ToString(),
+                    CreatedOn = createdOn
+                });
+            } catch (Exception) {
+                await settingService.AddAsync(new AppSettings
+                {
+                    ReferenceKey = referenceKey,
+                    Value = OperationResult.Failure.ToString(),
+                    CreatedOn = createdOn
+                });
+            }
+            
+        }
     }
 }

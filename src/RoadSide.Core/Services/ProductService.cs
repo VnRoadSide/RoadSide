@@ -15,53 +15,68 @@ public class ProductQueryOption : QueryPaging, IQueryFilter
     public ICollection<(string, Sorting)> Filters { get; set; } = new List<(string, Sorting)>();
 }
 
-public interface IProductService : IService<Domain.Products, Entities.Products>
+public interface IProductService : IService<Products, Entities.Products>
 {
-    ValueTask<Paging<Domain.Products>> GetAsync(ProductQueryOption option);
-    ValueTask<Domain.Products> GetByIdAsync(Guid id);
+    ValueTask<Paging<Products>> GetAsync(ProductQueryOption option);
+    ValueTask<Products> GetByIdAsync(Guid id);
 }
 
 internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContext appContext)
-    : Service<Domain.Products, Entities.Products>(context, mapper), IProductService
+    : Service<Products, Entities.Products>(context, mapper), IProductService
 {
     private readonly IMapper _mapper = mapper;
 
-    public async ValueTask<Paging<Domain.Products>> GetAsync(ProductQueryOption option)
+    private ICollection<string> GetAllBaseUrls(Category category)
+    {
+        var baseUrls = new List<string>();
+        var currentCategory = category;
+        while (currentCategory != null)
+        {
+            baseUrls.Add(currentCategory.Url);
+            currentCategory = currentCategory.BaseCategory;
+        }
+        return baseUrls;
+    }
+    public async ValueTask<Paging<Products>> GetAsync(ProductQueryOption option)
     {
         var query = GetQueryable().GetFilter(option);
-
-        if (option.IncludeCategory)
-        {
-            query = query
-                .Include(x => x.Category);
-            if (option.CategoryUrl is not null)
-            {
-                query = query.Where(x => x.Category != null && x.Category.Url == option.CategoryUrl);
-            }
-        }
-
         if (option.IsPortal)
         {
             query = query.Where(x => x.VendorId == appContext.User.Id);
         }
-
-        query = query.Include(x => x.Vouchers);
-
-        return new Paging<Domain.Products>
+        
+        if (option.IncludeCategory)
         {
-            Total = query.Count(),
-            Data = _mapper.Map<ICollection<Domain.Products>>(await query.ToListAsync())
+            query = query
+                .Include(x => x.Category)
+                .ThenInclude(x => x.BaseCategory);
+        }
+        
+        query = query.Include(x => x.Vouchers);
+        var data = _mapper.Map<ICollection<Products>>(await query.ToListAsync());
+        var total = query.Count();
+        
+        if (option.CategoryUrl is not null)
+        {
+            data = data.Where(x => GetAllBaseUrls(x.Category).Contains(option.CategoryUrl)).ToList();
+            total = data.Count;
+        }
+
+        return new Paging<Products>
+        {
+            Total = total,
+            Data = data
         };
     }
 
-    public async ValueTask<Domain.Products> GetByIdAsync(Guid id)
+    public async ValueTask<Products> GetByIdAsync(Guid id)
     {
         var entity = await GetQueryable()
             .Include(x => x.Vouchers)
             .Include(x => x.Vendor)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id);
-        var result = _mapper.Map<Domain.Products>(entity);
+        var result = _mapper.Map<Products>(entity);
         return result;
     }
 }
