@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { ProductManagement } from "./product";
 import { useApi } from "@/lib/hooks";
 import { PagingResult, Product } from "@/models";
@@ -8,7 +9,8 @@ export default async function Page() {
 }
 
 async function getData() {
-  const { get } = useApi();
+  const session = await auth();
+  const { get } = useApi(session);
 
   const { data, error } = await get<PagingResult<Product>>(
     "/portal/products"

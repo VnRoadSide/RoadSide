@@ -1,4 +1,4 @@
-namespace RoadSide.Core.Models;
+namespace RoadSide.Domain;
 
 public class Token
 {

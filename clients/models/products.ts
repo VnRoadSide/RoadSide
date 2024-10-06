@@ -16,19 +16,15 @@ export interface Product {
   sale?: number;
   rate?: number;
   discountedPrice?: number;
-  brand: string;
-  origin: string;
-  quantity: number;
-  shippingProvider: string;
-  deliveryTime: string;
-  shippingFee: number;
-  shippingNote: string;
-  preOrder: boolean;
-  returnPolicy: string;
-  additionalNotes: string;
-  temperatureControlRequired: boolean;
-  storageTemperature?: number;
-  packagingRequirements: string;
+  availability: Availability;
+  InstockQuantity: number;
+}
+
+export enum Availability {
+  InStock,
+  LowStock,
+  OutOfStock,
+  PreOrder,
 }
 
 export interface Category {

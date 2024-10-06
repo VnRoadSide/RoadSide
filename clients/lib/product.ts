@@ -1,18 +1,17 @@
+
 import { Product } from "@/models";
 import { useApi } from "./hooks";
-
-export function getCurrentPrice(product: Product) {
-  return product.discountedPrice ?? product.baseUnitPrice;
-}
+import { auth } from "@/auth";
 
 export async function addProduct(product: Product) {
-  const { post } = useApi();
+  const session = await auth();
+  const { post } = useApi(session);
   const { data, error } = await post<Product>("/products", product);
   return data;
 }
 export async function deleteProduct(id: string | undefined) {
-  console.log("id", id);
-  const { delete: del } = useApi();
+  const session = await auth();
+  const { delete: del } = useApi(session);
 
   if (!id) {
     console.log("no id");

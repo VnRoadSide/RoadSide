@@ -1,6 +1,7 @@
 import { OrderView } from "./order";
 import { Orders } from "@/models";
 import { useApi } from "@/lib/hooks";
+import { auth } from "@/auth";
 
 export default async function Page() {
   const { orders } = await getData();
@@ -8,7 +9,8 @@ export default async function Page() {
 }
 
 async function getData() {
-  const { get } = useApi();
+  const session = await auth();
+  const { get } = useApi(session);
   const { data: orders, error: OrderError } = await get<Orders[]>(
     "/orders?page=1&pageSize=100"
   );

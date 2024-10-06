@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { useApi } from "./hooks";
 
 export type SignUpForm = {
@@ -67,7 +68,8 @@ export async function signInUser(form: SignInForm) {
 }
 
 export async function signOutUser() {
-  const { post } = useApi();
+  const session = await auth();
+  const { post } = useApi(session);
   const result = await post("/auth/logout");
   return result;
 }
@@ -79,7 +81,8 @@ export async function sendPasswordResetLink(email: string) {
 }
 
 export async function resetPassword(token: string) {
-  const { post } = useApi();
+  const session = await auth();
+  const { post } = useApi(session);
   const result = await post(`/auth/reset?token=${token}`);
   return result;
 }

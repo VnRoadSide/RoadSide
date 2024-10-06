@@ -22,8 +22,9 @@ public class MediaController : ControllerBase
     /// <param name="file">The file to upload</param>
     /// <returns>The URL of the uploaded media</returns>
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadMedia([FromForm] IFormFile file)
+    public async Task<IActionResult> UploadMedia([FromForm] IFormFile[] files)
     {
+        var file = files.FirstOrDefault();
         if (file == null || file.Length == 0)
         {
             return BadRequest("No file provided or file is empty.");

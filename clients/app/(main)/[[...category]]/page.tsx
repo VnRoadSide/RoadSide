@@ -20,6 +20,7 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { fetchData } from "@/lib/fetch";
+import { auth } from "@/auth";
 
 function CategorySection({ categories }: { categories: Category[] }) {
   function CategoryItem({ category }: { category: Category }) {
@@ -148,8 +149,8 @@ export default async function Page({
 
 async function getData(categoryUrl?: string) {
   // const features: Feature[] | null = await fetchData("features");
-
-  const { get } = useApi();
+  const session = await auth();
+  const { get } = useApi(session);
 
   const { data: products, error: productError } = await get<
     PagingResult<Product>

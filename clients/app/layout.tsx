@@ -32,18 +32,18 @@ export default async function RootLayout({
       </head>
       <body suppressHydrationWarning={true}>
         <MantineProvider theme={theme}>
-          <NavigationProgress />
+            <NavigationProgress />
 
-          <AppShell
-            header={{ height: 60, collapsed: false, offset: true }}
-            withBorder={false}
-          >
-            <AppShellHeader>
-              <NavBar session={session}/>
-            </AppShellHeader>
-            <AppShellMain>{children}</AppShellMain>
-          </AppShell>
-          <Footer />
+            <AppShell
+              header={{ height: 60, collapsed: false, offset: true }}
+              withBorder={false}
+            >
+              <AppShellHeader>
+                <NavBar session={session} />
+              </AppShellHeader>
+              <AppShellMain>{children}</AppShellMain>
+            </AppShell>
+            <Footer />
         </MantineProvider>
       </body>
     </html>

@@ -1,8 +1,9 @@
 import { auth } from "@/auth";
 import { environment } from "@/environment";
+import { Session } from "next-auth";
 
 // Function to create the HTTP client instance
-export const useApi = () => {
+export const useApi = (session?: Session | null) => {
   const makeRequest = async <T>(
     url: string,
     options: RequestInit = {}
@@ -12,7 +13,9 @@ export const useApi = () => {
         "Content-Type": "application/json",
         ...options.headers,
       }
-      const session = await auth();
+      const isMultipart = (options.headers as any)["Content-Type"] as string === "multipart/form-data";
+      options.body = isMultipart ? options.body : JSON.stringify(options.body);
+      
       if (session) {
         options.headers = {
           ...options.headers,
@@ -20,7 +23,9 @@ export const useApi = () => {
         }
         console.log("session: ", session.accessToken);
       }
-      
+
+      console.log("options: ", options.body);
+
       const response = await fetch(`${environment.apiUrl}${url}`, options);
 
       if (!response.ok) {
@@ -48,7 +53,7 @@ export const useApi = () => {
     makeRequest<T>(url, {
       ...config,
       method: "POST",
-      body: JSON.stringify(data),
+      body: data as any, // need to handle base on content type
     });
 
   const put = <T = any, U = any>(
@@ -59,7 +64,7 @@ export const useApi = () => {
     makeRequest<T>(url, {
       ...config,
       method: "PUT",
-      body: JSON.stringify(data),
+      body: data as any,
     });
 
   const deleteRequest = <T = any>(

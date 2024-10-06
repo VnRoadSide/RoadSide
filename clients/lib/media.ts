@@ -1,27 +1,44 @@
-export function getPublicIdFromUrl(url: string): string | null {
-  try {
-    // Create a URL object to parse the URL
-    const urlObject = new URL(url);
+"use server";
+import { auth } from '@/auth';
+import { useApi } from './hooks'; // Assuming you have a hook to handle API requests
 
-    // Extract the pathname from the URL object
-    const pathname = urlObject.pathname;
+// Function to handle media upload
+export async function uploadMedia(formData: FormData) {
+  const session = await auth();
+  const { post } = useApi(session);
 
-    // Find the position of "/upload/" in the URL
-    const uploadIndex = pathname.indexOf("/upload/");
+  // Make POST request to upload media
+  const { data, error } = await post('/media/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 
-    if (uploadIndex === -1) {
-      return null; // Return null if "/upload/" is not found
-    }
-
-    // Extract the part of the path after "/upload/"
-    const pathAfterUpload = pathname.substring(uploadIndex + "/upload/".length);
-
-    // Remove the file extension to get the publicId
-    const publicId = pathAfterUpload.substring(0, pathAfterUpload.lastIndexOf('.'));
-
-    return publicId;
-  } catch (error) {
-    console.error("Invalid URL provided:", error);
+  // Return uploaded media URL or handle the error
+  if (error) {
+    console.error('Media upload failed', error);
     return null;
   }
+
+  return data?.url; // Assuming the backend responds with the media URL
+}
+
+// Function to handle media deletion
+export async function deleteMedia(publicId: string | undefined) {
+  if (!publicId) {
+    console.error('No publicId provided for deletion');
+    return null;
+  }
+  const session = await auth();
+  const { delete: del } = useApi(session);
+
+  // Make DELETE request to delete the media
+  const { data, error } = await del(`/media/delete/${publicId}`);
+
+  if (error) {
+    console.error('Media deletion failed', error);
+    return null;
+  }
+
+  return data; // Assuming the backend responds with success message
 }

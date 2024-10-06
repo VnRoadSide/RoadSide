@@ -44,7 +44,7 @@ function ProductRow({
       <TableTd>{item.name}</TableTd>
       <TableTd>{item.sale}</TableTd>
       <TableTd>{item.baseUnitPrice}</TableTd>
-      <TableTd>{item.quantity}</TableTd>
+      <TableTd>{item.InstockQuantity}</TableTd>
       <TableTd>{item.description}</TableTd>
       <TableTd>
         <Button variant="outline" color="blue">
@@ -71,7 +71,7 @@ export function ProductManagement({
 }) {
   const handleDelete = (key: number) => {
     data.splice(key, 1);
-  }
+  };
   return (
     <>
       <Title order={2}>Sản phẩm</Title>
@@ -127,7 +127,11 @@ export function ProductManagement({
             </TableThead>
             <TableTbody>
               {data.map((item, index) => (
-                <ProductRow key={index} item={item} onDelete={() => handleDelete(index)} />
+                <ProductRow
+                  key={index}
+                  item={item}
+                  onDelete={() => handleDelete(index)}
+                />
               ))}
             </TableTbody>
           </Table>

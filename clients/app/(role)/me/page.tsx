@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { dayList, monthList, useApi, yearList } from "@/lib/hooks";
 import {
   Avatar,
@@ -17,7 +18,8 @@ import {
 import { IconBrandFacebook, IconBrandGoogle } from "@tabler/icons-react";
 
 async function GetData() {
-  const { get } = useApi();
+  const session = await auth();
+  const { get } = useApi(session);
   const { data, error } = await get("/auth/me");
   console.log(data, error);
   return data;

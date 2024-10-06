@@ -1,4 +1,4 @@
-using RoadSide.Core.Models;
+using RoadSide.Domain;
 
 namespace RoadSide.Infrastructure.Extensions;
 

@@ -1,6 +1,7 @@
 "use server"
 import { Product } from "@/models";
 import { useApi } from "./hooks";
+import { auth } from "@/auth";
 
 export interface OrderItem {
   id: number;
@@ -17,20 +18,23 @@ export interface Order {
 }
 
 export async function createCheckoutSession(items: OrderItem[]) {
-  const { post } = useApi();
+  const session = await auth();
+  const { post } = useApi(session);
   const { data, error } = await post<string>("/orders/checkout", items);
   console.log(data, error)
   return data;
 }
 
 export async function getCheckoutSession(sessionId: string) {
-  const { get } = useApi();
+  const session = await auth();
+  const { get } = useApi(session);
   const { data } = await get<Order[]>(`/orders/checkout/${sessionId}`);
   return data;
 } 
 
 export async function proceedCheckout(sessionId: string) {
-  const { post } = useApi();
+  const session = await auth();
+  const { post } = useApi(session);
   const { data } = await post<{success: boolean}>(`/orders/${sessionId}`);
   return data
 }

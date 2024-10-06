@@ -1,8 +1,9 @@
 "use client";
 import CategoryPicker from "@/components/CategoryPicker";
+import { uploadMedia } from "@/lib/media";
 import { addProduct } from "@/lib/product";
 import { validator } from "@/lib/validator";
-import { Category, Product } from "@/models";
+import { Availability, Category, Product } from "@/models";
 import {
   Stack,
   Card,
@@ -20,7 +21,7 @@ import {
   Checkbox,
   FileInput,
 } from "@mantine/core";
-import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
+import { Dropzone, FileWithPath, MIME_TYPES } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
 import { IconDownload, IconX, IconPhotoPlus } from "@tabler/icons-react";
 import { useRef, useState } from "react";
@@ -41,40 +42,15 @@ export function AddProductView({ categories }: ProductViewProps) {
       category: null,
       vendor: null,
       vouchers: [],
-      brand: "",
-      origin: "",
-      quantity: 0,
-      shippingProvider: "",
-      deliveryTime: "",
-      shippingFee: 0,
-      shippingNote: "",
-      preOrder: false,
-      returnPolicy: "",
-      additionalNotes: "",
-      temperatureControlRequired: false,
-      storageTemperature: 0,
-      packagingRequirements: "",
+      availability: Availability.InStock,
+      InstockQuantity: 0,
     },
     validate: {
       name: validator.name,
       description: validator.description,
-      brand: validator.brand,
-      origin: validator.origin,
       unit: validator.unit,
       baseUnitPrice: validator.baseUnitPrice,
-      quantity: validator.quantity,
-      shippingProvider: validator.shippingProvider,
-      deliveryTime: validator.deliveryTime,
-      shippingFee: validator.shippingFee,
-      shippingNote: validator.shippingNote,
-      temperatureControlRequired: validator.temperatureControlRequired,
-      storageTemperature: (value, values) =>
-        values.temperatureControlRequired && value == null
-          ? "Vui lòng nhập nhiệt độ bảo quản"
-          : null,
-      packagingRequirements: validator.packagingRequirements,
-      returnPolicy: validator.returnPolicy,
-      additionalNotes: validator.additionalNotes,
+      InstockQuantity: validator.quantity,
     },
   });
   const [files, setFiles] = useState<File[]>([]);
@@ -93,20 +69,33 @@ export function AddProductView({ categories }: ProductViewProps) {
     addProduct(values);
   };
 
+  const handleUpload = async (acceptedFiles: File[]) => {
+    const formData = new FormData();
+    formData.append("file", acceptedFiles[0]);
+    console.log(formData.getAll("file"));
+    const url = await uploadMedia(formData);
+    console.log(url);
+    if (url) {
+      setFiles(acceptedFiles);
+      form.setFieldValue("image", url);
+    }
+  };
+
   return (
     <Stack>
       <form onSubmit={form.onSubmit(onSubmit)}>
         {/* Thông tin cơ bản */}
         <Card>
           <Title order={2}>Thông tin cơ bản</Title>
-          <SimpleGrid cols={2}  mt="md" spacing="md">
+          <SimpleGrid cols={2} mt="md" spacing="md">
             <Text>Hình ảnh sản phẩm</Text>
             <Card radius="md" shadow="md" withBorder>
               <Dropzone
                 openRef={openRef}
                 onDrop={(acceptedFiles) => {
-                  setFiles(acceptedFiles);
-                  console.log("accepted files", acceptedFiles);
+                  handleUpload(acceptedFiles).then(() =>
+                    console.log("accepted files", acceptedFiles)
+                  );
                 }}
                 onReject={(rejectedFiles) =>
                   console.log("rejected files", rejectedFiles)
@@ -196,18 +185,6 @@ export function AddProductView({ categories }: ProductViewProps) {
         <Card>
           <Title order={2}>Thông tin bán hàng</Title>
           <SimpleGrid cols={2} spacing="md" mt="md">
-            {/* <TextInput
-              label="Thương hiệu"
-              placeholder="Vui lòng nhập"
-              withAsterisk
-              {...form.getInputProps("brand")}
-            />
-            <TextInput
-              label="Xuất xứ"
-              placeholder="Vui lòng nhập"
-              withAsterisk
-              {...form.getInputProps("origin")}
-            /> */}
             <TextInput
               label="Đơn vị bán"
               placeholder="kg / hộp / 100g"
@@ -227,7 +204,7 @@ export function AddProductView({ categories }: ProductViewProps) {
               placeholder="Vui lòng nhập số nguyên"
               min={1}
               withAsterisk
-              {...form.getInputProps("quantity")}
+              {...form.getInputProps("InstockQuantity")}
             />
           </SimpleGrid>
         </Card>
@@ -239,101 +216,11 @@ export function AddProductView({ categories }: ProductViewProps) {
             <Text>Đơn vị vận chuyển: Giao hàng nhanh</Text>
             <Text>Thời gian giao hàng dự kiến: trong 2 giờ</Text>
             <Text>Phí vận chuyển: Miễn phí</Text>
-
-            {/* <Select
-              label="Chọn đơn vị vận chuyển"
-              placeholder="Chọn đơn vị"
-              data={[
-                { value: "viettel_fresh", label: "Viettel Post Fresh" },
-                {
-                  value: "vietnam_post_agri",
-                  label: "Vietnam Post Agriculture",
-                },
-                {
-                  value: "local_coop",
-                  label: "Đơn vị vận chuyển hợp tác xã địa phương",
-                },
-              ]}
-              searchable
-              withAsterisk
-              {...form.getInputProps("shippingProvider")}
-            />
-
-
-            <Checkbox
-              label="Yêu cầu kiểm soát nhiệt độ"
-              description="Sản phẩm có yêu cầu vận chuyển trong điều kiện nhiệt độ kiểm soát?"
-              {...form.getInputProps('temperatureControlRequired', { type: 'checkbox' })}
-            />
-            {form.values.temperatureControlRequired && (
-              <NumberInput
-                label="Nhiệt độ bảo quản (°C)"
-                placeholder="Nhập nhiệt độ bảo quản"
-                min={-20}
-                max={10}
-                step={0.5}
-                withAsterisk
-                {...form.getInputProps("storageTemperature")}
-              />
-            )}
-
-            <TextInput
-              label="Yêu cầu đóng gói"
-              placeholder="Nhập các yêu cầu đóng gói (nếu có)"
-              {...form.getInputProps("packagingRequirements")}
-            />
-
-            <NumberInput
-              label="Thời gian giao hàng (giờ)"
-              placeholder="Nhập số giờ dự kiến"
-              min={1}
-              withAsterisk
-              {...form.getInputProps("deliveryTime")}
-            />
-
-            <NumberInput
-              label="Phí vận chuyển (đồng)"
-              placeholder="Nhập phí vận chuyển"
-              min={0}
-              step={5000}
-              withAsterisk
-              {...form.getInputProps("shippingFee")}
-            />
-
-            <TextInput
-              label="Lưu ý về vận chuyển"
-              placeholder="Nhập các lưu ý (nếu có)"
-              {...form.getInputProps("shippingNote")}
-            />*/}
           </SimpleGrid>
         </Card>
 
-        {/* Thông tin khác */}
-        {/* <Card>
-          <Title order={2}>Thông tin khác</Title>
-          <SimpleGrid cols={2} spacing="md" mt="md">
-            <Checkbox
-              label="Hàng đặt trước"
-              description="Sản phẩm này có sẵn để đặt trước?"
-              {...form.getInputProps('preOrder', { type: 'checkbox' })}
-            />
-
-            <TextInput
-              label="Chính sách đổi trả"
-              placeholder="Mô tả chính sách đổi trả"
-              {...form.getInputProps("returnPolicy")}
-            />
-
-            <TextInput
-              label="Lưu ý thêm"
-              placeholder="Nhập lưu ý nếu có"
-              {...form.getInputProps("additionalNotes")}
-            />
-          </SimpleGrid>
-        </Card> */}
-
         <Group mt="md">
-          <Button type="submit" onClick={() => form.onSubmit(onSubmit)}>Thêm sản phẩm</Button>
+          <Button type="submit">Thêm sản phẩm</Button>
         </Group>
       </form>
     </Stack>

@@ -1,9 +1,11 @@
 import { Product } from "@/models";
 import ProductView from "./product";
 import { useApi } from "@/lib/hooks";
+import { auth } from "@/auth";
 
 async function getData(id: string) {
-    const { get } = useApi();
+    const session = await auth();
+    const { get } = useApi(session);
     const { data, error } = await get<Product>(`/detail/${id}`);
     console.log(data)
     return data;

@@ -1,4 +1,5 @@
 
+import { auth } from "@/auth";
 import { NotificationView } from "@/components/Notification";
 import { useApi } from "@/lib/hooks";
 import { Notification, PagingResult } from "@/models";
@@ -11,7 +12,8 @@ export default async function Page() {
 }
 
 async function getData() {
-  const { get } = useApi();
+  const session = await auth();
+  const { get } = useApi(session);
   const { data, error } = await get<PagingResult<Notification>>("/notification/portal");
   
   if (error) {

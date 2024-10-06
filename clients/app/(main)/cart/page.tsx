@@ -22,8 +22,8 @@ import {
   Image,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
-import { getCurrentPrice } from "@/lib/product";
+import { useRouter } from "next/navigation";
+import { getCurrentPrice } from "@/lib/utils";
 
 function ProductRow({
   item,
@@ -68,10 +68,7 @@ function ProductRow({
             ? `₫${item.product.baseUnitPrice.toLocaleString()}`
             : ""}
         </Text>
-        <Text>
-          ₫
-          {getCurrentPrice(item.product).toLocaleString()}
-        </Text>
+        <Text>₫{getCurrentPrice(item.product).toLocaleString()}</Text>
       </TableTd>
       <TableTd>
         <NumberInput
@@ -157,7 +154,7 @@ export default function Cart() {
   // Render product row using Mantine Table components
   const [{ items, session, isClient }, setValue, getSession] = useCart();
   const [selectAll, setSelectedAll] = useState(items.every((p) => p.selected));
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     setSelectedAll(items.every((p) => p.selected));
@@ -183,7 +180,11 @@ export default function Cart() {
 
   const total = items.reduce(
     (total, item) =>
-      total + (item.selected ? (item.product.discountedPrice ?? item.product.baseUnitPrice) * item.quantity : 0),
+      total +
+      (item.selected
+        ? (item.product.discountedPrice ?? item.product.baseUnitPrice) *
+          item.quantity
+        : 0),
     0
   );
   const selected = items.reduce((total, item) => total + item.quantity, 0);

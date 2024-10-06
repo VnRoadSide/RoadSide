@@ -2,13 +2,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
-using RoadSide.Core.Entities;
-using RoadSide.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RoadSide.Core.Services;
+using RoadSide.Domain;
 using RoadSide.Infrastructure.Extensions;
+using User = RoadSide.Core.Entities.User;
 
 namespace RoadSide.Infrastructure.Jwt
 {
