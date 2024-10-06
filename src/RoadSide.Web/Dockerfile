@@ -11,7 +11,6 @@ RUN dotnet publish RoadSide.Web -c $configuration --os=$TARGETOS --arch=$TARGETA
 # =====================================================================================
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-chiseled AS runtime
-USER app
 WORKDIR /app
 COPY --from=publish /src/published .
 
