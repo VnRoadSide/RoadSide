@@ -21,7 +21,6 @@ async function GetData() {
   const session = await auth();
   const { get } = useApi(session);
   const { data, error } = await get("/auth/me");
-  console.log(data, error);
   return data;
 }
 

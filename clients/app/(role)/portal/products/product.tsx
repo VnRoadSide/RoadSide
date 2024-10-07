@@ -22,6 +22,7 @@ import {
 import { Product } from "@/models";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { deleteProduct } from "@/lib/product";
+import { Session } from "next-auth";
 
 function ProductRow({
   item,
@@ -32,10 +33,6 @@ function ProductRow({
   key: number;
   onDelete: () => void;
 }) {
-  const handleDelete = async () => {
-    onDelete();
-    await deleteProduct(item.id);
-  };
   return (
     <TableTr key={key}>
       <TableTd>
@@ -53,7 +50,7 @@ function ProductRow({
         </Button>
       </TableTd>
       <TableTd>
-        <Button variant="outline" color="red" onClick={handleDelete}>
+        <Button variant="outline" color="red" onClick={onDelete}>
           {" "}
           <IconTrash /> Xoá{" "}
         </Button>
@@ -65,9 +62,11 @@ function ProductRow({
 export function ProductManagement({
   data,
   total,
+  session
 }: {
   data: Product[];
   total: number;
+  session: Session | null
 }) {
   const handleDelete = (key: number) => {
     data.splice(key, 1);

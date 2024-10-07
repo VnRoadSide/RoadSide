@@ -112,9 +112,7 @@ export function CheckoutView({
   const router = useRouter();
 
   const handleConfirm = async () => {
-    console.log("handleConfirm");
     const result = await proceedCheckout(checkoutSessionId);
-    console.log("result", result);
     if (result?.success) {
       router.push("/checkout/success");
     } else {

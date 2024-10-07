@@ -12,8 +12,8 @@ public class Products
     public string Name { get; set; } = String.Empty;
     public string Description { get; set; } = String.Empty;
     public int BaseUnitPrice { get; set; }
-    public DateTimeOffset DateCreated { get; set; }
-    public DateTimeOffset DateModified { get; set; }
+    public DateTime DateCreated { get; set; }
+    public DateTime DateModified { get; set; }
     public string ImageUrl { get; set; } = String.Empty;
     public int SaleQuantity { get; set; } = 0;
     public int Rate { get; set; } = 0;

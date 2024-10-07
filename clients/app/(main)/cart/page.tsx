@@ -171,7 +171,6 @@ export default function Cart() {
 
   const handleCheckout = async () => {
     const newSession = await getSession();
-    console.log("newSession", newSession);
     if (!newSession) {
       return;
     }

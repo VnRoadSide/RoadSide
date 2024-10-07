@@ -14,7 +14,6 @@ async function getData() {
   const { get } = useApi(session);
   const { data, error } = await get<PagingResult<Notification>>("/notification");
   
-  console.log(data);
   if (error) {
     console.error("Error: ", error);
   }

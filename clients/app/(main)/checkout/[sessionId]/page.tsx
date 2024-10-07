@@ -8,7 +8,6 @@ import { Session } from "next-auth";
 async function getData(sessionId: string, session: Session | null) {
   const { get } = useApi(session);
   const { data, error } = await get<Order>(`/orders/checkout/${sessionId}`);
-  console.log(sessionId, error, data);
   if (!data) {
     redirect(`/checkout`) // Navigate to the new post page
   }

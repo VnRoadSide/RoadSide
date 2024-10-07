@@ -1,7 +1,6 @@
 
 import { Product } from "@/models";
 import { useApi } from "./hooks";
-import { auth } from "@/auth";
 import { Session } from "next-auth";
 
 export async function addProduct(product: Product, session: Session | null) {
@@ -9,8 +8,7 @@ export async function addProduct(product: Product, session: Session | null) {
   const { data, error } = await post<Product>("/products", product);
   return data;
 }
-export async function deleteProduct(id: string | undefined) {
-  const session = await auth();
+export async function deleteProduct(id: string | undefined, session: Session | null) {
   const { delete: del } = useApi(session);
 
   if (!id) {
@@ -18,6 +16,5 @@ export async function deleteProduct(id: string | undefined) {
     return;
   }
   const { data, error } = await del(`/portal/products?id=${id}`);
-  console.log(error);
   return data;
 }

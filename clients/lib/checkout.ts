@@ -21,7 +21,6 @@ export async function createCheckoutSession(items: OrderItem[]) {
   const session = await auth();
   const { post } = useApi(session);
   const { data, error } = await post<string>("/orders/checkout", items);
-  console.log(data, error)
   return data;
 }
 

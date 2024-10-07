@@ -72,7 +72,6 @@ export function AddProductView({ categories, vouchers, session }: ProductViewPro
 
   const handleUpload = async (acceptedFiles: File[]) => {
     const url = await uploadMedia(acceptedFiles[0], session);
-    console.log(url);
     if (url) {
       setFiles(acceptedFiles);
       form.setFieldValue("imageUrl", url);

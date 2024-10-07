@@ -14,7 +14,6 @@ async function getData() {
   const session = await auth();
   const { get } = useApi(session);
   const {data: orders, error: OrderError} = await get<Orders[]>("/orders/portal?page=1&pageSize=10");
-  console.log(orders)
   if (OrderError) {
     console.error("Error: ", OrderError);
   }

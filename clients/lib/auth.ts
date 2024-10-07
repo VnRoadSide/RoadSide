@@ -51,11 +51,8 @@ declare module "next-auth" {
 
 export async function signUpUser(form: AuthForm) {
   const { post } = useApi();
-  console.log("hit", form);
   const { data, error } = await post<Authorization>("/auth/signup", form);
-  if (!error) {
-  }
-  console.log(data);
+
   return data;
 }
 
