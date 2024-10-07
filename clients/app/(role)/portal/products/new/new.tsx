@@ -3,7 +3,7 @@ import CategoryPicker from "@/components/CategoryPicker";
 import { uploadMedia } from "@/lib/media";
 import { addProduct } from "@/lib/product";
 import { validator } from "@/lib/validator";
-import { Availability, Category, Product } from "@/models";
+import { Availability, Category, Product, Vouchers } from "@/models";
 import {
   Stack,
   Card,
@@ -12,25 +12,25 @@ import {
   Button,
   Group,
   TextInput,
-  Select,
   rem,
   SimpleGrid,
   NumberInput,
-  Radio,
   Image,
-  Checkbox,
-  FileInput,
+  MultiSelect,
 } from "@mantine/core";
-import { Dropzone, FileWithPath, MIME_TYPES } from "@mantine/dropzone";
+import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
 import { IconDownload, IconX, IconPhotoPlus } from "@tabler/icons-react";
+import { Session } from "next-auth";
 import { useRef, useState } from "react";
 
 type ProductViewProps = {
   categories: Category[];
+  vouchers: Vouchers[];
+  session: Session | null;
 };
 
-export function AddProductView({ categories }: ProductViewProps) {
+export function AddProductView({ categories, vouchers, session }: ProductViewProps) {
   const openRef = useRef<() => void>(null);
   const form = useForm<Product>({
     mode: "controlled",
@@ -44,6 +44,7 @@ export function AddProductView({ categories }: ProductViewProps) {
       vouchers: [],
       availability: Availability.InStock,
       InstockQuantity: 0,
+      imageUrl: "",
     },
     validate: {
       name: validator.name,
@@ -66,18 +67,15 @@ export function AddProductView({ categories }: ProductViewProps) {
   ));
 
   const onSubmit = (values: Product) => {
-    addProduct(values);
+    addProduct(values, session);
   };
 
   const handleUpload = async (acceptedFiles: File[]) => {
-    const formData = new FormData();
-    formData.append("file", acceptedFiles[0]);
-    console.log(formData.getAll("file"));
-    const url = await uploadMedia(formData);
+    const url = await uploadMedia(acceptedFiles[0], session);
     console.log(url);
     if (url) {
       setFiles(acceptedFiles);
-      form.setFieldValue("image", url);
+      form.setFieldValue("imageUrl", url);
     }
   };
 
@@ -92,11 +90,7 @@ export function AddProductView({ categories }: ProductViewProps) {
             <Card radius="md" shadow="md" withBorder>
               <Dropzone
                 openRef={openRef}
-                onDrop={(acceptedFiles) => {
-                  handleUpload(acceptedFiles).then(() =>
-                    console.log("accepted files", acceptedFiles)
-                  );
-                }}
+                onDrop={handleUpload}
                 onReject={(rejectedFiles) =>
                   console.log("rejected files", rejectedFiles)
                 }
@@ -167,6 +161,7 @@ export function AddProductView({ categories }: ProductViewProps) {
 
             <CategoryPicker
               label="Danh mục"
+              placeholder="Chọn danh mục"
               withAsterisk
               categories={categories}
               onSelect={(category) => form.setFieldValue("category", category)}
@@ -206,16 +201,17 @@ export function AddProductView({ categories }: ProductViewProps) {
               withAsterisk
               {...form.getInputProps("InstockQuantity")}
             />
-          </SimpleGrid>
-        </Card>
-
-        {/* Vận chuyển */}
-        <Card>
-          <Title order={2}>Vận chuyển</Title>
-          <SimpleGrid cols={2} spacing="md" mt="md">
-            <Text>Đơn vị vận chuyển: Giao hàng nhanh</Text>
-            <Text>Thời gian giao hàng dự kiến: trong 2 giờ</Text>
-            <Text>Phí vận chuyển: Miễn phí</Text>
+            <MultiSelect
+              label="Mã giảm giá"
+              hidePickedOptions
+              data={vouchers.map((voucher) => ({
+                value: voucher.id,
+                label: voucher.code,
+              }))}
+              searchable
+              withAsterisk
+              onChange={(v) => form.setFieldValue("vouchers", vouchers.filter((voucher) => v.includes(voucher.id)))}
+              />
           </SimpleGrid>
         </Card>
 

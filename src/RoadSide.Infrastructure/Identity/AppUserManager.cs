@@ -98,7 +98,7 @@ public class AppUserManager : UserManager<User>
 
     public async Task<(SignInResult, Domain.User)> CheckPasswordSignInAsync(LoginInfo info, bool lockoutOnFailure)
     {
-        var user = await FindByNameAsync(info.Email) ?? await FindByEmailAsync(info.Email);
+        var user = await FindByEmailAsync(info.Email);
         if (user == null)
         {
             throw new ArgumentNullException(nameof(user));

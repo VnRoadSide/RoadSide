@@ -14,16 +14,16 @@ public class ProductsController: ControllerBase
     private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
     private readonly ISearchProvider _searchProvider;
-    private readonly ISettingService _settingService;
+    private readonly IVoucherService _voucherService;
     private readonly TimeSpan _reindexInterval = TimeSpan.FromMinutes(1); // Set your desired interval
 
     public ProductsController(ILogger<ProductsController> logger, IProductService productService,
-        ICategoryService categoryService, ISearchProvider searchProvider, ISettingService settingService) {
+        ICategoryService categoryService, ISearchProvider searchProvider, IVoucherService voucherService) {
         _logger = logger;
         _productService = productService;
         _categoryService = categoryService;
         _searchProvider = searchProvider;
-        _settingService = settingService;
+        _voucherService = voucherService;
     }
 
     [HttpGet]
@@ -166,7 +166,7 @@ public class ProductsController: ControllerBase
     {
         try
         {
-            await _productService.AddAsync(product);
+            await _productService.UpsertAsync(product);
             return Ok();
         }
         catch (ValidationException ex)
@@ -177,5 +177,20 @@ public class ProductsController: ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
+    }
+
+    [HttpGet]
+    [Route("voucher")]
+    public async Task<ActionResult<ICollection<Voucher>>> GetVouchers()
+    {
+        try
+        {
+            var vouchers = await _voucherService.GetAllAsync(new VoucherQueryOption { ActiveOnly = true });
+            return Ok(vouchers);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        } 
     }
 }

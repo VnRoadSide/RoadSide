@@ -11,24 +11,30 @@ export const useApi = (session?: Session | null) => {
       options.headers = {
         "Content-Type": "application/json",
         ...options.headers,
+      };
+      if (
+        ((options.headers as any)["Content-Type"] as string) ===
+        "application/json"
+      ) {
+        options.body = JSON.stringify(options.body);
+      } else {
+        delete (options.headers as any)["Content-Type"];
       }
-      const isMultipart = (options.headers as any)["Content-Type"] as string === "multipart/form-data";
-      options.body = isMultipart ? options.body : JSON.stringify(options.body);
-      
+
       if (session) {
         options.headers = {
           ...options.headers,
           Authorization: `Bearer ${session.accessToken}`,
-        }
+        };
         console.log("session: ", session.accessToken);
       }
-
-      console.log("options: ", options.body);
 
       const response = await fetch(`${environment.apiUrl}${url}`, options);
 
       if (!response.ok) {
-        throw new Error(`API error! Status: ${response.status}. Reason: ${response.statusText}`);
+        throw new Error(
+          `API error! Status: ${response.status}. Reason: ${response.statusText}`
+        );
       }
 
       const data: T = await response.json();

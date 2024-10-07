@@ -86,6 +86,14 @@ public class CoreDbContext : DbContext, ICoreDbContext
             .WithMany()
             .HasForeignKey(n => n.ToId)
             .OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<Products>()
+            .HasMany(p => p.Vouchers)
+            .WithMany(v => v.AppliedProducts)
+            .UsingEntity(j => j.ToTable("products_voucher")); // Specify table name for clarity
+
+        // Explicitly map the join entity to the existing table
+        modelBuilder.Entity<ProductVoucher>()
+            .ToTable("products_voucher");  // Map to your existing table
     }
     
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

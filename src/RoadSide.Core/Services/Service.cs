@@ -72,10 +72,9 @@ internal class Service<TDomain, TEntity> : IService<TDomain, TEntity>
 
     public async Task<TDomain> UpsertAsync(TDomain domain, CancellationToken cancellationToken = default)
     {
-        var entity = _mapper.Map<TEntity>(domain);
-        var entityId = GetEntityId(entity); 
+        var id = GetDomainId(domain); 
 
-        if (await GetByIdAsync(entityId) is null)
+        if (await GetByIdAsync(id) is null)
         {
             return await AddAsync(domain, cancellationToken);
         }
@@ -92,9 +91,9 @@ internal class Service<TDomain, TEntity> : IService<TDomain, TEntity>
         await _context.SaveChangesAsync(cancellationToken);
     }
     
-    private object GetEntityId(TEntity entity)
+    private object GetDomainId(TDomain entity)
     {
-        var entityIdProperty = typeof(TEntity).GetProperty("Id");
+        var entityIdProperty = typeof(TDomain).GetProperty("Id");
         if (entityIdProperty == null)
         {
             throw new InvalidOperationException("Entity does not have an Id property");

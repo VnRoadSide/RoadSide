@@ -19,6 +19,8 @@ public interface IProductService : IService<Products, Entities.Products>
 {
     ValueTask<Paging<Products>> GetAsync(ProductQueryOption option);
     ValueTask<Products> GetByIdAsync(Guid id);
+
+    new ValueTask<Products> UpsertAsync(Products domain, CancellationToken cancellationToken = default);
 }
 
 internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContext appContext)
@@ -78,5 +80,11 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
             .FirstOrDefaultAsync(x => x.Id == id);
         var result = _mapper.Map<Products>(entity);
         return result;
+    }
+    
+    public new async ValueTask<Products> UpsertAsync(Products domain, CancellationToken cancellationToken = default)
+    {
+        domain.Vendor = new User { Id = appContext.User.Id };
+        return await base.UpsertAsync(domain, cancellationToken);
     }
 }

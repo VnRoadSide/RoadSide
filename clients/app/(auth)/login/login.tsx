@@ -70,7 +70,7 @@ export default function Login() {
                 type="email"
                 required
                 key={form.key("credential")}
-                {...form.getInputProps("credential")}
+                {...form.getInputProps("email")}
               />
               <PasswordInput
                 label="Mật khẩu"

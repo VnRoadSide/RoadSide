@@ -1,10 +1,12 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RoadSide.Core.Services;
-using RoadSide.Infrastructure.Media; // If your infrastructure implementations are in this namespace
+using RoadSide.Infrastructure.Media;
 
 namespace RoadSide.Web.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/media")]
 public class MediaController : ControllerBase
@@ -22,9 +24,8 @@ public class MediaController : ControllerBase
     /// <param name="file">The file to upload</param>
     /// <returns>The URL of the uploaded media</returns>
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadMedia([FromForm] IFormFile[] files)
+    public async Task<IActionResult> UploadMedia([FromForm] IFormFile file)
     {
-        var file = files.FirstOrDefault();
         if (file == null || file.Length == 0)
         {
             return BadRequest("No file provided or file is empty.");
