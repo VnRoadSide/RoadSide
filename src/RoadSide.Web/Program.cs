@@ -15,7 +15,6 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     // Add configuration from app settings.json
     .AddJsonFile(File.Exists("appsettings.cloud.json") ? "appsettings.cloud.json" : "appsettings.json")
-    .AddJsonFile("/etc/secrets/appsettings.prod.json", optional: true)
     .AddEnvironmentVariables();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
