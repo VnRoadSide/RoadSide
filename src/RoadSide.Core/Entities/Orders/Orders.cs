@@ -17,4 +17,6 @@ public class Orders : IAuditing<Guid>
     public Guid LastModifiedBy { get; set; }
     public DateTime CreatedOn { get; set; }
     public Guid CreatedBy { get; set; }
+    
+    public virtual User User { get; set; }
 }

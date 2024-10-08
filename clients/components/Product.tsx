@@ -55,12 +55,10 @@ export function ProductCard({ product }: { product: Product }) {
             {product.unit ?? "Unit"}
           </Text>
         </Group>
-        <Group gap="md" justify="space-between">
         <Text fz="xs" c="dimmed">
           {product.description ?? "Description"}
         </Text>
         <Badge variant="outline">{product.vendor?.fullName}</Badge>
-        </Group>
         <Group gap="md" justify="space-between" align="center">
           <Stack justify="center" h={"3em"} gap={"0"}>
             <Text fz="xl" fw={700} style={{ lineHeight: 1 }} component="span">

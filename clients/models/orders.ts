@@ -1,3 +1,5 @@
+
+import { User } from "@/lib/auth";
 import { Product } from "./products";
 
 export enum OrderStatus {
@@ -24,8 +26,10 @@ export interface OrderItem {
 export interface Orders {
   id: string;
   items: OrderItem[];
+  user: User;
   totalPrice: number;
   orderStatus?: OrderStatus
+  createdBy: string;
 }
 
 export interface Vouchers {

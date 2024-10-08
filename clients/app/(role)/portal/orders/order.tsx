@@ -136,9 +136,7 @@ export function OrderView({
                         { value: "refunded", label: "Trả hàng/Hoàn tiền" },
                       ]}
                     />
-                    <Badge color={getStatusColor(OrderStatus[data.orderStatus!] as OrderStatusType)}>{OrderStatus[data.orderStatus!]}</Badge>
                   </Group>
-                  <Title order={4}>Mã đơn hàng {data.id}</Title>
                   <OrderStatusBadge orderStatus={data.orderStatus as OrderStatus}/>
                 </Group>
 
@@ -179,7 +177,7 @@ export function OrderView({
                   ))}
                   <TableTbody>
                     <TableTr>
-                      <TableTd></TableTd>
+                      <TableTd>{data.user.fullName}</TableTd>
                       <TableTd></TableTd>
                       <TableTd></TableTd>
                       <TableTd>

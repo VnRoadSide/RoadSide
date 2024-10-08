@@ -54,7 +54,8 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
             .OrderByDescending(order => order.CreatedOn)
             .GetPaging(option)
             .AsNoTracking();
-        query = query.Include(q => q.Items)
+        query = query
+            .Include(q => q.Items)
             .ThenInclude(q => q.Product)
             .ThenInclude(q => q.Vendor)
             .Include(q => q.Items)
@@ -67,6 +68,7 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
     public async Task<ICollection<Orders>> GetForPortalAsync(QueryOrderOptions option)
     {
         var query = GetQueryable()
+            .Include(q => q.User)
             .Include(order => order.Items)
             .ThenInclude(item => item.Product)
             .Where(order => order.Items.Any(item => item.Product.VendorId == appContext.UserId));
