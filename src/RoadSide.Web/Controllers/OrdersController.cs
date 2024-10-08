@@ -160,4 +160,10 @@ public class OrdersController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+
+    // [HttpPost("{id}/change-status/{status}")]
+    // public async ValueTask<ActionResult<StatusAction>> ChangeOrderStatusAsync([FromRoute] Guid id, Guid status)
+    // {
+    //     
+    // }
 }

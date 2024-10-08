@@ -47,7 +47,7 @@ export function OrderView({ orders }: { orders: Orders[] }) {
           {orders.map((data, index) => (
             <Card key={index} shadow="sm" padding="lg" mb="md">
               <Group justify="space-between">
-                <Title order={4}>Đơn hàng {index + 1}</Title>
+                <Title order={4}>Đơn hàng {data.id}</Title>
                 <Badge>Chờ xác nhận</Badge>
               </Group>
               <Table>

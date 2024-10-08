@@ -54,7 +54,8 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
                 .ThenInclude(x => x.BaseCategory);
         }
         
-        query = query.Include(x => x.Vouchers);
+        query = query.Include(x => x.Vouchers)
+            .Include(q => q.Vendor);
         var data = _mapper.Map<ICollection<Products>>(await query.ToListAsync());
         var total = query.Count();
         

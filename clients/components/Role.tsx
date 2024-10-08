@@ -43,10 +43,12 @@ export function RoleView({
   
     return breadcrumb;
   };
+
   const pathname = usePathname();
   const nav: Url[] = buildBreadcrumb(pathname);
+
   return (
-    <Stack p="xl">
+    <Stack px="xl">
       <Breadcrumbs>
         {nav.map((item, index) => (
           <Anchor href={item.href} key={index}>
@@ -64,7 +66,19 @@ export function RoleView({
         >
           <NavigationSection urls={urls} />
         </Paper>
-        <Paper radius="md" p="xs" shadow="lg" style={{ width: "100%" }}>
+        {/* Apply scrolling to children content */}
+        <Paper
+          radius="md"
+          pt="xs"
+          shadow="lg"
+          style={{
+            width: "100%",
+            maxHeight: "calc(100vh - 150px)", // Set max height for the content area
+            overflowY: "auto", // Apply vertical scrolling
+            scrollbarWidth: "none", // Hide scrollbar in Firefox
+            msOverflowStyle: "none", // Hide scrollbar in Internet Explorer/Edge
+          }}
+        >
           {children}
         </Paper>
       </Group>
