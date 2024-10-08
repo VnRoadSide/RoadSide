@@ -20,6 +20,7 @@ import {
   Title,
   UnstyledButton,
   Image,
+  Badge,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -58,7 +59,9 @@ function ProductRow({
           Miễn phí 15 ngày
         </Text>
       </TableTd>
-
+      <TableTd>
+        <Badge color="pink">{item.product.vendor?.fullName}</Badge>
+      </TableTd>
       <TableTd>
         <Text
           c={item.product.discountedPrice ? "dimmed" : undefined}
@@ -89,7 +92,12 @@ function ProductRow({
           <Button color="red" variant="light" onClick={onRemove}>
             Xóa
           </Button>
-          <Button variant="light" onClick={onSuggest}>
+          <Button
+          component="a"
+          href= {`/${item.product.category?.url ?? ""}`}
+          variant="outline"
+          color="blue"
+          >
             Tìm sản phẩm tương tự
           </Button>
         </Group>
@@ -127,6 +135,7 @@ function OrderSection() {
               <TableTh></TableTh>
               <TableTh></TableTh>
               <TableTh>Sản Phẩm</TableTh>
+              <TableTh>Tên cửa hàng</TableTh>
               <TableTh>Đơn Giá</TableTh>
               <TableTh>Số Lượng</TableTh>
               <TableTh>Số Tiền</TableTh>
@@ -208,7 +217,7 @@ export default function Cart() {
                 onClick={handleSelectAll}
               />
             </GridCol>
-            <GridCol
+            {/* <GridCol
               span={6}
               style={{
                 display: "flex",
@@ -217,7 +226,7 @@ export default function Cart() {
               }}
             >
               <UnstyledButton>Đưa vào mục Đã thích</UnstyledButton>
-            </GridCol>
+            </GridCol> */}
           </Grid>
           <Grid grow>
             <GridCol

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"; // Use next/navigation for client-s
 import {
   Autocomplete,
   Card,
+  Text,
   Stack,
   Tabs,
   TabsList,
@@ -22,6 +23,7 @@ import {
   Select,
   Modal,
   Button,
+  Box,
 } from "@mantine/core";
 import { Orders, OrderStatus, OrderStatusType } from "@/models/orders";
 import { getCurrentPrice } from "@/lib/utils";
@@ -138,13 +140,18 @@ export function OrderView({
                   </Group>
                   <OrderStatusBadge orderStatus={data.orderStatus as OrderStatus}/>
                 </Group>
-
+                <Card shadow="md" withBorder w={"35%"}>
+                  <Text fw={700}>Khách hàng: {data.user?.fullName}</Text>
+                  <Text>Số điện thoại: {data.user?.phoneNumber}</Text>
+                  <Text>Địa chỉ giao hàng: {data.user?.address.addressLines}</Text>  
+                </Card>
                 {/* Product table */}
                 <Table>
                   <TableThead>
                     <TableTr>
                       <TableTh></TableTh>
                       <TableTh>Sản Phẩm</TableTh>
+                      <TableTh>Phiếu giảm giá</TableTh>
                       <TableTh>Đơn Giá</TableTh>
                       <TableTh>Số Lượng</TableTh>
                       <TableTh>Số Tiền</TableTh>
@@ -162,6 +169,13 @@ export function OrderView({
                           />
                         </TableTd>
                         <TableTd>{item.product.name}</TableTd>
+                        <TableTd __size="xl">
+                        {item.product.vouchers.map((data, index) => (
+                          <Badge key={index} color="pink" variant="light" >
+                            Giảm {data.discount}%
+                          </Badge>) 
+                        )}
+                      </TableTd>
                         <TableTd>
                           {getCurrentPrice(item.product).toLocaleString()}
                         </TableTd>
@@ -176,7 +190,8 @@ export function OrderView({
                   ))}
                   <TableTbody>
                     <TableTr>
-                      <TableTd>{data.user.fullName}</TableTd>
+                      <TableTd></TableTd>
+                      <TableTd></TableTd>
                       <TableTd></TableTd>
                       <TableTd></TableTd>
                       <TableTd>

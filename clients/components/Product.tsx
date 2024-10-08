@@ -52,11 +52,11 @@ export function ProductCard({ product }: { product: Product }) {
         <Group gap="md" justify="space-between">
           <Text fw={500}>{product.name ?? "Title"}</Text>
           <Text fz="sm" c="dimmed" fw={500} style={{ lineHeight: 1 }} mt={3}>
-            {product.unit ?? "Unit"}
+            {product.unit ?? "Đơn vị"}
           </Text>
         </Group>
         <Text fz="xs" c="dimmed">
-          {product.description ?? "Description"}
+          {product.description ?? "Không có mô tả"}
         </Text>
         <Badge variant="outline">{product.vendor?.fullName}</Badge>
         <Group gap="md" justify="space-between" align="center">

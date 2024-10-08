@@ -1,4 +1,5 @@
 "use client";
+import InfoVendor from "@/components/InfoVendor";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { getCurrentPrice } from "@/lib/utils";
 import { Orders, OrderStatus, OrderStatusType } from "@/models/orders";
@@ -24,6 +25,7 @@ import {
   Button,
   Badge,
 } from "@mantine/core";
+import { User } from "@/lib/auth";
 import { useRouter } from "next/navigation"; // Import useRouter to handle routing
 
 export function OrderView({ orders, status = "all", page, pageSize }: { orders: Orders[], status?: OrderStatusType, page?: number, pageSize?: number }) {
@@ -61,14 +63,16 @@ export function OrderView({ orders, status = "all", page, pageSize }: { orders: 
           {orders.map((data, index) => (
             <Card key={index} shadow="sm" padding="lg" mb="md">
               <Group justify="space-between">
-                <Title order={4}>Mã đơn hàng {data.id}</Title>
+                <Title order={4}>Đơn hàng {data.id}</Title>
                   <OrderStatusBadge orderStatus={data.orderStatus as OrderStatus}/>
               </Group>
-              <Table>
+              <Table align="center">
                 <TableThead>
                   <TableTr>
                     <TableTh></TableTh>
                     <TableTh>Sản Phẩm</TableTh>
+                    <TableTh>Cửa hàng</TableTh>
+                    <TableTh>Phiếu giảm giá</TableTh>
                     <TableTh>Đơn Giá</TableTh>
                     <TableTh>Số Lượng</TableTh>
                     <TableTh>Số Tiền</TableTh>
@@ -87,6 +91,17 @@ export function OrderView({ orders, status = "all", page, pageSize }: { orders: 
                       </TableTd>
                       <TableTd>{data.product.name}</TableTd>
                       <TableTd>
+                        <InfoVendor user={data.product.vendor as User}/>
+                      </TableTd>
+                      <TableTd __size="xl">
+                      {data.product.vouchers.map((item, index) => (
+                          <Badge key={index} color="pink" variant="light" >
+                            Giảm {item.discount}%
+                          </Badge>) 
+                        )}
+                      </TableTd>
+                      
+                      <TableTd>
                         {getCurrentPrice(data.product).toLocaleString()}
                       </TableTd>
                       <TableTd>{data.quantity}</TableTd>
@@ -100,6 +115,8 @@ export function OrderView({ orders, status = "all", page, pageSize }: { orders: 
                 ))}
                 <TableTbody>
                   <TableTr>
+                    <TableTd></TableTd>
+                    <TableTd></TableTd>
                     <TableTd></TableTd>
                     <TableTd></TableTd>
                     <TableTd></TableTd>

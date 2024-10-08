@@ -55,6 +55,9 @@ function OrderPart({ order }: { order: Order }) {
           <TableTd>
             <Text>₫{subtotal.toLocaleString()}</Text>
           </TableTd>
+          <TableTd>
+            <Text>Hình thức thanh toán: COD</Text>
+          </TableTd>
         </TableTr>
       </>
     );

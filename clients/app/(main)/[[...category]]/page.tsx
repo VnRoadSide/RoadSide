@@ -114,7 +114,7 @@ function ProductSection({ products }: { products: Product[] }) {
       ))}
     </SimpleGrid>
   ) : (
-    <Text>No products to show. Try to reconnect to the internet.</Text>
+    <Text>Không có sản phẩm để hiển thị. Vui lòng thử lại.</Text>
   );
 }
 

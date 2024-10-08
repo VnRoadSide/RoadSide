@@ -15,6 +15,7 @@ export interface User {
   dateOfBirth: Date | string;
   avatarUrl?: string;
   address: Address;
+  phoneNumber: string
 }
 
 export interface CurrentUser {

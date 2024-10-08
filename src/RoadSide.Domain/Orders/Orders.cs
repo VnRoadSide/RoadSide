@@ -12,4 +12,6 @@ public class Orders: BaseEntity<Guid>, IAuditing<Guid>
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     public Guid CreatedBy { get; set; }
     public Guid LastModifiedBy { get; set; }
+    
+    public User user { get; set; }
 }
