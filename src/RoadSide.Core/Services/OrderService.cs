@@ -8,7 +8,10 @@ using RoadSide.Domain.Context;
 
 namespace RoadSide.Core.Services;
 
-public class QueryOrderOptions : QueryPaging;
+public class QueryOrderOptions : QueryPaging
+{
+    public OrderStatus? Status { get; set; }
+}
 
 public interface IOrderService : IService<Orders, Entities.Orders>
 {
@@ -58,7 +61,14 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
         var query = GetQueryable()
             .Include(order => order.Items)
             .ThenInclude(item => item.Product)
-            .Include(order => order.Items.Where(item => item.Product.VendorId == appContext.UserId));
+            .Where(order => order.Items.Any(item => item.Product.VendorId == appContext.UserId));
+
+        if (option.Status is not null)
+        {
+            query = query.Where(order => order.OrderStatus == option.Status);
+        }
+
+        query = query.OrderByDescending(order => order.CreatedOn);
         var result = _mapper.Map<IList<Orders>>(await query.ToListAsync());
         foreach (var item in result)
         {

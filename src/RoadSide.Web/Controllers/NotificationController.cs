@@ -13,11 +13,9 @@ public class NotificationController: ControllerBase
 {
     private readonly ILogger<AppSettingsController> _logger;
     private readonly INotificationService _notificationService;
-    private readonly IAppContext _appContext;
 
-    public NotificationController(IAppContext appContext, INotificationService notificationService, ILogger<AppSettingsController> logger)
+    public NotificationController(INotificationService notificationService, ILogger<AppSettingsController> logger)
     {
-        _appContext = appContext;
         _notificationService = notificationService;
         _logger = logger;
     }

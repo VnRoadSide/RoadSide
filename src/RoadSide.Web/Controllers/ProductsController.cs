@@ -15,7 +15,6 @@ public class ProductsController: ControllerBase
     private readonly ICategoryService _categoryService;
     private readonly ISearchProvider _searchProvider;
     private readonly IVoucherService _voucherService;
-    private readonly TimeSpan _reindexInterval = TimeSpan.FromMinutes(1); // Set your desired interval
 
     public ProductsController(ILogger<ProductsController> logger, IProductService productService,
         ICategoryService categoryService, ISearchProvider searchProvider, IVoucherService voucherService) {

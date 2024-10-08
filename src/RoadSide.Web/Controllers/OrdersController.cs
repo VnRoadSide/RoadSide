@@ -120,7 +120,7 @@ public class OrdersController : ControllerBase
 
     
     [HttpGet("portal")]
-    public async ValueTask<ActionResult<ICollection<Orders>>> GetOrderForPortalAsync([FromQuery] int page, int pageSize)
+    public async ValueTask<ActionResult<ICollection<Orders>>> GetOrderForPortalAsync([FromQuery] int page, int pageSize, OrderStatus? status)
     {
         try
         {
@@ -128,6 +128,7 @@ public class OrdersController : ControllerBase
             {
                 Page = page,
                 PageSize = pageSize,
+                Status = status
             };
 
             var orders = await _ordersService.GetForPortalAsync(option);

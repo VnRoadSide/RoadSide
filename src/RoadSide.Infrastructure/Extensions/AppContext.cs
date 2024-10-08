@@ -1,23 +1,27 @@
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims; // For accessing user claims
 using RoadSide.Core.Extensions;
 using RoadSide.Domain;
 using RoadSide.Domain.Context;
-using RoadSide.Infrastructure.Identity;
 
 namespace RoadSide.Infrastructure.Extensions;
 
-public class AppContext: IAppContext
+public class AppContext(IHttpContextAccessor httpContextAccessor) : IAppContext
 {
-    private IHttpContextAccessor _httpContextAccessor;
-    private AppUserManager _userManager;
-
-    public AppContext(IHttpContextAccessor httpContextAccessor, AppUserManager userManager)
+    // Fetch UserId directly from HttpContext claims
+    public Guid UserId
     {
-        _httpContextAccessor = httpContextAccessor;
-        _userManager = userManager;
+        get
+        {
+            var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out var userId))
+            {
+                return userId;
+            }
+            throw new Exception("User ID not found or invalid.");
+        }
     }
-    public Guid UserId => User.Id;
-    public User User => _userManager.GetDomainUserAsync(_httpContextAccessor.HttpContext?.User).GetAwaiter().GetResult();
-    public ICollection<OrderItem> Cart => [];
-    public ICollection<Orders> Checkout { get; set; } = [];
+
+    public ICollection<OrderItem> Cart => new List<OrderItem>();
+    public ICollection<Orders> Checkout { get; set; } = new List<Orders>();
 }

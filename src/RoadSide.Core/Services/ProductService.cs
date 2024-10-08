@@ -44,7 +44,7 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
         var query = GetQueryable().GetFilter(option);
         if (option.IsPortal)
         {
-            query = query.Where(x => x.VendorId == appContext.User.Id);
+            query = query.Where(x => x.VendorId == appContext.UserId);
         }
         
         if (option.IncludeCategory)
@@ -84,7 +84,7 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
     
     public new async ValueTask<Products> UpsertAsync(Products domain, CancellationToken cancellationToken = default)
     {
-        domain.Vendor = new User { Id = appContext.User.Id };
+        domain.Vendor = new User { Id = appContext.UserId };
         return await base.UpsertAsync(domain, cancellationToken);
     }
 }

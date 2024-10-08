@@ -1,13 +1,16 @@
 import { Product } from "./products";
 
 export enum OrderStatus {
-  Pending = 0,
-  InStock = 1,
-  OnTheWay = 2,
-  Delivered = 3,
-  Cancelled = 4,
-  Refunded = 5
+  pending = 0,
+  pickup,
+  shipping,
+  delivered,
+  cancelled,
+  refunded,
+  all
 }
+
+export type OrderStatusType = keyof typeof OrderStatus;
 
 export interface OrderItem {
   id: number;

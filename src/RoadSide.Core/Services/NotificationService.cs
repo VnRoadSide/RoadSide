@@ -27,7 +27,7 @@ internal class NotificationsService(ICoreDbContext context, IMapper mapper, IApp
     {
         var query = GetQueryable()
             .Where(x => x.IsPersonal == option.IsPersonal)
-            .Where(x => x.ToId == appContext.User.Id)
+            .Where(x => x.ToId == appContext.UserId)
             .OrderByDescending(x => x.CreatedOn)
             .AsNoTracking();
 

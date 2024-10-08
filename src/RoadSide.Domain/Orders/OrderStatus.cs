@@ -3,8 +3,8 @@ namespace RoadSide.Domain;
 public enum OrderStatus
 {
     Pending,
-    InStock,
-    OnTheWay,
+    Pickup,
+    Shipping,
     Delivered,
     Cancelled,
     Refunded
