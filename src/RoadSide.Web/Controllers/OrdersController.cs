@@ -120,16 +120,16 @@ public class OrdersController : ControllerBase
 
     
     [HttpGet("portal")]
-    public async ValueTask<ActionResult<ICollection<Orders>>> GetOrderForPortalAsync([FromQuery] int page, int pageSize, OrderStatus? status)
+    public async ValueTask<ActionResult<ICollection<Orders>>> GetOrderForPortalAsync([FromQuery] int? page, int? pageSize, OrderStatus? status)
     {
         try
         {
             var option = new QueryOrderOptions
             {
-                Page = page,
-                PageSize = pageSize,
                 Status = status
             };
+            option.Page = page ?? option.Page;
+            option.PageSize = pageSize ?? option.PageSize;
 
             var orders = await _ordersService.GetForPortalAsync(option);
             return Ok(orders);
@@ -142,15 +142,16 @@ public class OrdersController : ControllerBase
 
 
     [HttpGet]
-    public async ValueTask<ActionResult<ICollection<Orders>>> GetAllOrdersAsync([FromQuery] int page, int pageSize)
+    public async ValueTask<ActionResult<ICollection<Orders>>> GetAllOrdersAsync([FromQuery] int? page, int? pageSize, OrderStatus? status)
     {
         try
         {
             var option = new QueryOrderOptions
             {
-                Page = page,
-                PageSize = pageSize,
+                Status = status
             };
+            option.Page = page ?? option.Page;
+            option.PageSize = pageSize ?? option.PageSize;
 
             var orders = await _ordersService.GetAllAsync(option);
             return Ok(orders);

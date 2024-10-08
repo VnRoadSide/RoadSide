@@ -25,6 +25,7 @@ import {
 } from "@mantine/core";
 import { Orders, OrderStatus, OrderStatusType } from "@/models/orders";
 import { getCurrentPrice } from "@/lib/utils";
+import OrderStatusBadge from '@/components/OrderStatusBadge';
 
 export function OrderView({
   orders,
@@ -137,6 +138,8 @@ export function OrderView({
                     />
                     <Badge color={getStatusColor(OrderStatus[data.orderStatus!] as OrderStatusType)}>{OrderStatus[data.orderStatus!]}</Badge>
                   </Group>
+                  <Title order={4}>Mã đơn hàng {data.id}</Title>
+                  <OrderStatusBadge orderStatus={data.orderStatus as OrderStatus}/>
                 </Group>
 
                 {/* Product table */}

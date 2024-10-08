@@ -43,7 +43,14 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
     public async Task<ICollection<Orders>> GetAllAsync(QueryOrderOptions option)
     {
         var query = GetQueryable()
-            .Where(order => order.CreatedBy == appContext.UserId)
+            .Where(order => order.CreatedBy == appContext.UserId);
+        
+        if (option.Status is not null)
+        {
+            query = query.Where(order => order.OrderStatus == option.Status);
+        }
+        
+        query = query
             .OrderByDescending(order => order.CreatedOn)
             .GetPaging(option)
             .AsNoTracking();
@@ -53,7 +60,8 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
             .Include(q => q.Items)
             .ThenInclude(q => q.Product)
             .ThenInclude(q => q.Vouchers);
-        return _mapper.Map<IList<Orders>>(await query.ToListAsync());
+        
+        return _mapper.Map<ICollection<Orders>>(await query.ToListAsync());
     }
 
     public async Task<ICollection<Orders>> GetForPortalAsync(QueryOrderOptions option)
@@ -68,7 +76,7 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
             query = query.Where(order => order.OrderStatus == option.Status);
         }
 
-        query = query.OrderByDescending(order => order.CreatedOn);
+        query = query.OrderByDescending(order => order.CreatedOn).GetPaging(option).AsNoTracking();;
         var result = _mapper.Map<IList<Orders>>(await query.ToListAsync());
         foreach (var item in result)
         {
