@@ -1,5 +1,5 @@
 "use server"
-import { Product } from "@/models";
+import { OrderStatus, Product } from "@/models";
 import { useApi } from "./hooks";
 import { auth } from "@/auth";
 
@@ -35,5 +35,12 @@ export async function proceedCheckout(sessionId: string) {
   const session = await auth();
   const { post } = useApi(session);
   const { data } = await post<{success: boolean}>(`/orders/${sessionId}`);
+  return data
+}
+
+export async function changeOrderStatus(id : string, status: OrderStatus) {
+  const session = await auth();
+  const { post } = useApi(session);
+  const { data } = await post<{success: boolean}>(`/orders/${id}/change-status/${status}`);
   return data
 }

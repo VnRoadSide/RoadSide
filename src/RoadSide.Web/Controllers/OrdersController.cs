@@ -162,9 +162,21 @@ public class OrdersController : ControllerBase
         }
     }
 
-    // [HttpPost("{id}/change-status/{status}")]
-    // public async ValueTask<ActionResult<StatusAction>> ChangeOrderStatusAsync([FromRoute] Guid id, Guid status)
-    // {
-    //     
-    // }
+    [HttpPost("{id}/change-status/{status}")]
+    public async ValueTask<ActionResult<StatusAction>> ChangeOrderStatusAsync([FromRoute] Guid id, OrderStatus status)
+    {
+        try
+        {
+            await _ordersService.UpdateOrderStatus(id, status);
+            return Ok(new StatusAction { Success = true });
+        }
+        catch (ArgumentNullException)
+        {
+            return Ok(new StatusAction { Success = false });
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
 }

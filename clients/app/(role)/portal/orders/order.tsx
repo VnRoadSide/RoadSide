@@ -26,6 +26,7 @@ import {
 import { Orders, OrderStatus, OrderStatusType } from "@/models/orders";
 import { getCurrentPrice } from "@/lib/utils";
 import OrderStatusBadge from '@/components/OrderStatusBadge';
+import { changeOrderStatus } from "@/lib/checkout";
 
 export function OrderView({
   orders,
@@ -75,9 +76,7 @@ export function OrderView({
     if (selectedOrderId && selectedStatus) {
       try {
         // Example: await updateOrderStatus(selectedOrderId, selectedStatus);
-        console.log(
-          `Order ${selectedOrderId} updated to status ${selectedStatus}`
-        );
+        await changeOrderStatus(selectedOrderId, OrderStatus[selectedStatus]);
         setConfirmOpen(false); // Close the modal
         router.refresh(); // Refresh the page to reflect the new status
       } catch (error) {

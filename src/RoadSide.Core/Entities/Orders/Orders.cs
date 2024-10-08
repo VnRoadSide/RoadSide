@@ -18,5 +18,6 @@ public class Orders : IAuditing<Guid>
     public DateTime CreatedOn { get; set; }
     public Guid CreatedBy { get; set; }
     
+    [ForeignKey(nameof(CreatedBy))]
     public virtual User User { get; set; }
 }

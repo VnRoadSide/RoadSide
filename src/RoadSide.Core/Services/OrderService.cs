@@ -21,6 +21,7 @@ public interface IOrderService : IService<Orders, Entities.Orders>
 
     Task BulkAddAsync(ICollection<Orders> orders);
     Task<Orders> ValidateOrders(Guid sessionId);
+    Task UpdateOrderStatus(Guid id, OrderStatus status);
 }
 
 internal class OrderService(ICoreDbContext context, IMapper mapper, IProductService productService,  ICacheService cacheService, IAppContext appContext, IService<OrderItem, Entities.OrderItem> orderItemService)
@@ -110,5 +111,13 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
             TotalPrice = orderItems.Sum(o => (o.Product.DiscountedPrice ?? o.Product.BaseUnitPrice)* o.Quantity)
         };
         return Task.FromResult(order);
+    }
+
+    public async Task UpdateOrderStatus(Guid id, OrderStatus status)
+    {
+        var order = await GetByIdAsync(id);
+        ArgumentNullException.ThrowIfNull(order);
+        order.OrderStatus = status;
+        await _context.SaveChangesAsync();
     }
 }
