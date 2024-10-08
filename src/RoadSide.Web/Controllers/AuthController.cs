@@ -91,7 +91,7 @@ public class AuthController : ControllerBase
         var user = await _manager.GetDomainUserAsync(User);
         var result = new CurrentUser
         {
-            Id = user!.Id,
+            Id = user.Id,
             UserName = user.UserName,
             Email = user.Email,
             RoleName = user.Roles.Select(t => t.Name).ToList(),

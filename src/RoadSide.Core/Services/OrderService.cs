@@ -69,9 +69,11 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
     public async Task<ICollection<Orders>> GetForPortalAsync(QueryOrderOptions option)
     {
         var query = GetQueryable()
-            .Include(q => q.User)
             .Include(order => order.Items)
             .ThenInclude(item => item.Product)
+            .ThenInclude(item => item.Vouchers)
+            .Include(order => order.Items.Where(item => item.Product.VendorId == appContext.UserId))
+            .Include(q => q.User)
             .Where(order => order.Items.Any(item => item.Product.VendorId == appContext.UserId));
 
         if (option.Status is not null)
@@ -80,7 +82,7 @@ internal class OrderService(ICoreDbContext context, IMapper mapper, IProductServ
         }
 
         query = query.OrderByDescending(order => order.CreatedOn).GetPaging(option).AsNoTracking();;
-        var result = _mapper.Map<IList<Orders>>(await query.ToListAsync());
+        var result = _mapper.Map<ICollection<Orders>>(await query.ToListAsync());
         foreach (var item in result)
         {
             item.TotalPrice = item.Items.Sum(o => (o.Product.DiscountedPrice ?? o.Product.BaseUnitPrice) * o.Quantity);

@@ -13,5 +13,5 @@ public class Orders: BaseEntity<Guid>, IAuditing<Guid>
     public Guid CreatedBy { get; set; }
     public Guid LastModifiedBy { get; set; }
     
-    public User user { get; set; }
+    public User User { get; set; }
 }

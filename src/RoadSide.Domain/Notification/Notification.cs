@@ -14,4 +14,5 @@ public class Notifier
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     public string Content { get; set; }
     public string Url { get; set; }
+    public bool MarkAsRead { get; set; }
 }

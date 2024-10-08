@@ -225,19 +225,3 @@ export function OrderView({
     </Stack>
   );
 }
-
-// Utility function to get color based on status
-function getStatusColor(status: OrderStatusType) {
-  switch (status) {
-    case "delivered":
-      return "green";
-    case "cancelled":
-      return "red";
-    case "shipping":
-      return "blue";
-    case "pickup":
-      return "yellow";
-    default:
-      return "gray";
-  }
-}
