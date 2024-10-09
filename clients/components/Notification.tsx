@@ -100,7 +100,7 @@ export function NotificationView({ data, total }: PagingResult<Notification>) {
         <Flex justify="center">
           <Pagination
             value={currentPage}
-            total={total}
+            total={Math.ceil(total/pageSize)}
             onChange={handleChangePage}
           />
         </Flex>
