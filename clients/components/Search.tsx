@@ -116,7 +116,7 @@ const SearchBoxComponent = ({
         <Hits
           hitComponent={(hit) =>
             <Combobox.Options>
-              {hit.length > 0 ? (
+              {searchResults.length > 0 ? (
                 searchResults
               ) : (
                 <Combobox.Empty>Nothing found</Combobox.Empty>
