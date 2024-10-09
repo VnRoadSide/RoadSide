@@ -55,7 +55,7 @@ export default function NavBar({
                 </Text>
               </Group>
             </Anchor>
-            <FuzzySearch indexName="product"/>
+            <FuzzySearch indexName="products"/>
           </Group>
 
           <Group gap={0} align="center">

@@ -143,7 +143,7 @@ export function OrderView({
                 <Card shadow="md" withBorder w={"35%"}>
                   <Text fw={700}>Khách hàng: {data.user?.fullName}</Text>
                   <Text>Số điện thoại: {data.user?.phoneNumber}</Text>
-                  <Text>Địa chỉ giao hàng: {data.user?.address.addressLines}</Text>  
+                  <Text>Địa chỉ giao hàng: {data.user?.address?.addressLines}</Text>  
                 </Card>
                 {/* Product table */}
                 <Table>

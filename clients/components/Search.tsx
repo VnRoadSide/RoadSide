@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { liteClient as algoliasearch } from "algoliasearch/lite";
-import { InstantSearch, useInstantSearch } from "react-instantsearch";
+import { InstantSearch, useInstantSearch, Hits } from "react-instantsearch";
 import { environment } from "@/environment";
-import { useCombobox, Combobox, TextInput, Kbd, Box, Loader } from "@mantine/core";
+import {
+  useCombobox,
+  Combobox,
+  TextInput,
+  Kbd,
+  Box,
+  Loader,
+} from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons-react";
 
@@ -18,13 +25,13 @@ interface SearchResult {
 }
 
 function FuzzySearch({ indexName }: { indexName: string }) {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebouncedValue(search, 500); // Debounce the search input by 500ms
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const combobox = useCombobox();
 
   return (
-    <InstantSearch searchClient={searchClient} indexName={indexName}>
+    <InstantSearch searchClient={searchClient} indexName={indexName} future={{preserveSharedStateOnUnmount:true}}>
       <SearchBoxComponent
         search={search}
         setSearch={setSearch}
@@ -83,17 +90,17 @@ const SearchBoxComponent = ({
               backgroundColor: theme.colors.dark[6],
               borderColor: theme.colors.dark[4],
               color: theme.colors.gray[0],
-              paddingRight: '50px', // Adjust for the right section
-              paddingLeft: '40px', // Adjust for the icon
-              height: '40px',
+              paddingRight: "50px", // Adjust for the right section
+              paddingLeft: "40px", // Adjust for the icon
+              height: "40px",
             },
             rightSection: {
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               backgroundColor: theme.colors.dark[7],
-              borderRadius: '4px',
-              padding: '4px 8px',
+              borderRadius: "4px",
+              padding: "4px 8px",
             },
           })}
         />
@@ -101,15 +108,22 @@ const SearchBoxComponent = ({
 
       {/* Search Dropdown */}
       <Combobox.Dropdown>
-        {status === 'loading' && (
+        {status === "loading" && (
           <Box mt="sm" p="xs">
             <Loader size="sm" />
           </Box>
         )}
-
-        <Combobox.Options>
-          {searchResults.length > 0 ? searchResults : <Combobox.Empty>Nothing found</Combobox.Empty>}
-        </Combobox.Options>
+        <Hits
+          hitComponent={(hit) =>
+            <Combobox.Options>
+              {hit.length > 0 ? (
+                searchResults
+              ) : (
+                <Combobox.Empty>Nothing found</Combobox.Empty>
+              )}
+            </Combobox.Options>
+          }
+        />
       </Combobox.Dropdown>
     </Combobox>
   );

@@ -22,5 +22,4 @@ public class Notifications
     [MaxLength(Int16.MaxValue)] 
     public string? Url { get; set; }
     public bool IsPersonal { get; set; }
-    public bool MarkAsRead { get; set; }
 }
