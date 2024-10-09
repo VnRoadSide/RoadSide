@@ -56,18 +56,6 @@ export function NotificationView({ data, total }: PagingResult<Notification>) {
           </Text>
         </Flex>
       </TableTd>
-      <TableTd>
-        <Button variant="transparent" fz="sm" fw={500}>
-          Đánh dấu đã đọc
-        </Button>
-      </TableTd>
-      <TableTd>
-        <Group gap={0} justify="flex-end">
-          <ActionIcon variant="subtle" color="gray">
-            <IconTrash width={30} height={30} stroke={1.5} />
-          </ActionIcon>
-        </Group>
-      </TableTd>
     </TableTr>
   ));
 

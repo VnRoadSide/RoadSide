@@ -140,10 +140,10 @@ export function OrderView({
                   </Group>
                   <OrderStatusBadge orderStatus={data.orderStatus as OrderStatus}/>
                 </Group>
-                <Card shadow="md" withBorder w={"35%"}>
+                <Card shadow="md" withBorder w={"50%"}>
                   <Text fw={700}>Khách hàng: {data.user?.fullName}</Text>
                   <Text>Số điện thoại: {data.user?.phoneNumber}</Text>
-                  <Text>Địa chỉ giao hàng: {data.user?.address?.addressLines}</Text>  
+                  <Text>Địa chỉ giao hàng: {data.user?.address?.addressLines + ", " + data.user?.address?.locality + ", " + data.user?.address?.region + ", " + data.user?.address?.country}</Text>  
                 </Card>
                 {/* Product table */}
                 <Table>
@@ -151,7 +151,9 @@ export function OrderView({
                     <TableTr>
                       <TableTh></TableTh>
                       <TableTh>Sản Phẩm</TableTh>
+                      <TableTh>Đơn vị</TableTh>
                       <TableTh>Phiếu giảm giá</TableTh>
+
                       <TableTh>Đơn Giá</TableTh>
                       <TableTh>Số Lượng</TableTh>
                       <TableTh>Số Tiền</TableTh>
@@ -169,6 +171,7 @@ export function OrderView({
                           />
                         </TableTd>
                         <TableTd>{item.product.name}</TableTd>
+                        <TableTd>{item.product.unit}</TableTd>
                         <TableTd __size="xl">
                         {item.product.vouchers.map((data, index) => (
                           <Badge key={index} color="pink" variant="light" >

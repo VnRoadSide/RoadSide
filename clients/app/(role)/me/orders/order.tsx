@@ -138,6 +138,7 @@ export function OrderView({
                       <TableTh></TableTh>
                       <TableTh>Sản Phẩm</TableTh>
                       <TableTh>Cửa hàng</TableTh>
+                      <TableTh>Đơn vị</TableTh>
                       <TableTh>Phiếu giảm giá</TableTh>
                       <TableTh>Đơn Giá</TableTh>
                       <TableTh>Số Lượng</TableTh>
@@ -159,6 +160,7 @@ export function OrderView({
                         <TableTd>
                           <InfoVendor user={data.product.vendor as User} />
                         </TableTd>
+                        <TableTd>{data.product.unit}</TableTd>
                         <TableTd __size="xl">
                           {data.product.vouchers.map((item, index) => (
                             <Badge key={index} color="pink" variant="light">
