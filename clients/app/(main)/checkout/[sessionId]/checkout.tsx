@@ -55,9 +55,6 @@ function OrderPart({ order }: { order: Order }) {
           <TableTd>
             <Text>₫{subtotal.toLocaleString()}</Text>
           </TableTd>
-          <TableTd>
-            <Text>Hình thức thanh toán: COD</Text>
-          </TableTd>
         </TableTr>
       </>
     );
@@ -82,12 +79,13 @@ function CheckoutSection({ order }: { order: Order }) {
       </Card>
 
       <Card shadow="sm" p="lg" radius="md" mt="md">
-        <Text size="sm" w={500}>
-          Vận chuyển
-        </Text>
+        <Text>Hình thức thanh toán: COD</Text>
+        <Text size="xs">Thanh toán trực tiếp bằng tiền mặt khi nhận hàng</Text>
         <Divider my="sm" />
+        
         <Text>Vận Chuyển Nhanh - ₫{totalShippingCost.toLocaleString()}</Text>
-        <Text size="xs">Dự kiến nhận hàng trong 4 giờ kể từ lúc đặt hàng</Text>
+        <Text size="xs">Dự kiến nhận hàng trong 4 giờ kể từ lúc đặt hàng đối với mặt hàng có sẵn</Text>
+        <Text size="xs">Dự kiến nhận hàng trong 2 ngày kể từ lúc đặt hàng đối với mặt hàng đặt trước</Text>
       </Card>
     </Box>
   );
@@ -123,13 +121,11 @@ export function CheckoutView({
     <Box p="xl">
       <Card shadow="sm" p="lg" radius="md" mb="md">
         <Title order={4}>Địa Chỉ Nhận Hàng</Title>
-        <Group justify="space-between">
           <Text>
             {" "}
             {address.name} {address.phone}
           </Text>
           <Text>{address.address}</Text>
-        </Group>
       </Card>
 
       <CheckoutSection order={order} />

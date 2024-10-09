@@ -217,16 +217,6 @@ export default function Cart() {
                 onClick={handleSelectAll}
               />
             </GridCol>
-            {/* <GridCol
-              span={6}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-end",
-              }}
-            >
-              <UnstyledButton>Đưa vào mục Đã thích</UnstyledButton>
-            </GridCol> */}
           </Grid>
           <Grid grow>
             <GridCol

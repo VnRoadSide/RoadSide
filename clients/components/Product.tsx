@@ -40,7 +40,7 @@ export function ProductCard({ product }: { product: Product }) {
     : Math.round((1 - product.discountedPrice / product.baseUnitPrice) * 100);
   return (
     <Card withBorder radius="md" padding="xs" miw="12rem">
-      <CardSection component={Link} href={`/product?id=${product.id}`}>
+      <CardSection>
         <ProductStatusBadge productStatus={product.availability} />
         <Image
           src={product.imageUrl}
@@ -48,7 +48,6 @@ export function ProductCard({ product }: { product: Product }) {
           height={120}
           fallbackSrc="https://placehold.co/600x400?text=Placeholder"
         />
-        
       </CardSection>
       <CardSection px="sm" pt="sm">
         <Group gap="md" justify="space-between">

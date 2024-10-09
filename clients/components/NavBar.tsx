@@ -25,7 +25,6 @@ import { Session } from "next-auth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useCounter } from "@mantine/hooks";
 import FuzzySearch from "./Search";
 
 export default function NavBar({
@@ -82,9 +81,7 @@ export default function NavBar({
                     p="xs"
                     aria-label="Me"
                   >
-                    <Indicator inline label={counter}>
-                      <IconUserCircle stroke={1.5} />
-                    </Indicator>
+                  <IconUserCircle stroke={1.5} />
                   </ActionIcon>
                 </MenuTarget>
                 <MenuDropdown>
