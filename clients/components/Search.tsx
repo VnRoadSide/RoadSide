@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { liteClient as algoliasearch } from "algoliasearch/lite";
-import { InstantSearch, useInstantSearch, Hits } from "react-instantsearch";
+import { InstantSearch, useInstantSearch, Hits, Configure, Highlight } from "react-instantsearch";
 import { environment } from "@/environment";
 import {
   useCombobox,
@@ -9,8 +9,13 @@ import {
   Kbd,
   Box,
   Loader,
+  Group,
+  Paper,
+  Image,
+  Badge
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
+import type { Hit } from 'instantsearch.js';
 import { IconSearch } from "@tabler/icons-react";
 
 const searchClient = algoliasearch(
@@ -22,110 +27,134 @@ interface SearchResult {
   objectID: string;
   name: string;
   description: string;
+  imageUrl: string;
+  baseUnitPrice: number;
+  category: { name: string };
 }
 
-function FuzzySearch({ indexName }: { indexName: string }) {
-  const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebouncedValue(search, 500); // Debounce the search input by 500ms
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const combobox = useCombobox();
+const FuzzySearch = ({ indexName }: { indexName: string }) => {
+  const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebouncedValue(search, 500);
 
   return (
-    <InstantSearch searchClient={searchClient} indexName={indexName} future={{preserveSharedStateOnUnmount:true}}>
-      <SearchBoxComponent
-        search={search}
-        setSearch={setSearch}
-        combobox={combobox}
-        selectedItem={selectedItem}
-        setSelectedItem={setSelectedItem}
-        debouncedSearch={debouncedSearch}
-      />
-    </InstantSearch>
-  );
-}
-
-const SearchBoxComponent = ({
-  search,
-  setSearch,
-  combobox,
-  selectedItem,
-  setSelectedItem,
-  debouncedSearch,
-}: {
-  search: string;
-  setSearch: (value: string) => void;
-  combobox: any;
-  selectedItem: string | null;
-  setSelectedItem: (value: string | null) => void;
-  debouncedSearch: string;
-}) => {
-  const { results, status } = useInstantSearch();
-
-  // Filter and map results from Algolia
-  const searchResults = results.hits.map((hit: SearchResult) => (
-    <Combobox.Option value={hit.name} key={hit.objectID}>
-      {hit.name}
-    </Combobox.Option>
-  ));
-
-  return (
-    <Combobox
-      store={combobox}
-      width={600}
-      onOptionSubmit={(val) => {
-        setSelectedItem(val);
-        combobox.closeDropdown();
-      }}
-    >
-      <Combobox.Target>
-        {/* Customized TextInput */}
+    <InstantSearch searchClient={searchClient} indexName={indexName}>
+      <Configure hitsPerPage={8} />
+      
+      <Box style={{ maxWidth: 400, margin: 'auto', position: 'relative' }}>
+        {/* Search Input Field */}
         <TextInput
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
-          placeholder="Search"
-          leftSection={<IconSearch size={18} />} // Adding search icon
-          rightSectionWidth={90}
-          style={(theme) => ({
+          placeholder="Search products"
+          icon={<IconSearch size={18} />}
+          radius="md"
+          size="md"
+          styles={(theme) => ({
             input: {
-              backgroundColor: theme.colors.dark[6],
-              borderColor: theme.colors.dark[4],
-              color: theme.colors.gray[0],
-              paddingRight: "50px", // Adjust for the right section
-              paddingLeft: "40px", // Adjust for the icon
-              height: "40px",
-            },
-            rightSection: {
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: theme.colors.dark[7],
-              borderRadius: "4px",
-              padding: "4px 8px",
+              paddingRight: '40px',
             },
           })}
         />
-      </Combobox.Target>
 
-      {/* Search Dropdown */}
-      <Combobox.Dropdown>
-        {status === "loading" && (
-          <Box mt="sm" p="xs">
-            <Loader size="sm" />
-          </Box>
-        )}
-        <Hits
-          hitComponent={(hit) =>
-            <Combobox.Options>
-              {searchResults.length > 0 ? (
-                searchResults
-              ) : (
-                <Combobox.Empty>Nothing found</Combobox.Empty>
-              )}
-            </Combobox.Options>
-          }
+        {/* Conditionally show search results */}
+        {debouncedSearch && <SearchResults />}
+      </Box>
+    </InstantSearch>
+  );
+};
+
+// Custom component using useInstantSearch to access the hits and search status
+const SearchResults = () => {
+  const { results, status } = useInstantSearch();
+
+  // Render loader if still loading
+  if (status === 'loading') {
+    return (
+      <Box mt="sm" p="xs">
+        <Loader size="sm" />
+      </Box>
+    );
+  }
+console.log(results?.hits)
+  // Render search results if available
+  if (results?.hits.length > 0) {
+    return (
+      <Paper
+        shadow="md"
+        radius="md"
+        style={{
+          position: 'absolute',
+          width: '100%',
+          top: '60px',
+          zIndex: 10,
+          border: '1px solid #ddd',
+          maxHeight: '300px',
+          overflowY: 'auto',
+        }}
+      >
+        {results.hits.map((hit: SearchResult) => (
+          <HitComponent key={hit.objectID} hit={hit} />
+        ))}
+      </Paper>
+    );
+  }
+
+  // Fallback for no results
+  return (
+    <Paper shadow="md" radius="md" mt="sm" p="md">
+      <p>No results found.</p>
+    </Paper>
+  );
+};
+
+// Updated HitComponent to display search result
+const HitComponent = ({ hit }: { hit: SearchResult }) => {
+  return (
+    <Paper
+      p="sm"
+      shadow="xs"
+      radius="md"
+      mb="sm"
+      withBorder
+      style={(theme) => ({
+        '&:hover': {
+          backgroundColor: theme.colors.gray[0],
+        },
+        transition: 'background-color 0.2s',
+        cursor: 'pointer',
+      })}
+    >
+      <Group align="flex-start">
+        {/* Product Image */}
+        <Image
+          src={hit.imageUrl}
+          alt={hit.name}
+          width={60}
+          height={60}
+          radius="md"
+          fit="cover"
         />
-      </Combobox.Dropdown>
-    </Combobox>
+
+        <div style={{ flex: 1 }}>
+          {/* Product Name */}
+          <h4 style={{ margin: 0 }}>{hit.name}</h4>
+          
+          {/* Product Price */}
+          <p style={{ margin: 0, color: '#888', fontSize: '14px' }}>
+            ${hit.baseUnitPrice?.toFixed(2) || 'Price not available'}
+          </p>
+
+          {/* Product Category */}
+          {hit.category?.name ? (
+            <Badge color="teal" variant="light">
+              {hit.category.name}
+            </Badge>
+          ) : (
+            <Badge color="gray" variant="light">Category not available</Badge>
+          )}
+        </div>
+      </Group>
+    </Paper>
   );
 };
 
