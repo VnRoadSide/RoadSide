@@ -13,7 +13,7 @@ import {
   CardSection,
 } from "@mantine/core";
 import Link from "next/link";
-import ProductStatusBadge from "./ProductStatusBadge";
+import ProductStatusBadge, { ProductStatusBadge2 } from "./ProductStatusBadge";
 export function ProductCard({ product }: { product: Product }) {
   const [{items, session}, setValue] = useCart();
 
@@ -41,7 +41,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Card withBorder radius="md" padding="xs" miw="12rem">
       <CardSection>
-        <ProductStatusBadge productStatus={product.availability} />
+        <ProductStatusBadge2 productStatus={product.availability} />
         <Image
           src={product.imageUrl}
           alt={product.name}

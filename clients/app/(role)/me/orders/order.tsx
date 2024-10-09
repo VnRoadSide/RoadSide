@@ -105,11 +105,6 @@ export function OrderView({
             Trả hàng/Hoàn tiền
           </TabsTab>
         </TabsList>
-        <Autocomplete
-          mt={"md"}
-          mb={"md"}
-          placeholder="Bạn có thể tìm kiếm theo tên Shop, ID đơn hàng hoặc Tên Sản phẩm "
-        />
         {/* Show orders filtered by current tab */}
         {orders.length > 0 ? (
           <TabsPanel value={status}>

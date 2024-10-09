@@ -45,7 +45,7 @@ const FuzzySearch = ({ indexName }: { indexName: string }) => {
         <TextInput
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
-          placeholder="Search products"
+          placeholder="Tìm kiếm sản phẩm"
           leftSection={<IconSearch size={18} />}
           radius="md"
           size="md"
