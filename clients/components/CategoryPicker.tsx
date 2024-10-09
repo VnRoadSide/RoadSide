@@ -1,5 +1,4 @@
-// components/CategoryPicker.tsx
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Category } from "@/models";
 import {
   Combobox,
@@ -27,6 +26,7 @@ interface CategoryPickerProps {
     value: Category | null,
     option: { value: Category | null; label: string }
   ) => void;
+  initialValue?: Category | null; // New prop for initial category selection
 }
 
 export default function CategoryPicker({
@@ -36,12 +36,19 @@ export default function CategoryPicker({
   nothingFoundMessage = "No categories found",
   categories = [],
   onSelect,
+  initialValue = null, // Default value is null
 }: CategoryPickerProps) {
   const comboboxStore = useCombobox();
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null
-  );
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(initialValue); // Initialize with initial value
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    // When initialValue changes, set it as the selected category
+    if (initialValue) {
+      setSelectedCategory(initialValue);
+      setSearchTerm(initialValue.name); // Set the search term to the category's name
+    }
+  }, [initialValue]);
 
   const handleSelect = (category: Category) => {
     if (!category.categories || category.categories.length === 0) {
@@ -129,7 +136,7 @@ export default function CategoryPicker({
             onFocus={() => comboboxStore.openDropdown()}
             onChange={(event) => {
               setSearchTerm(event.currentTarget.value);
-              setSelectedCategory(null);
+              setSelectedCategory(null); // Clear selected category when searching
               comboboxStore.openDropdown();
             }}
             leftSection={<IconSearch size={16} />}
@@ -162,6 +169,7 @@ export default function CategoryPicker({
     </Box>
   );
 }
+
 interface CategoryItemProps {
   category: Category;
   onSelect: (category: Category) => void;
@@ -178,7 +186,6 @@ function CategoryItem({ category, onSelect, level = 0 }: CategoryItemProps) {
     <Box key={category.id}>
       <Combobox.Option
         value={category.url!}
-        // disabled={!isLeaf}
         onMouseDown={(event) => {
           // Prevents the input from losing focus
           event.preventDefault();

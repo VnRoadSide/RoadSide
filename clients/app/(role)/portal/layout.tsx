@@ -1,4 +1,5 @@
 import { RoleView } from "@/components/Role";
+import { Button } from "@mantine/core";
 import { ReactNode } from "react";
 
 const navigation = [
@@ -17,9 +18,16 @@ const navigation = [
   {
     label: "Thêm Sản Phẩm",
     href: "/portal/products/new",
-  }
+  },
 ];
 
 export default function PortalLayout({ children }: { children: ReactNode }) {
-  return <RoleView urls={navigation}>{children}</RoleView>;
+  return (
+    <RoleView
+      urls={navigation}
+      
+    >
+      {children}
+    </RoleView>
+  );
 }

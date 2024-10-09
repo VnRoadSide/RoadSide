@@ -8,6 +8,8 @@ import {
   Paper,
   Stack,
   rem,
+  Button,
+  Flex,
 } from "@mantine/core";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
@@ -25,14 +27,18 @@ function NavigationSection({ urls }: { urls: Url[] }) {
 export function RoleView({
   children,
   urls = [],
+  actionButton = null, // Accept actionButton as an optional prop
 }: {
   children: ReactNode;
   urls?: Url[];
+  actionButton?: ReactNode; // Action button placeholder prop
 }) {
   const buildBreadcrumb = (pathname: string) => {
-    const breadcrumb: { label: string; href: string }[] = [{ label: "Trang chủ", href: "/" }];
+    const breadcrumb: { label: string; href: string }[] = [
+      { label: "Trang chủ", href: "/" },
+    ];
     let currentPath = "";
-  
+
     // Iterate over the navigation and build the breadcrumb chain
     urls.forEach((item) => {
       if (pathname.startsWith(item.href)) {
@@ -40,7 +46,7 @@ export function RoleView({
         breadcrumb.push({ label: item.label, href: currentPath });
       }
     });
-  
+
     return breadcrumb;
   };
 
@@ -48,14 +54,25 @@ export function RoleView({
   const nav: Url[] = buildBreadcrumb(pathname);
 
   return (
-    <Stack px="xl">
-      <Breadcrumbs>
-        {nav.map((item, index) => (
-          <Anchor href={item.href} key={index}>
-            {item.label}
-          </Anchor>
-        ))}
-      </Breadcrumbs>
+    <Stack p="lg">
+      <Flex justify="space-between" align="center" >
+        {/* Breadcrumb navigation */}
+        <Breadcrumbs>
+          {nav.map((item, index) => (
+            <Anchor href={item.href} key={index}>
+              {item.label}
+            </Anchor>
+          ))}
+        </Breadcrumbs>
+
+        {/* Placeholder for action buttons */}
+        {actionButton && (
+          <Group align="center">
+            {actionButton}
+          </Group>
+        )}
+      </Flex>
+
       <Group wrap="nowrap" align="start">
         <Paper
           radius="md"
@@ -66,6 +83,7 @@ export function RoleView({
         >
           <NavigationSection urls={urls} />
         </Paper>
+
         {/* Apply scrolling to children content */}
         <Paper
           radius="md"

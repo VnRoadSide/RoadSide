@@ -83,6 +83,7 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
         var entity = await GetQueryable()
             .Include(x => x.Vouchers)
             .Include(x => x.Vendor)
+            .Include(x => x.Category)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id);
         var result = _mapper.Map<Products>(entity);

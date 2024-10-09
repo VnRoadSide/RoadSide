@@ -23,6 +23,7 @@ import { Product } from "@/models";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { deleteProduct } from "@/lib/product";
 import { Session } from "next-auth";
+import { redirect, useRouter } from "next/navigation";
 
 function ProductRow({
   item,
@@ -33,6 +34,7 @@ function ProductRow({
   key: number;
   onDelete: () => void;
 }) {
+  const router = useRouter();
   return (
     <TableTr key={key}>
       <TableTd>
@@ -44,7 +46,7 @@ function ProductRow({
       <TableTd>{item.InstockQuantity}</TableTd>
       <TableTd>{item.description}</TableTd>
       <TableTd>
-        <Button variant="outline" color="blue">
+        <Button variant="outline" color="blue" onClick={() => router.push(`/portal/products/edit?id=${item.id}`)}>
           {" "}
           <IconEdit /> Chỉnh sửa{" "}
         </Button>

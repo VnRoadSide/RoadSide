@@ -1,7 +1,8 @@
-"use client";
+"use client"; // This must be a client-side component
+
 import CategoryPicker from "@/components/CategoryPicker";
 import { uploadMedia } from "@/lib/media";
-import { addOrUpdateProduct } from "@/lib/product";
+import { addOrUpdateProduct } from "@/lib/product"; // Conditionally handle add/update
 import { validator } from "@/lib/validator";
 import { Availability, Category, Product, Vouchers } from "@/models";
 import {
@@ -23,22 +24,28 @@ import { useForm } from "@mantine/form";
 import { IconDownload, IconX, IconPhotoPlus } from "@tabler/icons-react";
 import { Session } from "next-auth";
 import { useRef, useState } from "react";
+import MediaPicker from "./MediaPicker";
 
-type ProductViewProps = {
+type ProductFormProps = {
   categories: Category[];
   vouchers: Vouchers[];
   session: Session | null;
+  initialProduct?: Product; // Optional for editing, not needed for adding new products
+  isEdit?: boolean; // Flag to determine whether the form is for editing
 };
 
 export function ProductForm({
   categories,
   vouchers,
   session,
-}: ProductViewProps) {
+  initialProduct,
+  isEdit = false,
+}: ProductFormProps) {
+  console.log("initialProduct", initialProduct);
   const openRef = useRef<() => void>(null);
   const form = useForm<Product>({
     mode: "controlled",
-    initialValues: {
+    initialValues: initialProduct || {
       name: "",
       description: "",
       baseUnitPrice: 0,
@@ -58,6 +65,7 @@ export function ProductForm({
       InstockQuantity: validator.quantity,
     },
   });
+
   const [files, setFiles] = useState<File[]>([]);
   const previews = files.map((file, index) => (
     <Image
@@ -70,8 +78,11 @@ export function ProductForm({
     />
   ));
 
-  const onSubmit = (values: Product) => {
-    addOrUpdateProduct(values, session);
+  const handleSubmit = async (values: Product) => {
+    if (isEdit && initialProduct) {
+      await addOrUpdateProduct({ ...values, id: initialProduct.id }, session);
+    } 
+    await addOrUpdateProduct(values, session); // Add new product
   };
 
   const handleUpload = async (acceptedFiles: File[]) => {
@@ -84,76 +95,16 @@ export function ProductForm({
 
   return (
     <Stack>
-      <form onSubmit={form.onSubmit(onSubmit)}>
-        {/* Thông tin cơ bản */}
+      <form onSubmit={form.onSubmit(handleSubmit)}>
         <Card>
           <Title order={2}>Thông tin cơ bản</Title>
           <SimpleGrid cols={2} mt="md" spacing="md">
             <Text>Hình ảnh sản phẩm</Text>
-            <Card radius="md" shadow="md" withBorder>
-              <Dropzone
-                openRef={openRef}
-                onDrop={handleUpload}
-                onReject={(rejectedFiles) =>
-                  console.log("rejected files", rejectedFiles)
-                }
-                radius="md"
-                accept={[MIME_TYPES.jpeg]}
-                maxSize={30 * 1024 ** 2}
-              >
-                <div style={{ pointerEvents: "none" }}>
-                  <Group>
-                    <Dropzone.Accept>
-                      <IconDownload
-                        style={{ width: rem(50), height: rem(50) }}
-                        stroke={1.5}
-                      />
-                    </Dropzone.Accept>
-                    <Dropzone.Reject>
-                      <IconX
-                        style={{ width: rem(50), height: rem(50) }}
-                        stroke={1.5}
-                      />
-                    </Dropzone.Reject>
-                    <Dropzone.Idle>
-                      {files.length > 0 ? (
-                        <Group mt="sm">{previews}</Group>
-                      ) : (
-                        <IconPhotoPlus
-                          style={{ width: rem(50), height: rem(50) }}
-                          stroke={1.5}
-                        />
-                      )}
-                    </Dropzone.Idle>
-                  </Group>
-
-                  <Text w={700} size="lg" mt="xl">
-                    <Dropzone.Accept>Kéo thả tệp tại đây</Dropzone.Accept>
-                    <Dropzone.Reject>
-                      Tệp phải là .jpeg và nhỏ hơn 30MB
-                    </Dropzone.Reject>
-                    {files.length > 0 ? (
-                      <Dropzone.Idle>Thay đổi hình ảnh</Dropzone.Idle>
-                    ) : (
-                      <Dropzone.Idle>Thêm hình ảnh</Dropzone.Idle>
-                    )}
-                  </Text>
-                  <Text size="sm" mt="xs" c="dimmed">
-                    Kéo thả tệp tại đây để tải lên. Lưu ý chỉ chấp nhận tệp có
-                    đuôi <i>.jpeg</i> kích thước dưới 30MB.
-                  </Text>
-                </div>
-              </Dropzone>
-
-              <Button
-                size="md"
-                radius="xl"
-                mt={"sm"}
-                onClick={() => openRef.current?.()}
-              >
-                Chọn tệp
-              </Button>
-            </Card>
+            <MediaPicker
+              session={session}
+              initialFileUrl={form.values.imageUrl} // Pass the initial URL if editing a product
+              onUpload={(url) => form.setFieldValue("imageUrl", url)} // Update form with the uploaded URL
+            />
 
             <TextInput
               label="Tên sản phẩm"
@@ -161,15 +112,14 @@ export function ProductForm({
               withAsterisk
               {...form.getInputProps("name")}
             />
-
             <CategoryPicker
               label="Danh mục"
               placeholder="Chọn danh mục"
               withAsterisk
+              initialValue={form.values.category}
               categories={categories}
               onSelect={(category) => form.setFieldValue("category", category)}
             />
-
             <TextInput
               label="Mô tả sản phẩm"
               placeholder="Nhập mô tả của sản phẩm"
@@ -179,7 +129,6 @@ export function ProductForm({
           </SimpleGrid>
         </Card>
 
-        {/* Thông tin bán hàng */}
         <Card>
           <Title order={2}>Thông tin bán hàng</Title>
           <SimpleGrid cols={2} spacing="md" mt="md">
@@ -224,7 +173,9 @@ export function ProductForm({
         </Card>
 
         <Group mt="md">
-          <Button type="submit">Thêm sản phẩm</Button>
+          <Button type="submit">
+            {isEdit ? "Cập nhật sản phẩm" : "Thêm sản phẩm"}
+          </Button>
         </Group>
       </form>
     </Stack>
