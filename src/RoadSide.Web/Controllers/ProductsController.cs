@@ -28,7 +28,7 @@ public class ProductsController: ControllerBase
     [HttpGet]
     [Route("products")]
     [Route("products/{categoryUrl}")]
-    public async Task<ActionResult<ICollection<Products>>> GetProducts(string categoryUrl = null)
+    public async Task<ActionResult<ICollection<Products>>> GetProducts(string? categoryUrl = null,string? search = null)
     {
         try
         {
@@ -36,6 +36,7 @@ public class ProductsController: ControllerBase
             {
                 IncludeCategory = true,
                 CategoryUrl = categoryUrl,
+                Search = search
             };
             
             var products = await _productService.GetAsync(option);

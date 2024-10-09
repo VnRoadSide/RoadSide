@@ -46,7 +46,7 @@ const FuzzySearch = ({ indexName }: { indexName: string }) => {
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
           placeholder="Search products"
-          icon={<IconSearch size={18} />}
+          leftSection={<IconSearch size={18} />}
           radius="md"
           size="md"
           styles={(theme) => ({
