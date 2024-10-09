@@ -15,20 +15,8 @@ const navigation = [
     href: "/me/orders",
   },
   {
-    label: "Sổ địa chỉ",
-    href: "/me/addresses",
-  },
-  {
-    label: "Thông tin thanh toán",
-    href: "/me/payment-info",
-  },
-  {
-    label: "Theo dõi",
-    href: "/me/follow",
-  },
-  {
-    label: "Hỗ trợ khách hàng",
-    href: "/me/support",
+    label: "Voucher hiện có",
+    href: "/me/voucher",
   },
 ];
 

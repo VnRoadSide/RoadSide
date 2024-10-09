@@ -90,14 +90,16 @@ export default function Signup() {
                 required
                 {...form.getInputProps("confirmPassword")}
               />
+
+              <Space h="md" />
               <Button type="submit" fullWidth>
                 Đăng Ký
               </Button>
             </form>
-            <Space h="md" />
+            {/* <Space h="md" />
             <Button variant="outline" fullWidth>
               Đăng ký với Google
-            </Button>
+            </Button> */}
           </Paper>
           <Space h="md" />
           <Text size="sm">

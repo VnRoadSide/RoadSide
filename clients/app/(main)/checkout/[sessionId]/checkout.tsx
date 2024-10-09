@@ -89,10 +89,6 @@ function CheckoutSection({ order }: { order: Order }) {
         <Text>Vận Chuyển Nhanh - ₫{totalShippingCost.toLocaleString()}</Text>
         <Text size="xs">Dự kiến nhận hàng trong 4 giờ kể từ lúc đặt hàng</Text>
       </Card>
-
-      <Card shadow="sm" p="lg" radius="md" mt="md">
-        <TextInput label="Lời nhắn:" placeholder="Lưu ý cho Người bán..." />
-      </Card>
     </Box>
   );
 }
@@ -107,10 +103,10 @@ export function CheckoutView({
   checkoutSessionId: string;
 }) {
   const address = {
-    name: "Trần Hà Tuấn Kiệt",
-    phone: "(+84) 355749742",
+    name: "Alice Smith",
+    phone: "(+84) 017012929",
     address:
-      "Tầng 5, Tòa Nhà Pijico, Số 186, Điện Biên Phủ, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh",
+      "32 đường số 2, Khu dân cư Kim Sơn, Tân Phong, Quận 7, Hồ Chí Minh",
   };
   const router = useRouter();
 
@@ -133,9 +129,6 @@ export function CheckoutView({
             {address.name} {address.phone}
           </Text>
           <Text>{address.address}</Text>
-          <Button variant="subtle" size="xs">
-            Thay Đổi
-          </Button>
         </Group>
       </Card>
 

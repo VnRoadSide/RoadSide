@@ -97,7 +97,8 @@ public class AuthController : ControllerBase
             RoleName = user.Roles.Select(t => t.Name).ToList(),
             Name = user.FullName,
             PhoneNumber = user.PhoneNumber,
-            Avatar = user.AvatarUrl
+            Avatar = user.AvatarUrl,
+            Address = user.Address
         };
         return Ok(result);
     }

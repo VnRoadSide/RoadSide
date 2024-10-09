@@ -79,7 +79,7 @@ export default function Login() {
                 {...form.getInputProps("password")}
               />
               <Link
-                href="/forgot-password"
+                href="/reset-password"
                 style={{
                   fontSize: "14px",
                   textDecoration: "underline",
@@ -95,10 +95,10 @@ export default function Login() {
                 Đăng Nhập
               </Button>
             </form>
-            <Space h="md" />
+            {/* <Space h="md" />
             <Button variant="outline" fullWidth>
               Đăng nhập với Google
-            </Button>
+            </Button> */}
           </Paper>
           <Space h="md" />
           <Text size="sm">

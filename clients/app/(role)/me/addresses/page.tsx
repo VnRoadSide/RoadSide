@@ -5,18 +5,18 @@ import { IconPencil, IconTrash } from "@tabler/icons-react";
 export default function AddressBook() {
   const addresses = [
     {
-      name: "TUẤN KIỆT TRẦN",
+      name: "Alice Smith",
       isDefault: true,
       address:
-        "B9.18, Chung cư Saigon Intela, KDC 13E, Đô thị mới Nam Thành Phố, Ấp 5, Xã Phong Phú, Huyện Bình Chánh, Hồ Chí Minh",
-      phone: "0355749742",
+      "32 đường số 2, Khu dân cư Kim Sơn, Tân Phong, Quận 7, Hồ Chí Minh",
+      phone: "0917012919",
     },
     {
-      name: "TRẦN HÀ TUẤN KIỆT",
+      name: "Alice Smith",
       isDefault: false,
       address:
-        "5/1B Duyên Hải, khu phố Hưng Thanh, Thị trấn Cần Thanh, Huyện Cần Giờ, Hồ Chí Minh",
-      phone: "0355749742",
+      "T1-07.01, Chung cư Calla Garden, KDC 13C, Xã Phong Phú, Huyện Bình Chánh, Hồ Chí Minh",
+      phone: "0917012919",
     },
   ];
 

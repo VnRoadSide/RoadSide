@@ -91,7 +91,7 @@ export default function NavBar({
                   <MenuItem component={Link} href="/me">
                     Tài khoản của tôi
                   </MenuItem>
-                  <MenuItem component={Link} href="/portal">
+                  <MenuItem component={Link} href="/portal/orders">
                     Kênh người bán
                   </MenuItem>
                   <MenuItem component={Link} href="/me/orders">

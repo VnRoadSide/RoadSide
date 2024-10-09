@@ -3,10 +3,6 @@ import { ReactNode } from "react";
 
 const navigation = [
   {
-    label: "Quản Lý Shop",
-    href: "/portal",
-  },
-  {
     label: "Quản Lý Đơn hàng",
     href: "/portal/orders",
   },
@@ -21,14 +17,6 @@ const navigation = [
   {
     label: "Thêm Sản Phẩm",
     href: "/portal/products/new",
-  },
-  {
-    label: "Kênh Marketing",
-    href: "/portal/marketing",
-  },
-  {
-    label: "Tài Chính",
-    href: "/portal/finance",
   }
 ];
 

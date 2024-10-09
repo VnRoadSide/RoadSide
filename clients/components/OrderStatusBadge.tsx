@@ -6,7 +6,7 @@ const orderStatusDict: Record<OrderStatus, { value: string; color: string }> = {
   [OrderStatus.pickup]: {value: "Chờ lấy hàng", color: "yellow"},
   [OrderStatus.shipping]: {value: "Đang giao", color: "blue"},
   [OrderStatus.delivered]: {value: "Đã giao", color: "green"},
-  [OrderStatus.cancelled]: {value: "Đơn huỷ", color: "dimmed"},
+  [OrderStatus.cancelled]: {value: "Đơn huỷ", color: "gray"},
   [OrderStatus.refunded]: {value: "Trả hàng", color: "red"},
   [OrderStatus.all]: {value: "Tất cả", color: ""},
 }

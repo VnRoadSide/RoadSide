@@ -177,7 +177,7 @@ export function OrderView({
                         )}
                       </TableTd>
                         <TableTd>
-                          {getCurrentPrice(item.product).toLocaleString()}
+                          {item.product.baseUnitPrice.toLocaleString()}
                         </TableTd>
                         <TableTd>{item.quantity}</TableTd>
                         <TableTd>
