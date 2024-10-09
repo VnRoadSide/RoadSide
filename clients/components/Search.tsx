@@ -83,7 +83,7 @@ const SearchBoxComponent = ({
               backgroundColor: theme.colors.dark[6],
               borderColor: theme.colors.dark[4],
               color: theme.colors.gray[0],
-              paddingRight: '100px', // Adjust for the right section
+              paddingRight: '50px', // Adjust for the right section
               paddingLeft: '40px', // Adjust for the icon
               height: '40px',
             },

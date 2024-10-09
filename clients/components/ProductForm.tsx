@@ -160,6 +160,7 @@ export function ProductForm({
                 value: voucher.id,
                 label: voucher.code,
               }))}
+              value={form.values.vouchers.map((voucher) => voucher.id)}
               searchable
               withAsterisk
               onChange={(v) =>
