@@ -7,14 +7,15 @@ COPY src .
 ARG TARGETOS
 ARG TARGETARCH
 
-RUN apt install icu-dev icu-libs icu-data-full
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 RUN dotnet publish RoadSide.Web -c $configuration --os=$TARGETOS --arch=$TARGETARCH --property:PublishDir=/src/published
 
 # =====================================================================================
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-chiseled AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+RUN apt update && apt upgrade -y && apt install -y libicu-dev
+
 USER app
 WORKDIR /app
 COPY --from=publish /src/published .
