@@ -6,7 +6,7 @@ namespace RoadSide.Infrastructure.Search;
 
 public class AlgoliaService(SearchClient client, ISettingService settingService) : ISearchProvider
 {
-    private readonly TimeSpan _reindexInterval = TimeSpan.FromMinutes(1);
+    private readonly TimeSpan _reindexInterval = TimeSpan.FromHours(1);
     private const string Prefix = "ReindexStatus_{0}";
 
     public async Task IndexAsync<T>(IEnumerable<T> items) where T : class
@@ -100,27 +100,32 @@ public class AlgoliaService(SearchClient client, ISettingService settingService)
     public async Task ReIndexOperationsAsync<T>(IEnumerable<T> items) where T : class
     {
         var referenceKey = string.Format(Prefix, typeof(T).Name.ToLowerInvariant());
-        var createdOn = DateTime.UtcNow;
         var reindexStatus = await settingService.GetAsync(referenceKey);
-        if (reindexStatus == null  || createdOn - reindexStatus.CreatedOn > _reindexInterval)
+        if (reindexStatus == null || DateTime.UtcNow - reindexStatus.LastModifiedOn > _reindexInterval)
         {
-            try {
-                await IndexAsync(items);
-                await settingService.AddAsync(new AppSettings
+            try
+            {
+                // Replace all objects to prevent duplication
+                var indexName = typeof(T).Name.ToLowerInvariant();
+                await client.ReplaceAllObjectsAsync(indexName, items);
+                await settingService.UpsertByKeyAsync(new AppSettings
                 {
-                    ReferenceKey = referenceKey,
+                    ReferenceKey= referenceKey,
                     Value = OperationResult.Success.ToString(),
-                    CreatedOn = createdOn
-                });
-            } catch (Exception) {
-                await settingService.AddAsync(new AppSettings
-                {
-                    ReferenceKey = referenceKey,
-                    Value = OperationResult.Failure.ToString(),
-                    CreatedOn = createdOn
+                    Type = nameof(OperationResult)
                 });
             }
-            
+            catch (Exception e)
+            {
+                await settingService.UpsertByKeyAsync(new AppSettings
+                {
+                    ReferenceKey= referenceKey,
+                    Value = OperationResult.Failure.ToString(),
+                    Type = nameof(OperationResult),
+                    Description = e.Message
+                });
+            }
         }
     }
+
 }

@@ -9,6 +9,7 @@ namespace RoadSide.Core.Services;
 public class ProductQueryOption : QueryPaging, IQueryFilter
 {
     public bool IncludeCategory { get; set; }
+    public bool Deep { get; set; }
     public string? CategoryUrl { get; set; }
     public string? Search { get; set; }
     public bool IsPortal { get; set; }
@@ -50,8 +51,13 @@ internal class ProductService(ICoreDbContext context, IMapper mapper, IAppContex
         if (option.IncludeCategory)
         {
             query = query
-                .Include(x => x.Category)
-                .ThenInclude(x => x.BaseCategory);
+                .Include(x => x.Category);
+            if (option.Deep)
+            {
+                query = query
+                    .Include(x => x.Category)
+                    .ThenInclude(x => x.BaseCategory);
+            }
         }
         
         query = query.Include(x => x.Vouchers)

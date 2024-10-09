@@ -68,7 +68,9 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.Vouchers, act => act.Ignore());
 
         CreateMap<Entities.Products, Products>();
-        CreateMap<Category, Entities.Category>();
+        CreateMap<Category, Entities.Category>()
+            .ForMember(dest => dest.Categories, act => act.Ignore())
+            .ForMember(dest => dest.BaseCategory, act => act.Ignore());
         CreateMap<Entities.Category, Category>();
         CreateMap<Prices, Entities.Prices>();
         CreateMap<Entities.Prices, Prices>();
