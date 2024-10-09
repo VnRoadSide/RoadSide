@@ -7,7 +7,7 @@ COPY src .
 ARG TARGETOS
 ARG TARGETARCH
 
-RUN apk add icu-libs
+RUN apt install icu-dev icu-libs icu-data-full
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 RUN dotnet publish RoadSide.Web -c $configuration --os=$TARGETOS --arch=$TARGETARCH --property:PublishDir=/src/published
