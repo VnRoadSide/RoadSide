@@ -12,7 +12,7 @@ public interface ISettingService : IService<Domain.AppSettings, Entities.AppSett
     ValueTask<AppSettings?> GetAsync(string referenceKey);
     ValueTask<ICollection<Domain.AppSettings>> GetAllAsync();
 
-    ValueTask<AppSettings> UpsertByKeyAsync(AppSettings domain);
+    ValueTask<AppSettings> UpsertByKeyAsync(AppSettings domain, CancellationToken cancellationToken = default);
 }
 
 internal class SettingService(ICoreDbContext context, IMapper mapper)
@@ -81,21 +81,23 @@ internal class SettingService(ICoreDbContext context, IMapper mapper)
             _mapper.Map<ICollection<Domain.AppSettings>>(GetQueryable().ToList()));
     }
 
-    public async ValueTask<AppSettings> UpsertByKeyAsync(AppSettings domain)
+    public async ValueTask<AppSettings> UpsertByKeyAsync(AppSettings domain, CancellationToken cancellationToken = default)
     {
-        var entity = GetQueryable().FirstOrDefault(x => x.ReferenceKey == domain.ReferenceKey);
-        
+        var entity = await GetQueryable()
+            .FirstOrDefaultAsync(x => x.ReferenceKey == domain.ReferenceKey, cancellationToken);
+
         if (entity is null)
         {
-            await AddAsync(domain);
+            return await AddAsync(domain, cancellationToken);
         }
         else
         {
-            domain.Id = entity.Id;
-            domain.LastModifiedOn = DateTime.Now;
-            await UpdateAsync(domain);
+            entity.Value = domain.Value;
+            entity.LastModifiedOn = DateTime.UtcNow;
+            entity.Description = domain.Description;
+            await context.SaveChangesAsync(cancellationToken);
+            return domain;
         }
-
-        return domain;
     }
+
 }
